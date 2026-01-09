@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router'
 import { icons } from '@/constants'
 import { useFavoritesStore } from '@/store/favoritesStore'
 import SafeView from '@/components/SafeView'
+import { Ionicons } from '@expo/vector-icons'
 
 export default function FavoritesPage() {
   const router = useRouter()
@@ -64,13 +65,16 @@ export default function FavoritesPage() {
   }
 
   return (
-    <SafeView className="flex-1 bg-[#f6f7f8] px-8 pt-4">
+    <SafeView className="flex-1 bg-brand-light px-8 pt-4">
       {/* Header */}
-      <Text className="text-3xl font-bold text-gray-900 mb-4 px-5 py-5">
-        المفضلة <Image source={icons.heartf} className="w-8 h-8 inline-block ml-2" />
+      <Text className="text-3xl font-extrabold text-brand-dark mb-4 px-5 py-5">
+        المفضلة{' '}
+        <Ionicons name='heart' color={"red"} size={25}
+        />
       </Text>
 
-      <FlatList className='px-3'
+      <FlatList
+        className="px-3"
         data={favorites}
         keyExtractor={item => item.id}
         numColumns={2}
@@ -79,7 +83,7 @@ export default function FavoritesPage() {
         renderItem={({ item }) => (
           <Pressable
             onPress={() => router.push(`/product/${item.id}`)}
-            className="w-[48%] bg-white rounded-3xl mb-4 shadow-lg overflow-hidden"
+            className="w-[48%] bg-white rounded-3xl mb-4 shadow-lg overflow-hidden active:scale-[0.98]"
           >
             {/* Image */}
             <View className="relative">
@@ -92,23 +96,26 @@ export default function FavoritesPage() {
               {/* Remove Button */}
               <Pressable
                 onPress={() => removeFavorite(item.id)}
-                className="absolute top-3 right-3 bg-white/90 p-2 rounded-full"
+                className="absolute top-3 right-3 bg-white/90 p-2 rounded-full shadow"
               >
-                <Image source={icons.trash} className='w-5 h-5'  />
+                <Image
+                  source={icons.trash}
+                  className="w-5 h-5 tint-brand-secondary"
+                />
               </Pressable>
             </View>
 
             {/* Content */}
             <View className="p-4">
               <Text
-                className="text-gray-900 font-semibold text-sm mb-1"
+                className="text-brand-dark font-semibold text-sm mb-1"
                 numberOfLines={2}
                 style={{ writingDirection: 'rtl' }}
               >
                 {item.name}
               </Text>
 
-              <Text className="text-lg font-bold text-gray-900">
+              <Text className="text-lg font-extrabold text-brand-primary">
                 {item.price} ر.س
               </Text>
             </View>
@@ -118,3 +125,5 @@ export default function FavoritesPage() {
     </SafeView>
   )
 }
+
+

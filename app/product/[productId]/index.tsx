@@ -282,26 +282,71 @@ export default function ProductDetailsPage() {
           </Text>
 
           {/* FEATURES */}
-          <View className="mt-6 gap-3">
-            {[
-              "مقاومة للماء",
-              "بطارية تدوم 7 أيام",
-              "شحن سريع",
-              "ضمان سنتين",
-              "مقاومة للماء",
-              "بطارية تدوم 7 أيام",
-              "شحن سريع",
-              "ضمان سنتين",
-            ].map((item, i) => (
-              <View
-                key={i}
-                className="flex-row items-center gap-3 bg-gray-100 px-4 py-3 rounded-xl"
-              >
-                <Ionicons name="checkmark-circle" size={20} color="#22c55e" />
-                <Text className="font-semibold text-gray-700">{item}</Text>
-              </View>
-            ))}
-          </View>
+          {/* FEATURES – Premium Glass Design */}
+<View className="mt-8 px-1 gap-4">
+
+  {[
+    { title: "مقاومة للماء", icon: "water-outline" },
+    { title: "بطارية تدوم 7 أيام", icon: "battery-full-outline" },
+    { title: "شحن سريع", icon: "flash-outline" },
+    { title: "ضمان سنتين", icon: "shield-checkmark-outline" },
+  ].map((item, i) => (
+    <View
+      key={i}
+      className="flex-row items-center gap-4 px-5 py-5 rounded-3xl overflow-hidden"
+      style={{
+        backgroundColor: "rgba(255,255,255,0.75)",
+        borderWidth: 1,
+        borderColor: "rgba(124,199,164,0.25)",
+        shadowColor: "#7CC7A4",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.25,
+        shadowRadius: 20,
+        elevation: 10,
+        transform: [{ translateY: i % 2 === 0 ? 0 : 6 }],
+      }}
+    >
+      {/* Gradient Accent Bar */}
+      <View
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: 6,
+          backgroundColor: i % 2 === 0 ? "#7CC7A4" : "#6FB7D6",
+        }}
+      />
+
+      {/* Icon Bubble */}
+      <View
+        className="w-12 h-12 rounded-full items-center justify-center"
+        style={{
+          backgroundColor: "rgba(246,166,77,0.18)",
+          shadowColor: "#F6A64D",
+          shadowOpacity: 0.4,
+          shadowRadius: 10,
+        }}
+      >
+        <Ionicons
+          name={item.icon as any}
+          size={24}
+          color="#F6A64D"
+        />
+      </View>
+
+      {/* Text */}
+      <Text
+        className="text-base font-extrabold text-brand-dark"
+        style={{ writingDirection: "rtl" }}
+      >
+        {item.title}
+      </Text>
+    </View>
+  ))}
+
+</View>
+
         </View>
         <View className="h-20" />
       </Animated.ScrollView>

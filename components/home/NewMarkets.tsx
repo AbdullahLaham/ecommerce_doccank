@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
 
@@ -33,9 +34,10 @@ export default function NewMarketsSection() {
     <View className="px-4 mt-6">
       {/* Header */}
       <View className="flex-row items-center justify-between mb-4">
-        <Text className="text-xl font-bold text-brand-dark">🆕 New Markets</Text>
-        <TouchableOpacity>
-          <Text className="text-brand-primary font-medium">See all</Text>
+        <Text className="text-xl font-bold text-brand-dark">🆕 اخر المتاجر لدينا</Text>
+        <TouchableOpacity className="flex flex-row items-center gap-2 text-lg">
+          <Text className="text-brand-primary font-extrabold">عرض الجميع</Text> 
+          <Ionicons name="caret-back-circle-outline" color={"#7CC7A4"} size={15} />
         </TouchableOpacity>
       </View>
 

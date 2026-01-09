@@ -293,6 +293,7 @@ import {
 } from "react-native";
 import SafeView from "@/components/SafeView";
 import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 // const cartItems = [
 //   {
 //     id: 1,
@@ -326,11 +327,11 @@ export default function CartScreen() {
 
 
   return (
-    <SafeView className="flex-1 bg-neutral-50 dark:bg-neutral-900">
+    <SafeView className="flex-1 bg-brand-light dark:bg-brand-dark">
       {/* Header */}
       <View className="px-6 py-4 border-b border-neutral-200 dark:border-neutral-800">
         <Text
-          className="text-2xl font-extrabold text-neutral-900 dark:text-white "
+          className="text-2xl font-extrabold text-brand-dark dark:text-white"
           style={{ writingDirection: "rtl" }}
         >
           سلة التسوق
@@ -351,7 +352,8 @@ export default function CartScreen() {
         {cartItems.map((item, i) => (
           <View
             key={i}
-            className="flex flex-row bg-white dark:bg-neutral-800 rounded-2xl mb-5 shadow-sm overflow-hidden"
+            className="flex flex-row bg-white dark:bg-neutral-800 rounded-2xl mb-5 shadow-sm overflow-hidden border border-brand-primary/20 p-1"
+
           >
             {/* Image */}
             <Image
@@ -365,22 +367,23 @@ export default function CartScreen() {
               <View>
                 <Text
                   numberOfLines={2}
-                  className="text-base font-semibold text-neutral-900 dark:text-white"
+className="text-base font-semibold text-brand-dark dark:text-white"
                   style={{ writingDirection: "rtl" }}
                 >
                   {item.name}
                 </Text>
 
-                <Text className="text-lg font-bold text-neutral-900 dark:text-white mt-1">
-                  {/* {item.price.toFixed(2)} $ */}
+                <Text className="text-lg font-bold text-brand-dark/80 dark:text-white mt-1">
+                  25 $
                 </Text>
               </View>
 
               {/* Quantity */}
-              <View className="flex flex-row items-center justify-between mt-3">
+              <View className="flex flex-row items-center bg-brand-light/70 dark:bg-neutral-700 rounded-full px-4 py-1"
+>
                 <View className="flex flex-row items-center bg-neutral-100 dark:bg-neutral-700 rounded-full px-4 py-1">
                   <TouchableOpacity onPress={() => increaseQty(item.id)}>
-                    <Text className="text-2xl font-bold">+</Text>
+                    <Text className="text-2xl font-bold text-brand-primary">+</Text>
                   </TouchableOpacity>
 
                   <Text className="mx-4 font-semibold text-neutral-900 dark:text-white">
@@ -388,17 +391,12 @@ export default function CartScreen() {
                   </Text>
 
                   <TouchableOpacity onPress={() => decreaseQty(item.id)}>
-                    <Text className="text-2xl font-bold">−</Text>
+                    <Text className="text-2xl font-bold text-brand-secondary">−</Text>
                   </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity onPress={() => removeItem(item.id)}>
-                  <Text
-                    className="text-red-500 font-medium"
-                    style={{ writingDirection: "rtl" }}
-                  >
-                    حذف
-                  </Text>
+                <TouchableOpacity onPress={() => removeItem(item.id)} className="bg-brand-accent/20 p-3 rounded-full ml-auto">
+                  <Ionicons name="trash-outline" size={20} color={"#F6A64D"}  />
                 </TouchableOpacity>
               </View>
             </View>
@@ -454,7 +452,7 @@ export default function CartScreen() {
 
 
         <View className="  px-6 py-6 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 mb-[80px]">
-          <TouchableOpacity className="bg-black dark:bg-white rounded-2xl py-4" onPress={() => router.push('/(checkout)/checkout')}>
+          <TouchableOpacity className="bg-brand-primary rounded-2xl py-4 shadow-md active:opacity-90" onPress={() => router.push('/(checkout)/checkout')}>
             <Text
               className="text-center text-white dark:text-black text-lg font-extrabold"
               style={{ writingDirection: "rtl" }}

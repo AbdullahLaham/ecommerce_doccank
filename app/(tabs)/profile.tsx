@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import SafeView from '@/components/SafeView'
- const user = {
+const user = {
   name: "أحمد محمد",
   email: "ahmed@email.com",
   phone: "+966 55 123 4567",
@@ -46,12 +46,12 @@ const menuItems = [
 
 export default function ProfileScreen() {
   return (
-    <SafeView className="flex-1 bg-neutral-50 dark:bg-neutral-900">
+    <SafeView className="flex-1 bg-brand-light dark:bg-brand-dark">
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View className="px-6 pt-8 pb-6">
           <Text
-            className="text-2xl font-extrabold text-neutral-900 dark:text-white"
+            className="text-2xl font-extrabold text-brand-dark dark:text-white"
             style={{ writingDirection: "rtl" }}
           >
             حسابي
@@ -59,7 +59,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* User Card */}
-        <View className="mx-6 bg-white dark:bg-neutral-800 rounded-3xl p-5 shadow-sm flex-row items-center">
+        <View className="mx-6 bg-white dark:bg-neutral-800 rounded-3xl p-5 shadow-sm flex-row items-center border border-brand-primary/20">
           <Image
             source={{ uri: user.avatar }}
             className="w-20 h-20 rounded-full"
@@ -78,13 +78,13 @@ export default function ProfileScreen() {
             </Text>
           </View>
 
-          <TouchableOpacity className="bg-neutral-100 dark:bg-neutral-700 p-3 rounded-full">
-            <Ionicons name="pencil" size={18} color="#555" />
+          <TouchableOpacity className="bg-brand-accent/20 p-3 rounded-full">
+            <Ionicons name="pencil" size={18} color="#F6A64D" />
           </TouchableOpacity>
         </View>
 
         {/* Info */}
-        <View className="mx-6 mt-6 bg-white dark:bg-neutral-800 rounded-3xl p-5">
+        <View className="mx-6 mt-6 bg-white dark:bg-neutral-800 rounded-3xl p-5 border border-brand-primary/10">
           <ProfileRow label="رقم الهاتف" value={user.phone} />
           <ProfileRow label="البريد الإلكتروني" value={user.email} />
         </View>
@@ -99,7 +99,7 @@ export default function ProfileScreen() {
               <Ionicons
                 name={item.icon as any}
                 size={22}
-                color="#88c1c5"
+                color="#6FB7D6"
               />
 
               <Text
@@ -112,15 +112,17 @@ export default function ProfileScreen() {
               <Ionicons
                 name="chevron-forward"
                 size={20}
-                color="#999"
+                color="#7CC7A4"
               />
             </TouchableOpacity>
           ))}
         </View>
+        <View className="flex-row items-center px-5 py-4 border-b border-brand-primary/10 dark:border-neutral-700"
+        />
 
         {/* Logout */}
         <View className="mx-6 mt-10 mb-20">
-          <TouchableOpacity className="bg-red-500 rounded-2xl py-4">
+          <TouchableOpacity className="bg-brand-primary rounded-2xl py-4">
             <Text
               className="text-center text-white font-extrabold text-lg"
               style={{ writingDirection: "rtl" }}

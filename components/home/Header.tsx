@@ -70,7 +70,7 @@ export default function Header({ count = 0 }: HomeHeaderProps) {
         {/* Cart */}
         <Pressable onPress={() => router.push('/cart')} className="relative">
           <View className="w-14 h-14 rounded-full items-center justify-center p-2 shadow-black shadow-sm ">
-            <Ionicons name="cart-outline" size={35} color="black" />
+            <Ionicons name="cart-sharp" size={35} color="black" />
 
           </View>
           {cartCount > 0 && (

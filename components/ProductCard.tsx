@@ -36,7 +36,7 @@ console.log('Item added to cart');
         </Text>
 
         <View className="flex-row justify-between items-center">
-          <Pressable className="bg-black px-4 py-2 rounded-full" onPress={addToCart}>
+          <Pressable className="bg-black px-4 py-2 rounded-full bg-brand-primary" onPress={addToCart}>
             <Text className="text-white text-xs font-bold">أضف</Text>
           </Pressable>
 
