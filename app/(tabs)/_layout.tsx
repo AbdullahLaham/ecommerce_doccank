@@ -88,44 +88,203 @@
 
 
 
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Colors } from '@/constants/theme';
-import { HapticTab } from '@/components/haptic-tab';
+// import { Tabs } from 'expo-router';
+// import React from 'react';
+// import { View, StyleSheet } from 'react-native';
+// import { Ionicons } from '@expo/vector-icons';
+// import { useColorScheme } from '@/hooks/use-color-scheme';
+// import { Colors } from '@/constants/theme';
+// import { HapticTab } from '@/components/haptic-tab';
 
-// --- Rounded Icon Component ---
+// // --- Rounded Icon Component ---
+// type TabBarIconProps = {
+//   name: string;
+//   focused: boolean;
+//   color: string;
+// };
+
+// const TabBarIcon = ({ name, focused, color }: TabBarIconProps) => {
+//   return (
+//     <View style={[styles.iconContainer, focused && styles.iconFocused]}>
+//       <Ionicons
+//         name={name as any}
+//         size={23}
+//         color={focused ? '#fff' : color}
+//       />
+//     </View>
+//   );
+// };
+
+// // --- Main Tab Layout ---
+// export default function TabLayout() {
+//   const colorScheme = useColorScheme();
+
+//   return (
+//     <Tabs
+//       screenOptions={{
+//         headerShown: false,
+//         tabBarButton: HapticTab,
+//         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+//         tabBarStyle: styles.tabBar,
+//       }}
+//     >
+//       <Tabs.Screen
+//         name="home"
+//         options={{
+//           title: 'الرئيسية',
+//           tabBarIcon: ({ focused, color }) => (
+//             <TabBarIcon name="home" focused={focused} color={color} />
+//           ),
+//         }}
+//       />
+
+//       <Tabs.Screen
+//         name="categories"
+//         options={{
+//           title: 'التصنيفات',
+//           tabBarIcon: ({ focused, color }) => (
+//             <TabBarIcon name="grid" focused={focused} color={color} />
+//           ),
+//         }}
+//       />
+
+//       <Tabs.Screen
+//         name="cart"
+//         options={{
+//           title: 'السله',
+//           tabBarIcon: ({ focused, color }) => (
+//             <TabBarIcon name="cart" focused={focused} color={color} />
+//           ),
+//         }}
+//       />
+
+//       <Tabs.Screen
+//         name="wishlist"
+//         options={{
+//           title: 'المحفوظات',
+//           tabBarIcon: ({ focused, color }) => (
+//             <TabBarIcon name="heart" focused={focused} color={color} />
+//           ),
+//         }}
+//       />
+
+//       <Tabs.Screen
+//         name="profile"
+//         options={{
+//           title: 'الحساب',
+//           tabBarIcon: ({ focused, color }) => (
+//             <TabBarIcon name="person" focused={focused} color={color} />
+//           ),
+//         }}
+//       />
+//     </Tabs>
+//   );
+// }
+
+// // --- Styles ---
+// const styles = StyleSheet.create({
+//   tabBar: {
+//     position: 'absolute',
+//     paddingTop: 3,
+//     paddingBottom: 2,
+//     bottom: 35,
+//     left: 16,
+//     right: 16,
+//     height: 70, padding: 0,
+//     backgroundColor: '#fff',
+//     borderRadius: 25,
+//     shadowColor: '#000',
+//     shadowOffset: { width: 0, height: 4 },
+//     shadowOpacity: 0.15,
+//     shadowRadius: 6,
+//     elevation: 8,
+//     borderTopWidth: 0, // remove default top border
+//   },
+//   iconContainer: {
+//     width: 32,
+//     height: 32,
+//     borderRadius: 22,
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     padding: 1,
+//     marginBottom: 2,
+//   },
+//   iconFocused: {
+//     backgroundColor: '#88c1c5',
+//     shadowColor: '#88c1c5',
+//     shadowOffset: { width: 0, height: 4 },
+//     shadowOpacity: 0.3,
+//     shadowRadius: 6,
+//     elevation: 6,
+//   },
+// });
+
+
+
+import { Tabs } from 'expo-router'
+import React, { useEffect, useRef } from 'react'
+import { View, StyleSheet, Animated } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import { HapticTab } from '@/components/haptic-tab'
+
+/* ---------------- Icon Component ---------------- */
+
 type TabBarIconProps = {
-  name: string;
-  focused: boolean;
-  color: string;
-};
+  name: string
+  focused: boolean
+  color: string
+}
 
 const TabBarIcon = ({ name, focused, color }: TabBarIconProps) => {
+  const translateY = useRef(new Animated.Value(0)).current
+  const scale = useRef(new Animated.Value(1)).current
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.spring(translateY, {
+        toValue: focused ? -6 : 0,
+        useNativeDriver: true,
+        damping: 14,
+        stiffness: 120,
+      }),
+      Animated.spring(scale, {
+        toValue: focused ? 1.05 : 1,
+        useNativeDriver: true,
+      }),
+    ]).start()
+  }, [focused])
+
   return (
-    <View style={[styles.iconContainer, focused && styles.iconFocused]}>
+    <Animated.View
+      style={[
+        styles.iconWrapper,
+        focused && styles.iconWrapperFocused,
+        {
+          transform: [{ translateY }, { scale }],
+        },
+      ]}
+    >
       <Ionicons
         name={name as any}
-        size={23}
-        color={focused ? '#fff' : color}
+        size={22}
+        color={focused ? '#FFFFFF' : color}
       />
-    </View>
-  );
-};
+    </Animated.View>
+  )
+}
 
-// --- Main Tab Layout ---
+/* ---------------- Tabs Layout ---------------- */
+
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarButton: HapticTab,
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: '#1F2937',
+        tabBarInactiveTintColor: '#6B7280',
         tabBarStyle: styles.tabBar,
+        tabBarLabelStyle: styles.label,
       }}
     >
       <Tabs.Screen
@@ -133,7 +292,7 @@ export default function TabLayout() {
         options={{
           title: 'الرئيسية',
           tabBarIcon: ({ focused, color }) => (
-            <TabBarIcon name="home" focused={focused} color={color} />
+            <TabBarIcon name="home-outline" focused={focused} color={color} />
           ),
         }}
       />
@@ -143,7 +302,7 @@ export default function TabLayout() {
         options={{
           title: 'التصنيفات',
           tabBarIcon: ({ focused, color }) => (
-            <TabBarIcon name="grid" focused={focused} color={color} />
+            <TabBarIcon name="grid-outline" focused={focused} color={color} />
           ),
         }}
       />
@@ -151,9 +310,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="cart"
         options={{
-          title: 'السله',
+          title: 'السلة',
           tabBarIcon: ({ focused, color }) => (
-            <TabBarIcon name="cart" focused={focused} color={color} />
+            <TabBarIcon name="cart-outline" focused={focused} color={color} />
           ),
         }}
       />
@@ -163,7 +322,7 @@ export default function TabLayout() {
         options={{
           title: 'المحفوظات',
           tabBarIcon: ({ focused, color }) => (
-            <TabBarIcon name="heart" focused={focused} color={color} />
+            <TabBarIcon name="heart-outline" focused={focused} color={color} />
           ),
         }}
       />
@@ -173,48 +332,55 @@ export default function TabLayout() {
         options={{
           title: 'الحساب',
           tabBarIcon: ({ focused, color }) => (
-            <TabBarIcon name="person" focused={focused} color={color} />
+            <TabBarIcon name="person-outline" focused={focused} color={color} />
           ),
         }}
       />
     </Tabs>
-  );
+  )
 }
 
-// --- Styles ---
+/* ---------------- Styles ---------------- */
+
 const styles = StyleSheet.create({
   tabBar: {
     position: 'absolute',
-    paddingTop: 3,
-    paddingBottom: 2,
-    bottom: 35,
+    bottom: 28,
     left: 16,
     right: 16,
-    height: 70, padding: 0,
-    backgroundColor: '#fff',
-    borderRadius: 25,
+    height: 72,
+    paddingBottom: 10,
+    paddingTop: 10,
+    borderRadius: 28,
+    backgroundColor: '#F8FAFC',
+    borderTopWidth: 0,
+
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 8,
-    borderTopWidth: 0, // remove default top border
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 12,
   },
-  iconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 22,
+
+  iconWrapper: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 1,
-    marginBottom: 2,
   },
-  iconFocused: {
-    backgroundColor: '#88c1c5',
-    shadowColor: '#88c1c5',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 6,
+
+  iconWrapperFocused: {
+    backgroundColor: '#7CC7A4',
+    shadowColor: '#7CC7A4',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    elevation: 8,
   },
-});
+
+  label: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+})

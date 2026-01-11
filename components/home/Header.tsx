@@ -1,20 +1,27 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, ActivityIndicator, Alert, Image, Pressable } from 'react-native'
+import {
+  View,
+  Text,
+  TextInput,
+  ActivityIndicator,
+  Alert,
+  Image,
+  Pressable,
+} from 'react-native'
 import { useRouter } from 'expo-router'
-import { useCartStore } from '@/store/cartStore';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons'
+import { useCartStore } from '@/store/cartStore'
 
 interface HomeHeaderProps {
   count?: number
 }
 
 export default function Header({ count = 0 }: HomeHeaderProps) {
-  const router = useRouter();
-  const [query, setQuery] = useState('');
-  const [loading, setLoading] = useState(false);
+  const router = useRouter()
+  const [query, setQuery] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const cartCount = useCartStore(state => state.getTotalItems())
-
 
   const handleSearch = async () => {
     const trimmed = query.trim()
@@ -25,13 +32,17 @@ export default function Header({ count = 0 }: HomeHeaderProps) {
 
     try {
       setLoading(true)
-      const response = await fetch(`https://your-api.com/products/search?q=${encodeURIComponent(trimmed)}`)
+      const response = await fetch(
+        `https://your-api.com/products/search?q=${encodeURIComponent(trimmed)}`
+      )
       if (!response.ok) throw new Error('Request failed')
+
       const data = await response.json()
       if (!Array.isArray(data) || data.length === 0) {
         Alert.alert('لا توجد نتائج', 'لم يتم العثور على منتجات')
         return
       }
+
       router.push({
         pathname: '/products',
         params: {
@@ -47,35 +58,52 @@ export default function Header({ count = 0 }: HomeHeaderProps) {
   }
 
   return (
-    <View className="px-4 pb-1 bg-gray-100">
+    <View className="bg-[#F8FAFC] px-4 pt-2 pb-4">
       <View className="flex-row items-center gap-3">
-        {/* App Title */}
-        {/* <Text className="text-2xl font-extrabold">دكانك</Text> */}
-        <Image source={require('@/assets/images/title.png')} style={{ width: 60, height: 70 }} />
+        {/* Logo */}
+        <Image
+          source={require('@/assets/images/icon.png')}
+          style={{ width: 70, height: 60 }}
+        />
 
-        {/* Search Input */}
-        <View className="flex-1 bg-white rounded-2xl px-4 py-2 shadow-sm flex-row items-center">
+        {/* Search */}
+        <View className="flex-1 flex-row items-center bg-white rounded-2xl px-4 h-12 shadow-sm">
+          <Ionicons
+            name="search-outline"
+            size={18}
+            color="#9CA3AF"
+            style={{ marginRight: 6 }}
+          />
+
           <TextInput
             value={query}
             onChangeText={setQuery}
             placeholder="ابحث عن المنتجات"
-            placeholderTextColor="#9ca3af"
-            className="flex-1 text-sm"
+            placeholderTextColor="#9CA3AF"
+            className="flex-1 text-sm text-[#1F2937]"
             returnKeyType="search"
             onSubmitEditing={handleSearch}
           />
-          {loading && <ActivityIndicator size="small" color="#88c1c5" />}
+
+          {loading && (
+            <ActivityIndicator size="small" color="#7CC7A4" />
+          )}
         </View>
 
         {/* Cart */}
-        <Pressable onPress={() => router.push('/cart')} className="relative">
-          <View className="w-14 h-14 rounded-full items-center justify-center p-2 shadow-black shadow-sm ">
-            <Ionicons name="cart-sharp" size={35} color="black" />
-
+        <Pressable
+          onPress={() => router.push('/cart')}
+          className="relative"
+        >
+          <View className="w-12 h-12 rounded-2xl bg-white items-center justify-center shadow-sm">
+            <Ionicons name="cart-outline" size={24} color="#1F2937" />
           </View>
+
           {cartCount > 0 && (
-            <View className="absolute -top-1 -right-1 bg-red-500 w-5 h-5 rounded-full items-center justify-center">
-              <Text className="text-white text-xs font-bold">{cartCount}</Text>
+            <View className="absolute -top-1 -right-1 bg-[#F6A64D] min-w-[18px] h-[18px] rounded-full items-center justify-center px-1">
+              <Text className="text-white text-[10px] font-bold">
+                {cartCount}
+              </Text>
             </View>
           )}
         </Pressable>

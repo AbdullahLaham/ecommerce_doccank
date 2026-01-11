@@ -332,7 +332,7 @@ export default function HomeScreen() {
       {/* Suggested Products */}
       
       <View className="mt-4">
-        <Text className="text-xl font-extrabold px-4 mb-4">المنتجات المقترحة</Text>
+        <Text className="text-2xl font-extrabold px-4">المنتجات المقترحة</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View className="flex-row gap-4 px-4">
             <ProductCard

@@ -374,7 +374,7 @@ className="text-base font-semibold text-brand-dark dark:text-white"
                 </Text>
 
                 <Text className="text-lg font-bold text-brand-dark/80 dark:text-white mt-1">
-                  25 $
+                  25 ₪
                 </Text>
               </View>
 
@@ -420,7 +420,7 @@ className="text-base font-semibold text-brand-dark dark:text-white"
               المجموع الفرعي
             </Text>
             <Text className="font-medium text-neutral-900 dark:text-white">
-              {total.toFixed(2)} $
+              {total.toFixed(2)} ₪
             </Text>
           </View>
 
@@ -432,7 +432,7 @@ className="text-base font-semibold text-brand-dark dark:text-white"
               الشحن
             </Text>
             <Text className="font-medium text-neutral-900 dark:text-white">
-              {shipping.toFixed(2)} $
+              {shipping.toFixed(2)} ₪
             </Text>
           </View>
 
@@ -444,7 +444,7 @@ className="text-base font-semibold text-brand-dark dark:text-white"
               الإجمالي
             </Text>
             <Text className="text-xl font-extrabold text-neutral-900 dark:text-white">
-              {(total + shipping).toFixed(2)} $
+              {(total + shipping).toFixed(2)} ₪
             </Text>
           </View>
         </View>

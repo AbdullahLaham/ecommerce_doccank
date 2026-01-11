@@ -36,8 +36,8 @@ export default function NewMarketsSection() {
       <View className="flex-row items-center justify-between mb-4">
         <Text className="text-xl font-bold text-brand-dark">🆕 اخر المتاجر لدينا</Text>
         <TouchableOpacity className="flex flex-row items-center gap-2 text-lg">
-          <Text className="text-brand-primary font-extrabold">عرض الجميع</Text> 
-          <Ionicons name="caret-back-circle-outline" color={"#7CC7A4"} size={15} />
+          <Text className="text-brand-primary font-extrabold text-xl">عرض الجميع</Text> 
+          <Ionicons name="caret-back-circle-outline" color={"#7CC7A4"} size={25} />
         </TouchableOpacity>
       </View>
 
