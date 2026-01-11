@@ -62,8 +62,12 @@ export default function Header({ count = 0 }: HomeHeaderProps) {
       <View className="flex-row items-center gap-3">
         {/* Logo */}
         <Image
-          source={require('@/assets/images/icon.png')}
-          style={{ width: 70, height: 60 }}
+          source={require('@/assets/images/header.png')}
+          style={{
+    width: 75,
+    height: 60,
+    transform: [{ scale: 1.5 }], // جرّب 1.1 – 1.5
+  }}
         />
 
         {/* Search */}
@@ -100,7 +104,7 @@ export default function Header({ count = 0 }: HomeHeaderProps) {
           </View>
 
           {cartCount > 0 && (
-            <View className="absolute -top-1 -right-1 bg-[#F6A64D] min-w-[18px] h-[18px] rounded-full items-center justify-center px-1">
+            <View className="absolute -top-1 -left-1 bg-[#F6A64D] min-w-[18px] h-[18px] rounded-full items-center justify-center px-1">
               <Text className="text-white text-[10px] font-bold">
                 {cartCount}
               </Text>

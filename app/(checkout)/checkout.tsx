@@ -363,8 +363,8 @@ export default function OrderDetailsScreen() {
       </ScrollView>
 
       {/* ===== CTA ===== */}
-      <View className="px-6 py-4 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
-        <TouchableOpacity className="bg-black dark:bg-white rounded-2xl py-4" onPress={() => confirmOrder()}>
+      <View className="px-6 py-4 border-t border-neutral-200 dark:border-neutral-800 bg-white ">
+        <TouchableOpacity className="bg-[#6FB7D6] dark:bg-white rounded-2xl py-4 " onPress={() => confirmOrder()}>
           <Text
             className="text-center text-white dark:text-black text-lg font-extrabold"
             style={{ writingDirection: 'rtl' }}

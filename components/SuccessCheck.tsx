@@ -1,5 +1,6 @@
 import { View, Animated, Text } from 'react-native'
 import { useEffect, useRef } from 'react'
+import { Ionicons } from '@expo/vector-icons'
 
 export default function SuccessCheck() {
   const scale = useRef(new Animated.Value(0)).current
@@ -15,9 +16,9 @@ export default function SuccessCheck() {
   return (
     <Animated.View
       style={{ transform: [{ scale }] }}
-      className="w-28 h-28 rounded-full bg-[#88c1c5]/20 items-center justify-center"
+      className="w-28 h-28 mt-5 rounded-full bg-[#88c1c5]/20 items-center justify-center"
     >
-      <Text className="text-5xl">✅</Text>
+      <Ionicons name='checkmark-done-outline' color={"#6FB7D6"} size={50} />
     </Animated.View>
   )
 }

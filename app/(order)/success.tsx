@@ -200,7 +200,7 @@ export default function OrderSuccessScreen() {
 
         {/* Order Summary Card */}
         <View
-          className="mx-6 bg-white rounded-3xl p-6 -mt-10"
+          className="mx-6 bg-white rounded-3xl p-6 mt-3"
           style={{
             shadowColor: '#000',
             shadowOpacity: 0.08,
