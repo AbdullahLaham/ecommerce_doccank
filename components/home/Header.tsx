@@ -110,6 +110,8 @@ export default function Header({ count = 0 }: HomeHeaderProps) {
               </Text>
             </View>
           )}
+
+          
         </Pressable>
       </View>
     </View>

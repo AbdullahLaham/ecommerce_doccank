@@ -221,11 +221,12 @@
 
 
 
-import { Tabs } from 'expo-router'
-import React, { useEffect, useRef } from 'react'
-import { View, StyleSheet, Animated } from 'react-native'
+import { router, Tabs } from 'expo-router'
+import React, { useEffect, useRef, useState } from 'react'
+import { View, StyleSheet, Animated, ActivityIndicator } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { HapticTab } from '@/components/haptic-tab'
+import { getToken } from '@/lib/auth-storage'
 
 /* ---------------- Icon Component ---------------- */
 
@@ -276,6 +277,45 @@ const TabBarIcon = ({ name, focused, color }: TabBarIconProps) => {
 /* ---------------- Tabs Layout ---------------- */
 
 export default function TabLayout() {
+
+  
+const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = await getToken();
+
+      // if (!token) {
+      //   router.replace("/(auth)/login");
+      // }
+
+      setChecking(false);
+    };
+
+    checkAuth();
+  }, []);
+
+  if (checking) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   return (
     <Tabs
       screenOptions={{

@@ -35,7 +35,7 @@
 // const styles = StyleSheet.create({})
 
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   View,
   Text,
@@ -59,6 +59,8 @@ import access from '@/assets/images/access.jpg'
 import books from '@/assets/images/books.jpg'
 import gifts from '@/assets/images/gifts.jpg'
 import CategoryCard from '../CategoryCard'
+import axios from 'axios'
+import { getToken } from '@/lib/auth-storage'
 export const CATEGORIES = [
   {
     id: '1',
@@ -167,6 +169,26 @@ export const CATEGORIES = [
 
 
 export default function CategoriesSlider() {
+  useEffect(() => {
+    const fetchData = async () => {
+  const token = await getToken(); // ضع التوكن هنا
+
+  const res = await axios.get(
+    'https://docank.mahmoudalbatran.com/api/categories',
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  console.log(res.data?.categories?.data[res.data?.categories?.data?.length - 1]);
+};
+
+
+    // 12|1COoob8rLUV9szNV0PXMTZvAMnSlHm8drOX7XGDGb7354da9
+    fetchData()
+  }, [])
   return (
     <View className="mt-3">
       <Text

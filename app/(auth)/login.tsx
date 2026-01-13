@@ -1,44 +1,242 @@
-import { router } from 'expo-router';
-import { View, Text, TextInput, Pressable } from 'react-native';
+// import { router } from 'expo-router';
+// import { View, Text, TextInput, Pressable } from 'react-native';
+
+
+// export default function SignupScreen() {
+//     return (
+//         <View className="flex-1 bg-[#88c1c5] justify-center px-6">
+//             <View className="bg-white rounded-[32px] px-7 py-10 shadow-2xl">
+//                 <View className='mb-8'>
+//                     <Text className="text-3xl font-extrabold text-center text-gray-900">تسجيل الدخول</Text>
+//                     <Text className="text-center text-gray-500 font-semibold text-base mt-3">سجل الدخول لاكمال رحلتك معنا</Text>
+
+//                 </View>
+//                 <View className='gap-4'>
+//                     <TextInput
+//                         placeholder="Email"
+//                         className="border border-gray-200 rounded-2xl px-5 py-4 text-gray-900 text-base bg-gray-50"
+//                     />
+//                     <TextInput
+//                         placeholder="Password"
+//                         secureTextEntry
+//                         className="border border-gray-200 rounded-2xl px-5 py-4 text-gray-900 text-base bg-gray-50"
+//                     />
+//                 </View>
+
+
+//                 <Pressable className="mt-8 bg-[#1f3a5f] py-4 rounded-2xl active:scale-[0.98]" onPress={() => router.push('/(tabs)/home')}>
+//                     <Text className="text-white text-center font-semibold text-lg">تسجيل الدخول</Text>
+//                 </Pressable>
+
+
+//                 <Text className="text-center text-gray-500 mt-6">
+//                     ليس لديك حساب؟{' '}
+//                     <Text
+//                         className="text-[#1f3a5f] font-bold"
+//                         onPress={() => router.push('/(auth)/sign-up')}
+//                     >
+//                         انشاء حساب
+//                     </Text>
+//                 </Text>
+//             </View>
+//         </View>
+//     );
+// }
+
+
+import OTPModal from "@/components/OTPModal";
+import { router } from "expo-router";
+import { useEffect, useRef, useState } from "react";
+import { View, Text, TextInput, Pressable, Image, ActivityIndicator, KeyboardAvoidingView, TouchableWithoutFeedback, ScrollView, Keyboard, Platform } from "react-native";
+import axios from "axios";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 
 export default function SignupScreen() {
+
+    const [otp, setOtp] = useState(['', '', '', '', ''])
+    const inputsRef = useRef<TextInput[]>([]);
+
+
+    const isValidEmail = (email: string) =>
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
+
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+    const [otpModal, setOtpModal] = useState(false)
+    const [timer, setTimer] = useState(60);
+
+
+    const submitLogin = async () => {
+        setError(null)
+
+        if (!email || !password)
+            return setError('جميع الحقول مطلوبة')
+
+        if (!isValidEmail(email))
+            return setError('البريد الإلكتروني غير صالح')
+
+        try {
+            setLoading(true)
+
+            const res = await axios.post(`https://docank.mahmoudalbatran.com/api/login`, {
+                email,
+                password,
+            })
+
+            const data = res.data;
+
+            console.log(data, 'ttttttttttttttttttttt')
+
+            if (!data) throw new Error(data.message || 'فشل تسجيل الدخول')
+
+            // ✅ OTP sent
+            setOtpModal(true)
+
+        } catch (err: any) {
+            setError(err.message)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+
+    useEffect(() => {
+        if (!otpModal || timer === 0) return
+        const interval = setInterval(() => setTimer(t => t - 1), 1000)
+        return () => clearInterval(interval)
+    }, [otpModal, timer])
+
+
+
+    /* ---------------- VERIFY OTP ---------------- */
+    const verifyOtp = async () => {
+        const code = otp.join('')
+        if (code.length !== 5) return setError('أدخل الرمز كامل')
+
+        try {
+            setLoading(true)
+            await fetch('https://your-api.com/auth/verify-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: "", otp: code }),
+            })
+
+            router.replace('/(tabs)/home')
+        } catch {
+            setError('رمز غير صحيح')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    /* ---------------- RESEND ---------------- */
+    //   const resendOtp = async () => {
+    //     setTimer(60)
+    //     await fetch('https://your-api.com/auth/resend-otp', {
+    //       method: 'POST',
+    //       body: JSON.stringify({ phone: form.phone, method }),
+    //     })
+    //   }
+
     return (
-        <View className="flex-1 bg-[#88c1c5] justify-center px-6">
-            <View className="bg-white rounded-[32px] px-7 py-10 shadow-2xl">
-                <View className='mb-8'>
-                    <Text className="text-3xl font-extrabold text-center text-gray-900">تسجيل الدخول</Text>
-                    <Text className="text-center text-gray-500 font-semibold text-base mt-3">سجل الدخول لاكمال رحلتك معنا</Text>
+        <KeyboardAwareScrollView
+    enableOnAndroid
+    extraScrollHeight={30}
+    keyboardShouldPersistTaps="handled"
+    contentContainerStyle={{ flexGrow: 1 }}
+  >
+        <View className="flex-1 bg-brand-light justify-center px-6">
 
+            {/* Gradient-like background feel */}
+            <View className="absolute inset-0 bg-brand-secondary/10" />
+
+            {/* Card */}
+            <View className="bg-gray-50 rounded-[36px] px-7 py-10 shadow-2xl border border-gray-100">
+
+                {/* Header */}
+                <View className="mb-10 items-center">
+                    <View className="w-14 h-14 rounded-2xl bg-brand-primary/15 items-center justify-center mb-4">
+                        <Image source={require("@/assets/images/icon.jpeg")} style={{ width: 120, height: 60, transform: [{ scale: 1.5 }], }} />
+                    </View>
+
+                    <Text className="text-3xl mt-3 font-extrabold text-brand-dark text-gray-600">
+                        تسجيل الدخول
+                    </Text>
+
+                    <Text className="text-center text-gray-500 font-medium text-base mt-2">
+                        أهلاً بعودتك، سجل دخولك لمتابعة رحلتك معنا
+                    </Text>
                 </View>
-                <View className='gap-4'>
-                    <TextInput
-                        placeholder="Email"
-                        className="border border-gray-200 rounded-2xl px-5 py-4 text-gray-900 text-base bg-gray-50"
-                    />
-                    <TextInput
-                        placeholder="Password"
-                        secureTextEntry
-                        className="border border-gray-200 rounded-2xl px-5 py-4 text-gray-900 text-base bg-gray-50"
-                    />
+
+                {/* Inputs */}
+                <View className="gap-5">
+                    <View>
+                        <Text className="text-sm text-gray-600 mb-2 font-medium">
+                            البريد الإلكتروني
+                        </Text>
+                        <TextInput
+                            placeholder="example@email.com"
+                            value={email}
+                            onChangeText={setEmail}
+                            placeholderTextColor="#9CA3AF"
+                            keyboardType="email-address"
+                            className="border border-gray-200 rounded-2xl px-5 py-4 text-brand-dark text-base bg-gray-50 focus:border-brand-primary"
+                        />
+                    </View>
+
+                    <KeyboardAvoidingView>
+                        <View>
+                        <Text className="text-sm text-gray-600 mb-2 font-medium">
+                            كلمة المرور
+                        </Text>
+                        <TextInput
+                            placeholder="••••••••"
+                            placeholderTextColor="#9CA3AF"
+                            secureTextEntry
+                             value={password}
+  onChangeText={setPassword}
+  
+                            className="border border-gray-200 rounded-2xl px-5 py-4 text-brand-dark text-base bg-gray-50 focus:border-brand-primary"
+                        />
+                    </View>
+                    </KeyboardAvoidingView>
                 </View>
 
-
-                <Pressable className="mt-8 bg-[#1f3a5f] py-4 rounded-2xl active:scale-[0.98]" onPress={() => router.push('/(tabs)/home')}>
-                    <Text className="text-white text-center font-semibold text-lg">تسجيل الدخول</Text>
+                {/* Button */}
+                <Pressable
+                disabled={loading}
+  onPress={submitLogin}
+                    className="mt-10 bg-brand-primary py-4 rounded-2xl active:scale-[0.97] shadow-lg shadow-brand-primary/30"
+                    // onPress={() => router.push("/(tabs)/home")}
+                >
+                    {loading ? <ActivityIndicator /> : <Text className="text-white text-center font-bold text-lg">
+                        تسجيل الدخول
+                    </Text>}
                 </Pressable>
 
+                {error && (
+  <Text className="text-red-500 text-center mt-4">
+    {error}
+  </Text>
+)}
 
-                <Text className="text-center text-gray-500 mt-6">
-                    ليس لديك حساب؟{' '}
+                {/* Footer */}
+                <Text className="text-center text-gray-500 mt-8 text-base">
+                    ليس لديك حساب؟{" "}
                     <Text
-                        className="text-[#1f3a5f] font-bold"
-                        onPress={() => router.push('/(auth)/sign-up')}
+                        className="text-brand-accent font-extrabold"
+                        onPress={() => router.push("/(auth)/sign-up")}
                     >
-                        انشاء حساب
+                        إنشاء حساب
                     </Text>
                 </Text>
             </View>
+            <OTPModal inputsRef={inputsRef} otpModal={otpModal} setOtpModal={setOtpModal} verifyOtp={verifyOtp} email={email} password={password} />
         </View>
+         </KeyboardAwareScrollView>
     );
 }

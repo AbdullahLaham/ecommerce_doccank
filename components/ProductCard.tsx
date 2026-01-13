@@ -51,7 +51,7 @@ console.log('Item added to cart');
     // </Pressable>
 
 
-     <View className="flex-1 m-2 bg-white rounded-3xl shadow-sm overflow-hidden">
+     <View className="flex-1 m-1 bg-white rounded-3xl shadow-sm overflow-hidden">
           <View className="relative">
             <Image
               source={{ uri: image }}
@@ -78,12 +78,13 @@ console.log('Item added to cart');
             >
               {title}
             </Text>
-            <Text
+           {category || location && 
+           <Text
               className="text-xs text-neutral-400 mb-3"
               style={{ writingDirection: 'rtl' }}
             >
               {category} · {location}
-            </Text>
+            </Text>}
             <View className="flex-row items-center justify-between">
               <View>
                 <Text className="text-lg font-extrabold text-[#1F2937]">
@@ -95,7 +96,7 @@ console.log('Item added to cart');
                   </Text>
                 )}
               </View>
-              <Pressable className="bg-[#7CC7A4] px-4 py-2 rounded-full" onPress={() => addToCart()}>
+              <Pressable className="bg-[#7CC7A4] px-3 py-2 rounded-full" onPress={() => addToCart()}>
                 <Text className="text-white text-xs font-bold">أضف للسلة</Text>
               </Pressable>
             </View>
