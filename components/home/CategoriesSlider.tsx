@@ -35,13 +35,14 @@
 // const styles = StyleSheet.create({})
 
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   View,
   Text,
   Image,
   Pressable,
-  FlatList
+  FlatList,
+  Dimensions
 } from 'react-native'
 import { router } from 'expo-router'
 import elec from '@/assets/images/elec.jpg'
@@ -166,29 +167,128 @@ export const CATEGORIES = [
   },
 ]
 
+// const CARD_BACKGROUNDS = [
+//   '#EAF7F1',
+//   '#FFF4E8',
+//   '#F3F6FF',
+//   '#F0FDF9',
+//   '#EEF2FF',
+//   '#FFF1F2',
+// ]
+// import { Dimensions } from 'react-native'
+
+// const SCREEN_WIDTH = Dimensions.get('window').width
+// const CARD_GAP = 12
+// const CARD_WIDTH = (SCREEN_WIDTH - 16 * 2 - CARD_GAP * 3) / 4 
+
+
+
+// export default function CategoriesSlider() {
+//   const [categories, setCategories] = useState([]);
+//   useEffect(() => {
+//     const fetchData = async () => {
+//   const token = await getToken(); // ضع التوكن هنا
+
+//   const res = await axios.get(
+//     'https://docank.mahmoudalbatran.com/api/categories',
+//     {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     }
+//   );
+
+//   setCategories(res.data?.categories?.data)
+
+
+//   console.log(res.data?.categories?.data[res.data?.categories?.data?.length - 1]);
+// };
+
+
+//     // 12|1COoob8rLUV9szNV0PXMTZvAMnSlHm8drOX7XGDGb7354da9
+//     fetchData()
+//   }, [])
+//   return (
+//     <View className="mt-3">
+//       <Text
+//         className="text-2xl font-extrabold mb-2 px-4 text-[#1F2937]"
+//         style={{ writingDirection: 'rtl' }}
+//       >
+//         تصنيفات المنتجات
+//       </Text>
+
+//       {/* <FlatList
+//         data={categories}
+//         keyExtractor={item => item.id}
+//         horizontal
+//         showsHorizontalScrollIndicator={false}
+//         contentContainerStyle={{ paddingHorizontal: 16 }}
+//         renderItem={({ item, index }) => <CategoryCard item={item}  bgColor={CARD_BACKGROUNDS[index % CARD_BACKGROUNDS.length]}
+//        />}
+//       /> */}
+
+//       <FlatList
+//   data={categories}
+//   keyExtractor={item => item.id}
+//   numColumns={4}
+//   scrollEnabled={false} // shows exactly 2 rows
+//   columnWrapperStyle={{ gap: CARD_GAP }}
+//   contentContainerStyle={{ paddingHorizontal: 16, gap: 16 }}
+//   renderItem={({ item, index }) => (
+//     <CategoryCard
+//       item={item}
+//       bgColor={CARD_BACKGROUNDS[index % CARD_BACKGROUNDS.length]}
+//       width={CARD_WIDTH}
+//     />
+//   )}
+// />
+
+//     </View>
+//   )
+// }
+
+
+
+
+
+
+
+
+
+
+const CARD_BACKGROUNDS = [
+  '#EAF7F1',
+  '#FFF4E8',
+  '#F3F6FF',
+  '#F0FDF9',
+  '#EEF2FF',
+  '#FFF1F2',
+]
+
+const SCREEN_WIDTH = Dimensions.get('window').width
+const CARD_GAP = 12
+const CARD_VISIBLE = 2.5
+const CARD_WIDTH = (SCREEN_WIDTH - CARD_GAP * (CARD_VISIBLE + 1)) / CARD_VISIBLE
 
 
 export default function CategoriesSlider() {
+  const [categories, setCategories] = useState<any[]>([])
+
   useEffect(() => {
     const fetchData = async () => {
-  const token = await getToken(); // ضع التوكن هنا
-
-  const res = await axios.get(
-    'https://docank.mahmoudalbatran.com/api/categories',
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      const token = await getToken()
+      const res = await axios.get(
+        'https://docank.mahmoudalbatran.com/api/categories',
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      setCategories(res.data?.categories?.data || [])
     }
-  );
 
-  console.log(res.data?.categories?.data[res.data?.categories?.data?.length - 1]);
-};
-
-
-    // 12|1COoob8rLUV9szNV0PXMTZvAMnSlHm8drOX7XGDGb7354da9
     fetchData()
   }, [])
+
   return (
     <View className="mt-3">
       <Text
@@ -198,13 +298,38 @@ export default function CategoriesSlider() {
         تصنيفات المنتجات
       </Text>
 
+      {/* <FlatList
+        data={categories}
+        keyExtractor={(item) => item.id}
+        numColumns={4} // 4 cards per row
+        scrollEnabled={false} // fits exactly 2 rows
+        columnWrapperStyle={{ gap: CARD_GAP, paddingVertical: 5 }}
+        
+        contentContainerStyle={{ paddingHorizontal: 12, gap: 12,   paddingBottom: 17, // top & bottom padding
+ }}
+        renderItem={({ item, index }) => (
+          <CategoryCard
+            item={item}
+            width={CARD_WIDTH}
+            bgColor={CARD_BACKGROUNDS[index % CARD_BACKGROUNDS.length]}
+          />
+        )}
+      /> */}
+
       <FlatList
-        data={CATEGORIES}
-        keyExtractor={item => item.id}
+        data={categories}
+        keyExtractor={(item) => item.id}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16 }}
-        renderItem={({ item }) => <CategoryCard item={item} />}
+        contentContainerStyle={{ paddingHorizontal: CARD_GAP, paddingVertical: 10, }}
+        ItemSeparatorComponent={() => <View style={{ width: CARD_GAP }} />}
+        renderItem={({ item, index }) => (
+          <CategoryCard
+            item={item}
+            width={CARD_WIDTH}
+            bgColor={CARD_BACKGROUNDS[index % CARD_BACKGROUNDS.length]}
+          />
+        )}
       />
     </View>
   )
