@@ -62,6 +62,7 @@ import gifts from '@/assets/images/gifts.jpg'
 import CategoryCard from '../CategoryCard'
 import axios from 'axios'
 import { getToken } from '@/lib/auth-storage'
+import { useCategoriesStore } from '@/store/categories.store'
 export const CATEGORIES = [
   {
     id: '1',
@@ -272,22 +273,31 @@ const CARD_WIDTH = (SCREEN_WIDTH - CARD_GAP * (CARD_VISIBLE + 1)) / CARD_VISIBLE
 
 
 export default function CategoriesSlider() {
-  const [categories, setCategories] = useState<any[]>([])
+  // const [categories, setCategories] = useState<any[]>([])
+
+
+  const { fetchCategories, categories } = useCategoriesStore()
 
   useEffect(() => {
-    const fetchData = async () => {
-      const token = await getToken()
-      const res = await axios.get(
-        'https://docank.mahmoudalbatran.com/api/categories',
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
-      setCategories(res.data?.categories?.data || [])
-    }
-
-    fetchData()
+    fetchCategories()
   }, [])
+
+
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const token = await getToken()
+  //     const res = await axios.get(
+  //       'https://docank.mahmoudalbatran.com/api/categories',
+  //       {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       }
+  //     )
+  //     setCategories(res.data?.categories?.data || [])
+  //   }
+
+  //   fetchData()
+  // }, [])
 
   return (
     <View className="mt-3">
