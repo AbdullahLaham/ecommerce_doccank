@@ -326,7 +326,13 @@ export default function CategoryCard({ item, width, bgColor }: Props) {
 
   return (
     <Pressable
-      onPress={() => router.push('/products')}
+      onPress={() => router.push({
+      pathname: '/products',
+      params: {
+        categoryId: item.id,
+        categoryName: item.name, // optional (for title)
+      },
+    })}
       style={{ width, height }}
       className="active:scale-95"
     >

@@ -8,6 +8,8 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import SafeView from '@/components/SafeView'
+import { removeToken } from "@/lib/auth-storage";
+import { router } from "expo-router";
 const user = {
   name: "أحمد محمد",
   email: "ahmed@email.com",
@@ -38,6 +40,11 @@ const menuItems = [
     route: "/payments",
   },
   {
+    title: "الاشعارات",
+    icon: "bell",
+    route: "/notifications",
+  },
+  {
     title: "الإعدادات",
     icon: "settings-outline",
     route: "/settings",
@@ -45,6 +52,14 @@ const menuItems = [
 ];
 
 export default function ProfileScreen() {
+
+  const onLogout = async () =>{ 
+    await removeToken();
+    console.log("rrrrrrrrrr");
+    router.replace("/(auth)/login");
+
+  }
+
   return (
     <SafeView className="flex-1 bg-brand-light dark:bg-brand-dark">
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -93,6 +108,7 @@ export default function ProfileScreen() {
         <View className="mx-6 mt-6 bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden">
           {menuItems.map((item, index) => (
             <TouchableOpacity
+            onPress={ () => router.push(item.route)}
               key={index}
               className="flex-row items-center px-5 py-4 border-b border-neutral-200 dark:border-neutral-700"
             >
@@ -122,7 +138,7 @@ export default function ProfileScreen() {
 
         {/* Logout */}
         <View className="mx-6 mt-10 mb-20">
-          <TouchableOpacity className="bg-brand-primary rounded-2xl py-4">
+          <TouchableOpacity className="bg-brand-primary rounded-2xl py-4" onPress={() => onLogout()}>
             <Text
               className="text-center text-white font-extrabold text-lg"
               style={{ writingDirection: "rtl" }}

@@ -23,8 +23,8 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
+        <Stack screenOptions={{ headerShown: false }} />
+          {/* <Stack.Screen name="(tabs)" />
           <Stack.Screen name="(checkout)" />
           <Stack.Screen name="(order)" />
           <Stack.Screen name="(auth)" />
@@ -32,7 +32,7 @@ export default function RootLayout() {
             name="modal"
             options={{ presentation: 'modal', title: 'Modal' }}
           />
-        </Stack>
+        </Stack> */}
 
         <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       </ThemeProvider>

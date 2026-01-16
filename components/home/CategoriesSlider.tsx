@@ -63,6 +63,7 @@ import CategoryCard from '../CategoryCard'
 import axios from 'axios'
 import { getToken } from '@/lib/auth-storage'
 import { useCategoriesStore } from '@/store/categories.store'
+import CategorySliderSkeleton from '../CategorySliderSkeleton'
 export const CATEGORIES = [
   {
     id: '1',
@@ -271,12 +272,14 @@ const CARD_GAP = 12
 const CARD_VISIBLE = 2.5
 const CARD_WIDTH = (SCREEN_WIDTH - CARD_GAP * (CARD_VISIBLE + 1)) / CARD_VISIBLE
 
+const SKELETON_DATA = Array.from({ length: 6 }) // number of skeleton cards
+
 
 export default function CategoriesSlider() {
   // const [categories, setCategories] = useState<any[]>([])
 
 
-  const { fetchCategories, categories } = useCategoriesStore()
+  const { fetchCategories, categories, loading } = useCategoriesStore()
 
   useEffect(() => {
     fetchCategories()
@@ -326,7 +329,7 @@ export default function CategoriesSlider() {
         )}
       /> */}
 
-      <FlatList
+      {!loading ? <FlatList
         data={categories}
         keyExtractor={(item) => item.id}
         horizontal
@@ -340,7 +343,16 @@ export default function CategoriesSlider() {
             bgColor={CARD_BACKGROUNDS[index % CARD_BACKGROUNDS.length]}
           />
         )}
-      />
+      /> : (
+        <FlatList
+  data={SKELETON_DATA}
+  keyExtractor={(_, index) => index.toString()}
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  contentContainerStyle={{ paddingHorizontal: CARD_GAP }}
+  renderItem={() => <CategorySliderSkeleton width={CARD_WIDTH} />}
+/>
+      )}
     </View>
   )
 }

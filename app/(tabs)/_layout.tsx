@@ -285,9 +285,9 @@ const [checking, setChecking] = useState(true);
     const checkAuth = async () => {
       const token = await getToken();
 
-      // if (!token) {
-      //   router.replace("/(auth)/login");
-      // }
+      if (!token) {
+        router.replace("/(auth)/login");
+      }
 
       setChecking(false);
     };

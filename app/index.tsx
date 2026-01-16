@@ -9,6 +9,8 @@ import { Link, Redirect } from 'expo-router';
 import "@/global.css"
 import { useEffect } from 'react';
 export default function HomeScreen() {
+
+  console.log("hello gtttttttttttttttttttttttttt")
 I18nManager.allowRTL(true);
       I18nManager.forceRTL(true);
   useEffect(() => {

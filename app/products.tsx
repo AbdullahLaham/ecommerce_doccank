@@ -901,6 +901,7 @@ import axios from 'axios'
 import ProductsFilterModal, {
   ProductsFilterValues,
 } from '@/components/ProductsFilterModal'
+import { useLocalSearchParams } from 'expo-router'
 
 /* ---------------- Product Card ---------------- */
 const ProductCard = ({ item }: any) => {
@@ -957,6 +958,11 @@ export default function ProductsPage() {
     condition: null,
   })
 
+  const { categoryId, categoryName } = useLocalSearchParams<{
+    categoryId?: string
+    categoryName?: string
+  }>()
+
   const fetchProducts = async () => {
     setLoading(true)
     try {
@@ -968,7 +974,7 @@ export default function ProductsPage() {
           headers: { Authorization: `Bearer ${token}` },
           params: {
             page,
-            type: filters.categoryId,
+            type: filters.categoryId || categoryName,
             // condition: filters.condition,
             // search,
             per_page: 20,
