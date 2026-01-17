@@ -27,21 +27,21 @@ const menuItems = [
   {
     title: "المفضلة",
     icon: "heart-outline",
-    route: "/favorites",
+    route: "/wishlist",
   },
-  {
-    title: "العناوين",
-    icon: "location-outline",
-    route: "/addresses",
-  },
-  {
-    title: "طرق الدفع",
-    icon: "card-outline",
-    route: "/payments",
-  },
+  // {
+  //   title: "العناوين",
+  //   icon: "location-outline",
+  //   route: "/addresses",
+  // },
+  // {
+  //   title: "طرق الدفع",
+  //   icon: "card-outline",
+  //   route: "/payments",
+  // },
   {
     title: "الاشعارات",
-    icon: "bell",
+    icon: "notifications-outline",
     route: "/notifications",
   },
   {

@@ -62,11 +62,11 @@ export default function Header({ count = 0 }: HomeHeaderProps) {
       <View className="flex-row items-center gap-3">
         {/* Logo */}
         <Image
-          source={require('@/assets/images/header.png')}
+          source={require('@/assets/images/dokanak.png')}
           style={{
-    width: 75,
+    width: 120,
     height: 60,
-    transform: [{ scale: 1.5 }], // جرّب 1.1 – 1.5
+    // transform: [{ scale: 1.5 }], // جرّب 1.1 – 1.5
   }}
         />
 

@@ -902,9 +902,28 @@ import ProductsFilterModal, {
   ProductsFilterValues,
 } from '@/components/ProductsFilterModal'
 import { useLocalSearchParams } from 'expo-router'
+import { useCartStore } from '@/store/cartStore'
+import Toast from 'react-native-toast-message'
 
 /* ---------------- Product Card ---------------- */
 const ProductCard = ({ item }: any) => {
+  const addItem = useCartStore(state => state.addItem);
+   const addToCart = () => {
+      addItem({
+        id: item?.id,
+        name: item?.name,
+        price: item.price,
+        quantity: 1,
+        image: item.image,
+  
+      });
+      Toast.show({
+    type: 'success',
+    text1: "success",
+    text2: 'تمت الإضافة إلى السلة بنجاح',
+  });
+  console.log('Item added to cart');
+    }
   return (
     <View className="flex-1 m-2 bg-white rounded-3xl shadow-sm overflow-hidden">
       <Image
@@ -936,7 +955,7 @@ const ProductCard = ({ item }: any) => {
             {item.price} ر.س
           </Text>
 
-          <Pressable className="bg-[#7CC7A4] px-4 py-2 rounded-full">
+          <Pressable className="bg-[#7CC7A4] px-4 py-2 rounded-full" onPress={addToCart}>
             <Text className="text-white text-xs font-bold">أضف للسلة</Text>
           </Pressable>
         </View>

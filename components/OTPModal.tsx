@@ -191,7 +191,10 @@ const OTPModal = ({
               </Text>
 
               <Text className="text-center text-gray-500 mt-2">
-                تم إرسال رمز مكوّن من 6 أرقام
+                تم إرسال رمز مكوّن من 6 أرقام الى بريدك الالكتروني
+              </Text>
+              <Text className="text-center text-gray-500 mt-2">
+                {email}
               </Text>
 
               {/* OTP INPUTS */}

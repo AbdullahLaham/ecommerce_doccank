@@ -227,6 +227,7 @@ import { View, StyleSheet, Animated, ActivityIndicator } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { HapticTab } from '@/components/haptic-tab'
 import { getToken } from '@/lib/auth-storage'
+import { checkAuth } from '@/lib/check-auth'
 
 /* ---------------- Icon Component ---------------- */
 
@@ -280,6 +281,19 @@ export default function TabLayout() {
 
   
 const [checking, setChecking] = useState(true);
+
+useEffect(() => {
+    const verify = async () => {
+      try {
+        await checkAuth(); // 👈 تحقق من التوكن
+        setChecking(false);
+      } catch {
+        router.replace("/(auth)/login");
+      }
+    };
+
+    verify();
+  }, []);
 
   useEffect(() => {
     const checkAuth = async () => {

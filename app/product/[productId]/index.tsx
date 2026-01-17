@@ -187,183 +187,566 @@
 //   );
 // }
 
-import React, { useRef } from "react";
+// import React, { useRef } from "react";
+// import {
+//   View,
+//   Text,
+//   Animated,
+//   Dimensions,
+//   Pressable,
+//   ScrollView,
+// } from "react-native";
+// import { Ionicons } from "@expo/vector-icons";
+// import { router } from "expo-router";
+
+// const { width } = Dimensions.get("window");
+// const IMAGE_HEIGHT = 280;
+
+// export default function ProductDetailsPage() {
+//   const scrollY = useRef(new Animated.Value(0)).current;
+
+//   const imageTranslate = scrollY.interpolate({
+//     inputRange: [-IMAGE_HEIGHT, 0, IMAGE_HEIGHT],
+//     outputRange: [-IMAGE_HEIGHT / 2, 0, IMAGE_HEIGHT * 0.75],
+//   });
+
+//  const imageScale = scrollY.interpolate({
+//   inputRange: [-IMAGE_HEIGHT, 0],
+//   outputRange: [1.15, 1],
+//   extrapolate: "clamp",
+// });
+
+
+//   return (
+//     <View className="flex-1 bg-gray-100">
+//       {/* Scroll */}
+//       <Animated.ScrollView
+//         showsVerticalScrollIndicator={false}
+//         onScroll={Animated.event(
+//           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+//           { useNativeDriver: true }
+//         )}
+//         scrollEventThrottle={16}
+//       >
+//         {/* HERO IMAGE */}
+//         <View className="overflow-hidden">
+//           <Animated.Image
+//             source={{ uri: "data:image/jpeg;base64,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" }}
+//             style={{
+//               width: "100%",
+//               height: "300",
+//               transform: [{ translateY: imageTranslate }, { scale: imageScale }],
+//             }}
+//             resizeMode="cover"
+//           />
+
+//           {/* Back + Favorite */}
+//           <View className="absolute top-14 left-4 right-4 flex-row justify-between">
+//             <Pressable className="bg-white/90 p-3 rounded-full" onPress={() => router.back()}>
+//               <Ionicons name="arrow-back" size={22} />
+//             </Pressable>
+
+//             <Pressable className="bg-white/90 p-3 rounded-full">
+//               <Ionicons name="heart-outline" size={22} />
+//             </Pressable>
+//           </View>
+//         </View>
+
+//         {/* CONTENT CARD */}
+//         <View className="-mt-8 rounded-t-[32px] bg-white px-6 pt-8 pb-32">
+//           {/* Title */}
+//           <Text className="text-3xl font-extrabold text-gray-900">
+//             ساعة ذكية فاخرة
+//           </Text>
+
+//           {/* Price */}
+//           <View className="flex-row items-center gap-3 mt-3">
+//             <Text className="text-2xl font-extrabold text-[#88c1c5]">
+//               249 $
+//             </Text>
+//             <Text className="text-gray-400 line-through">299 $</Text>
+//           </View>
+
+//           {/* Rating */}
+//           <View className="flex-row items-center gap-1 mt-3">
+//             {Array.from({ length: 5 }).map((_, i) => (
+//               <Ionicons key={i} name="star" size={16} color="#facc15" />
+//             ))}
+//             <Text className="text-gray-500 text-sm ml-2">(4.8)</Text>
+//           </View>
+
+//           {/* Description */}
+//           <Text className="mt-5 text-gray-600 leading-7">
+//             ساعة ذكية بتصميم عصري، مقاومة للماء، تدعم تتبع اللياقة البدنية،
+//             بطارية طويلة العمر، مناسبة للاستخدام اليومي والرياضي.
+//           </Text>
+
+//           {/* FEATURES */}
+//           {/* FEATURES – Premium Glass Design */}
+// <View className="mt-8 px-1 gap-4">
+
+//   {[
+//     { title: "مقاومة للماء", icon: "water-outline" },
+//     { title: "بطارية تدوم 7 أيام", icon: "battery-full-outline" },
+//     { title: "شحن سريع", icon: "flash-outline" },
+//     { title: "ضمان سنتين", icon: "shield-checkmark-outline" },
+//   ].map((item, i) => (
+//     <View
+//       key={i}
+//       className="flex-row items-center gap-4 px-5 py-5 rounded-3xl overflow-hidden"
+//       style={{
+//         backgroundColor: "rgba(255,255,255,0.75)",
+//         borderWidth: 1,
+//         borderColor: "rgba(124,199,164,0.25)",
+//         shadowColor: "#7CC7A4",
+//         shadowOffset: { width: 0, height: 10 },
+//         shadowOpacity: 0.25,
+//         shadowRadius: 20,
+//         elevation: 10,
+//         transform: [{ translateY: i % 2 === 0 ? 0 : 6 }],
+//       }}
+//     >
+//       {/* Gradient Accent Bar */}
+//       <View
+//         style={{
+//           position: "absolute",
+//           left: 0,
+//           top: 0,
+//           bottom: 0,
+//           width: 6,
+//           backgroundColor: i % 2 === 0 ? "#7CC7A4" : "#6FB7D6",
+//         }}
+//       />
+
+//       {/* Icon Bubble */}
+//       <View
+//         className="w-12 h-12 rounded-full items-center justify-center"
+//         style={{
+//           backgroundColor: "rgba(246,166,77,0.18)",
+//           shadowColor: "#F6A64D",
+//           shadowOpacity: 0.4,
+//           shadowRadius: 10,
+//         }}
+//       >
+//         <Ionicons
+//           name={item.icon as any}
+//           size={24}
+//           color="#F6A64D"
+//         />
+//       </View>
+
+//       {/* Text */}
+//       <Text
+//         className="text-base font-extrabold text-brand-dark"
+//         style={{ writingDirection: "rtl" }}
+//       >
+//         {item.title}
+//       </Text>
+//     </View>
+//   ))}
+
+// </View>
+
+//         </View>
+//         <View className="h-20" />
+//       </Animated.ScrollView>
+
+//       {/* STICKY BUY BAR */}
+//       <View className="absolute bottom-12 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4 flex-row items-center gap-4">
+//         <View>
+//           <Text className="text-xs text-gray-500">السعر</Text>
+//           <Text className="text-xl font-extrabold">249 $</Text>
+//         </View>
+
+//         <Pressable className="flex-1 bg-[#88c1c5] py-4 rounded-2xl active:scale-95">
+//           <Text className="text-white text-center font-extrabold text-lg">
+//             أضف إلى السلة
+//           </Text>
+//         </Pressable>
+//       </View>
+//     </View>
+//   );
+// }
+
+
+// import { View, Text, Image, ScrollView, Pressable } from 'react-native'
+// import { useProductStore } from '@/store/useProductStore'
+// import { useEffect, useState } from 'react'
+// import { router } from 'expo-router'
+// import { Ionicons } from '@expo/vector-icons'
+// import { getToken } from '@/lib/auth-storage'
+// import axios from 'axios'
+// import CategorySection from '@/components/CategorySection'
+// import ProductsSliderSkeleton from '@/components/ProductsSliderSkeleton'
+// import { FlatList } from 'react-native'
+// import ProductCard from '@/components/ProductCard'
+
+// export default function ProductDetails() {
+//   const product = useProductStore((s) => s.selectedProduct)
+//   const [quantity, setQuantity] = useState(1);
+
+//   const [products, setProducts] = useState([]);
+//   const [loading, setLoading] = useState(false)
+//   const fetchProducts = async () => {
+//     const token = await getToken();
+//     console.log("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr", token)
+
+//     try {
+//       const res = await axios.get(
+//         'https://docank.mahmoudalbatran.com/api/products',
+//         {
+//           headers: { Authorization: `Bearer ${token}` },
+//           params: {
+//             type: product?.category?.name,
+//             // condition: filters.condition,
+//             // search,
+//             per_page: 20,
+//           },
+//         }
+//       )
+//       setProducts(res.data.products.data);
+//       console.log(res.data.products.data)
+//     } finally {
+//       setLoading(false)
+//     }
+//   }
+//   useEffect(() => {
+//     fetchProducts()
+//   }, [])
+
+//   if (!product) return null
+
+//   return (
+//     <ScrollView className="flex-1 bg-brand-light relative">
+//       {/* IMAGE */}
+//       <View className="bg-gray-100 items-center justify-center h-80">
+//         <Image
+//           source={{ uri: `https://docank.mahmoudalbatran.com/storage/${product?.image}` }}
+//           className="w-full h-full"
+//           resizeMode="contain"
+//         />
+
+//         {/* Back button */}
+//         <Pressable
+//           onPress={() => router.back()}
+//           className="absolute top-12 left-4 bg-white/90 px-3 py-1.5 rounded-full"
+//         >
+//           <Text className="text-brand-dark font-semibold"><Ionicons name='arrow-forward' size={25} /></Text>
+//         </Pressable>
+//       </View>
+
+
+//       {/* CONTENT */}
+//       <View className="px-5 pt-6 pb-10">
+//         <View className="bg-white rounded-2xl px-4 py-4 border border-gray-100">
+//           <Text className="text-2xl font-extrabold text-brand-dark">
+//             {product.name}
+//           </Text>
+//         </View>
+
+//         {/* <Text className="text-xl font-bold text-brand-accent mb-4">
+//           ₪ {product.price}
+//         </Text> */}
+
+//         {product.description && (
+//           <View className="bg-gray-50 rounded-2xl px-4 py-4 border border-gray-100 my-5">
+//             <Text className="text-[15px] text-gray-600 leading-7">
+//               {product.description}
+//             </Text>
+//           </View>
+//         )}
+//         {/* ACTION ROW */}
+
+
+
+
+//         <View className='border-t border-gray-200 pt-3'>
+//           <View className='flex flex-row items-center justify-between px-5'>
+//             <View>
+//               <Text className='text-xl font-bold text-gray-600'>الكمية</Text>
+//             </View>
+//             <View className="flex-row items-center mb-2">
+//               <Pressable
+//                 onPress={() => setQuantity(Math.max(1, quantity - 1))}
+//                 className="px-4 py-2 rounded-l-full bg-brand-primary"
+//               >
+//                 <Text className="text-lg font-bold text-white">−</Text>
+//               </Pressable>
+//               <View className="px-6 py-2 bg-gray-100 ">
+//                 <Text className="text-lg font-semibold ">{quantity}</Text>
+//               </View>
+//               <Pressable
+//                 onPress={() => setQuantity(quantity + 1)}
+//                 className="px-4 py-2 bg-gray-200 rounded-r-full bg-brand-secondary"
+//               >
+//                 <Text className="text-lg font-bold text-white">+</Text>
+//               </Pressable>
+//             </View>
+//           </View>
+//           <View className="mt-3 bg-white  px-6 py-4 flex-row items-center gap-4">
+
+//             <View>
+//               <Text className="text-xs text-gray-500">السعر</Text>
+//               <Text className="text-xl font-extrabold">{product?.price * quantity} ₪</Text>
+//             </View>
+
+//             <Pressable className="flex-1 bg-[#88c1c5] py-4 rounded-2xl active:scale-95">
+//               <Text className="text-white text-center font-extrabold text-lg">
+//                 أضف إلى السلة
+//               </Text>
+//             </Pressable>
+//           </View>
+//         </View>
+
+
+
+
+
+//       </View>
+
+
+//       {products?.length > 1 && (
+//         <>
+//           <View className="flex-row justify-between items-center px-4 mb-3">
+//             <Text className="text-xl font-extrabold text-gray-800">
+//               {/* {product?.category?.name} */}
+//               المنتجات من نفس الصنف
+//             </Text>
+
+//             <Pressable
+//               onPress={() =>
+//                 router.push({
+//                   pathname: '/products',
+//                   params: {
+//                     categoryId: product?.category.id,
+//                     categoryName: product?.category.name,
+//                   },
+//                 })
+//               }
+//             >
+//               <Text className="text-brand-primary font-extrabold text-xl">عرض الكل</Text>
+//             </Pressable>
+//           </View>
+
+//           {loading ? (
+//             <ProductsSliderSkeleton />
+//           ) : (
+//             <FlatList
+//               data={products.filter(prod => prod.id != product.id)}
+//               keyExtractor={(item) => item.id}
+//               horizontal
+//               showsHorizontalScrollIndicator={false}
+//               contentContainerStyle={{ paddingHorizontal: 16 }}
+//               renderItem={({ item }) => (
+//                 <ProductCard item={item} />
+//               )}
+//             />
+//           )}
+//         </>
+//       )}
+
+
+
+//       <View className='h-[5rem]' />
+//     </ScrollView>
+//   )
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import {
   View,
   Text,
-  Animated,
-  Dimensions,
-  Pressable,
+  Image,
   ScrollView,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+  Pressable,
+  FlatList,
+} from 'react-native'
+import { useEffect, useState } from 'react'
+import { router } from 'expo-router'
+import { Ionicons } from '@expo/vector-icons'
+import axios from 'axios'
 
-const { width } = Dimensions.get("window");
-const IMAGE_HEIGHT = 280;
+import { useProductStore } from '@/store/useProductStore'
+import { getToken } from '@/lib/auth-storage'
+import ProductCard from '@/components/ProductCard'
+import ProductsSliderSkeleton from '@/components/ProductsSliderSkeleton'
 
-export default function ProductDetailsPage() {
-  const scrollY = useRef(new Animated.Value(0)).current;
+export default function ProductDetails() {
+  const product = useProductStore((s) => s.selectedProduct)
+  const [quantity, setQuantity] = useState(1)
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const imageTranslate = scrollY.interpolate({
-    inputRange: [-IMAGE_HEIGHT, 0, IMAGE_HEIGHT],
-    outputRange: [-IMAGE_HEIGHT / 2, 0, IMAGE_HEIGHT * 0.75],
-  });
+  useEffect(() => {
+    if (!product) return
 
- const imageScale = scrollY.interpolate({
-  inputRange: [-IMAGE_HEIGHT, 0],
-  outputRange: [1.15, 1],
-  extrapolate: "clamp",
-});
+    const fetchProducts = async () => {
+      const token = await getToken()
+      try {
+        const res = await axios.get(
+          'https://docank.mahmoudalbatran.com/api/products',
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            params: {
+              type: product.category?.name,
+              per_page: 20,
+            },
+          }
+        )
+        setProducts(res.data.products.data)
+      } finally {
+        setLoading(false)
+      }
+    }
 
+    fetchProducts()
+  }, [])
+
+  if (!product) return null
 
   return (
-    <View className="flex-1 bg-gray-100">
-      {/* Scroll */}
-      <Animated.ScrollView
-        showsVerticalScrollIndicator={false}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true }
-        )}
-        scrollEventThrottle={16}
-      >
-        {/* HERO IMAGE */}
-        <View className="overflow-hidden">
-          <Animated.Image
-            source={{ uri: "data:image/jpeg;base64,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" }}
-            style={{
-              width: "100%",
-              height: "300",
-              transform: [{ translateY: imageTranslate }, { scale: imageScale }],
-            }}
-            resizeMode="cover"
-          />
-
-          {/* Back + Favorite */}
-          <View className="absolute top-14 left-4 right-4 flex-row justify-between">
-            <Pressable className="bg-white/90 p-3 rounded-full" onPress={() => router.back()}>
-              <Ionicons name="arrow-back" size={22} />
-            </Pressable>
-
-            <Pressable className="bg-white/90 p-3 rounded-full">
-              <Ionicons name="heart-outline" size={22} />
-            </Pressable>
+    <View className="flex-1 bg-brand-light">
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* ================= IMAGE SECTION ================= */}
+        <View className="pt-12 pb-10 bg-brand-light">
+          <View className="mx-5 bg-white rounded-3xl shadow-lg shadow-black/10 overflow-hidden">
+            <Image
+              source={{
+                uri: `https://docank.mahmoudalbatran.com/storage/${product.image}`,
+              }}
+              className="w-full h-72"
+              resizeMode="contain"
+            />
           </View>
+
+          {/* Back Button */}
+          <Pressable
+            onPress={() => router.back()}
+            className="absolute top-12 left-4 w-10 h-10 bg-white rounded-full items-center justify-center shadow"
+          >
+            <Ionicons name="arrow-forward" size={22} color="#1F2937" />
+          </Pressable>
         </View>
 
-        {/* CONTENT CARD */}
-        <View className="-mt-8 rounded-t-[32px] bg-white px-6 pt-8 pb-32">
-          {/* Title */}
-          <Text className="text-3xl font-extrabold text-gray-900">
-            ساعة ذكية فاخرة
-          </Text>
-
-          {/* Price */}
-          <View className="flex-row items-center gap-3 mt-3">
-            <Text className="text-2xl font-extrabold text-[#88c1c5]">
-              249 $
+        {/* ================= INFO ================= */}
+        <View className="px-5 -mt-6">
+          {/* Name & Price */}
+          <View className="bg-white rounded-3xl px-5 py-6 shadow shadow-black/5 space-y-3">
+            <Text className="text-2xl font-extrabold text-brand-dark">
+              {product.name}
             </Text>
-            <Text className="text-gray-400 line-through">299 $</Text>
+
+            <View className="flex-row items-center gap-2">
+              <Text className="text-2xl font-extrabold text-brand-accent">
+                ₪ {product.price}
+              </Text>
+              <Text className="text-sm text-gray-400">شامل الضريبة</Text>
+            </View>
           </View>
-
-          {/* Rating */}
-          <View className="flex-row items-center gap-1 mt-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Ionicons key={i} name="star" size={16} color="#facc15" />
-            ))}
-            <Text className="text-gray-500 text-sm ml-2">(4.8)</Text>
-          </View>
-
-          {/* Description */}
-          <Text className="mt-5 text-gray-600 leading-7">
-            ساعة ذكية بتصميم عصري، مقاومة للماء، تدعم تتبع اللياقة البدنية،
-            بطارية طويلة العمر، مناسبة للاستخدام اليومي والرياضي.
-          </Text>
-
-          {/* FEATURES */}
-          {/* FEATURES – Premium Glass Design */}
-<View className="mt-8 px-1 gap-4">
-
-  {[
-    { title: "مقاومة للماء", icon: "water-outline" },
-    { title: "بطارية تدوم 7 أيام", icon: "battery-full-outline" },
-    { title: "شحن سريع", icon: "flash-outline" },
-    { title: "ضمان سنتين", icon: "shield-checkmark-outline" },
-  ].map((item, i) => (
-    <View
-      key={i}
-      className="flex-row items-center gap-4 px-5 py-5 rounded-3xl overflow-hidden"
-      style={{
-        backgroundColor: "rgba(255,255,255,0.75)",
-        borderWidth: 1,
-        borderColor: "rgba(124,199,164,0.25)",
-        shadowColor: "#7CC7A4",
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.25,
-        shadowRadius: 20,
-        elevation: 10,
-        transform: [{ translateY: i % 2 === 0 ? 0 : 6 }],
-      }}
-    >
-      {/* Gradient Accent Bar */}
-      <View
-        style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          bottom: 0,
-          width: 6,
-          backgroundColor: i % 2 === 0 ? "#7CC7A4" : "#6FB7D6",
-        }}
-      />
-
-      {/* Icon Bubble */}
-      <View
-        className="w-12 h-12 rounded-full items-center justify-center"
-        style={{
-          backgroundColor: "rgba(246,166,77,0.18)",
-          shadowColor: "#F6A64D",
-          shadowOpacity: 0.4,
-          shadowRadius: 10,
-        }}
-      >
-        <Ionicons
-          name={item.icon as any}
-          size={24}
-          color="#F6A64D"
-        />
-      </View>
-
-      {/* Text */}
-      <Text
-        className="text-base font-extrabold text-brand-dark"
-        style={{ writingDirection: "rtl" }}
-      >
-        {item.title}
-      </Text>
-    </View>
-  ))}
-
-</View>
-
-        </View>
-        <View className="h-20" />
-      </Animated.ScrollView>
-
-      {/* STICKY BUY BAR */}
-      <View className="absolute bottom-12 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4 flex-row items-center gap-4">
-        <View>
-          <Text className="text-xs text-gray-500">السعر</Text>
-          <Text className="text-xl font-extrabold">249 $</Text>
         </View>
 
-        <Pressable className="flex-1 bg-[#88c1c5] py-4 rounded-2xl active:scale-95">
-          <Text className="text-white text-center font-extrabold text-lg">
-            أضف إلى السلة
-          </Text>
-        </Pressable>
+        {/* Description */}
+        {product.description && (
+          <View className="px-5 mt-5">
+            <View className="bg-white rounded-3xl px-5 py-5 shadow shadow-black/5">
+              <Text className="text-sm font-bold text-brand-primary mb-2">
+                وصف المنتج
+              </Text>
+              <Text className="text-[15px] text-gray-600 leading-7">
+                {product.description}
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {/* ================= RELATED PRODUCTS ================= */}
+        {products.length > 1 && (
+          <View className="mt-8">
+            <View className="flex-row justify-between items-center px-5 mb-3">
+              <Text className="text-xl font-extrabold text-brand-dark">
+                منتجات مشابهة
+              </Text>
+
+              <Pressable
+                onPress={() =>
+                  router.push({
+                    pathname: '/products',
+                    params: {
+                      categoryId: product.category.id,
+                      categoryName: product.category.name,
+                    },
+                  })
+                }
+              >
+                <Text className="text-brand-primary font-bold">
+                  عرض الكل
+                </Text>
+              </Pressable>
+            </View>
+
+            {loading ? (
+              <ProductsSliderSkeleton />
+            ) : (
+              <FlatList
+                data={products.filter((p) => p.id !== product.id)}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={{ paddingHorizontal: 16 }}
+                renderItem={({ item }) => <ProductCard item={item} />}
+              />
+            )}
+          </View>
+        )}
+
+        {/* Space for sticky bar */}
+        <View className="h-32" />
+      </ScrollView>
+
+      {/* ================= STICKY ADD TO CART ================= */}
+      <View className="absolute bottom-10 left-0 right-0 bg-white border-t border-gray-200 px-5 py-4">
+        <View className="flex-row items-center gap-3">
+          {/* Quantity */}
+          <View className="flex-row items-center bg-gray-100 rounded-full overflow-hidden">
+            <Pressable
+              onPress={() => setQuantity(Math.max(1, quantity - 1))}
+              className="px-4 py-2 bg-brand-primary"
+            >
+              <Text className="text-white text-lg font-bold">−</Text>
+            </Pressable>
+
+            <Text className="px-4 font-bold text-lg">{quantity}</Text>
+
+            <Pressable
+              onPress={() => setQuantity(quantity + 1)}
+              className="px-4 py-2 bg-brand-secondary"
+            >
+              <Text className="text-white text-lg font-bold">+</Text>
+            </Pressable>
+          </View>
+
+          {/* Add to cart */}
+          <Pressable className="flex-1 bg-brand-primary py-4 rounded-2xl active:scale-95">
+            <Text className="text-white text-center font-extrabold text-lg">
+              أضف إلى السلة · ₪ {product.price * quantity}
+            </Text>
+          </Pressable>
+        </View>
       </View>
     </View>
-  );
+  )
 }

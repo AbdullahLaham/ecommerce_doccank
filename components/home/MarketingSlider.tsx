@@ -49,6 +49,9 @@
 
 
 
+
+
+
 import { View, Text, Image, ScrollView, Dimensions, Pressable } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 

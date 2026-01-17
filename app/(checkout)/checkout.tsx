@@ -272,10 +272,12 @@ export default function OrderDetailsScreen() {
                 className="w-44 bg-white dark:bg-neutral-800 rounded-2xl mr-4 overflow-hidden"
               >
                 <Image
-                  source={{ uri: item.image }}
-                  className="w-full h-32"
-                  resizeMode="cover"
-                />
+                              source={{
+                          uri: `https://docank.mahmoudalbatran.com/storage/${item.image}`,
+                        }}
+                              className="w-28 h-28"
+                              resizeMode="cover"
+                            />
 
                 <View className="p-3">
                   <Text
