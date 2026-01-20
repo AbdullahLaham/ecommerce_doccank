@@ -6,8 +6,11 @@ import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Link, Redirect } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+
 import "@/global.css"
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import CustomSplash from "@/components/SplashScreen"
 export default function HomeScreen() {
 
   console.log("hello gtttttttttttttttttttttttttt")
@@ -18,6 +21,28 @@ I18nManager.allowRTL(true);
       
     }
   }, []);
+
+  // SplashScreen.preventAutoHideAsync();
+
+  // const [showSplash, setShowSplash] = useState(true);
+
+  // useEffect(() => {
+  //   async function prepare() {
+  //     // simulate loading
+  //     await new Promise(resolve => setTimeout(resolve, 2000));
+
+  //     await SplashScreen.hideAsync(); // hide native
+  //     setShowSplash(false);           // show app
+  //   }
+
+  //   prepare();
+  // }, []);
+
+  // if (showSplash) {
+  //   return <CustomSplash />;
+  // }
+
+
   
  return <Redirect href="/(auth)/login" />
 }

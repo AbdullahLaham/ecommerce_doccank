@@ -8,11 +8,22 @@ import { useColorScheme } from '@/hooks/use-color-scheme'
 import { I18nManager } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import Toast from 'react-native-toast-message'
+import { CustomToast } from '@/components/CustomToast';
+
+
 // eas build -p android --profile apk
 
 // ✅ RTL should be configured ONCE
 I18nManager.allowRTL(true)
 I18nManager.forceRTL(true)
+
+
+export const toastConfig = {
+  success: (props: any) => <CustomToast {...props} type="success" />,
+  error: (props: any) => <CustomToast {...props} type="error" />,
+  warning: (props: any) => <CustomToast {...props} type="warning" />,
+  info: (props: any) => <CustomToast {...props} type="info" />,
+};
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -39,7 +50,7 @@ export default function RootLayout() {
       </ThemeProvider>
 
       {/* 👇 THIS is all toast needs */}
-      <Toast />
+      <Toast config={toastConfig} />
     </SafeAreaProvider>
   )
 }

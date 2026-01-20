@@ -584,12 +584,17 @@ import { useProductStore } from '@/store/useProductStore'
 import { getToken } from '@/lib/auth-storage'
 import ProductCard from '@/components/ProductCard'
 import ProductsSliderSkeleton from '@/components/ProductsSliderSkeleton'
+import { useCartStore } from '@/store/cartStore'
+import Toast from 'react-native-toast-message'
 
 export default function ProductDetails() {
   const product = useProductStore((s) => s.selectedProduct)
   const [quantity, setQuantity] = useState(1)
   const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
+
+
+  const addItem = useCartStore(state => state.addItem);
 
   useEffect(() => {
     if (!product) return
@@ -614,7 +619,27 @@ export default function ProductDetails() {
     }
 
     fetchProducts()
-  }, [])
+  }, []);
+
+  const addToCart = () => {
+    let item = {...product};
+         if (item) {
+           addItem({
+            id: item?.id,
+            name: item?.name,
+            price: item.price,
+            quantity: quantity,
+            image: item.image,
+      
+          });
+         }
+          Toast.show({
+        type: 'success',
+        text1: "success",
+        text2: 'تمت الإضافة إلى السلة بنجاح',
+      });
+      console.log('Item added to cart');
+        }
 
   if (!product) return null
 
@@ -667,7 +692,7 @@ export default function ProductDetails() {
                 وصف المنتج
               </Text>
               <Text className="text-[15px] text-gray-600 leading-7">
-                {product.description}
+                {product.description} 
               </Text>
             </View>
           </View>
@@ -718,7 +743,7 @@ export default function ProductDetails() {
       </ScrollView>
 
       {/* ================= STICKY ADD TO CART ================= */}
-      <View className="absolute bottom-10 left-0 right-0 bg-white border-t border-gray-200 px-5 py-4">
+      <View className="absolute bottom-12 left-0 right-0 bg-white border-t border-gray-200 px-5 py-4">
         <View className="flex-row items-center gap-3">
           {/* Quantity */}
           <View className="flex-row items-center bg-gray-100 rounded-full overflow-hidden">
@@ -740,7 +765,7 @@ export default function ProductDetails() {
           </View>
 
           {/* Add to cart */}
-          <Pressable className="flex-1 bg-brand-primary py-4 rounded-2xl active:scale-95">
+          <Pressable className="flex-1 bg-brand-primary py-4 rounded-2xl active:scale-95" onPress={() => addToCart()}>
             <Text className="text-white text-center font-extrabold text-lg">
               أضف إلى السلة · ₪ {product.price * quantity}
             </Text>

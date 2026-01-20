@@ -904,65 +904,66 @@ import ProductsFilterModal, {
 import { useLocalSearchParams } from 'expo-router'
 import { useCartStore } from '@/store/cartStore'
 import Toast from 'react-native-toast-message'
+import ProductCard from '@/components/ProductCard'
 
 /* ---------------- Product Card ---------------- */
-const ProductCard = ({ item }: any) => {
-  const addItem = useCartStore(state => state.addItem);
-   const addToCart = () => {
-      addItem({
-        id: item?.id,
-        name: item?.name,
-        price: item.price,
-        quantity: 1,
-        image: item.image,
-  
-      });
-      Toast.show({
-    type: 'success',
-    text1: "success",
-    text2: 'تمت الإضافة إلى السلة بنجاح',
-  });
-  console.log('Item added to cart');
-    }
-  return (
-    <View className="flex-1 m-2 bg-white rounded-3xl shadow-sm overflow-hidden">
-      <Image
-        source={{
-          uri: `https://docank.mahmoudalbatran.com/storage/${item.image}`,
-        }}
-        className="w-full h-52"
-        resizeMode="cover"
-      />
+// const ProductCard = ({ item }: any) => {
+//   const addItem = useCartStore(state => state.addItem);
+//   const addToCart = () => {
+//     addItem({
+//       id: item?.id,
+//       name: item?.name,
+//       price: item.price,
+//       quantity: 1,
+//       image: item.image,
 
-      <View className="p-4">
-        <Text
-          className="text-base font-semibold text-[#1F2937] mb-1"
-          numberOfLines={1}
-          style={{ writingDirection: 'rtl' }}
-        >
-          {item.name}
-        </Text>
+//     });
+//     Toast.show({
+//       type: 'success',
+//       text1: "success",
+//       text2: 'تمت الإضافة إلى السلة بنجاح',
+//     });
+//     console.log('Item added to cart');
+//   }
+//   return (
+//     <View className="flex-1 m-2 bg-white rounded-3xl shadow-sm overflow-hidden">
+//       <Image
+//         source={{
+//           uri: `https://docank.mahmoudalbatran.com/storage/${item.image}`,
+//         }}
+//         className="w-full h-52"
+//         resizeMode="cover"
+//       />
 
-        <Text
-          className="text-xs text-neutral-400 mb-3"
-          style={{ writingDirection: 'rtl' }}
-        >
-          {item.category?.name}
-        </Text>
+//       <View className="p-4">
+//         <Text
+//           className="text-base font-semibold text-[#1F2937] mb-1"
+//           numberOfLines={1}
+//           style={{ writingDirection: 'rtl' }}
+//         >
+//           {item.name}
+//         </Text>
 
-        <View className="flex-row items-center justify-between">
-          <Text className="text-lg font-extrabold text-[#1F2937]">
-            {item.price} ر.س
-          </Text>
+//         <Text
+//           className="text-xs text-neutral-400 mb-3"
+//           style={{ writingDirection: 'rtl' }}
+//         >
+//           {item.category?.name}
+//         </Text>
 
-          <Pressable className="bg-[#7CC7A4] px-4 py-2 rounded-full" onPress={addToCart}>
-            <Text className="text-white text-xs font-bold">أضف للسلة</Text>
-          </Pressable>
-        </View>
-      </View>
-    </View>
-  )
-}
+//         <View className="flex-row items-center justify-between">
+//           <Text className="text-lg font-extrabold text-[#1F2937]">
+//             {item.price} ر.س
+//           </Text>
+
+//           <Pressable className="bg-[#7CC7A4] px-4 py-2 rounded-full" onPress={addToCart}>
+//             <Text className="text-white text-xs font-bold">أضف للسلة</Text>
+//           </Pressable>
+//         </View>
+//       </View>
+//     </View>
+//   )
+// }
 
 /* ---------------- Page ---------------- */
 export default function ProductsPage() {

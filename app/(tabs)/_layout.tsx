@@ -399,7 +399,7 @@ useEffect(() => {
 const styles = StyleSheet.create({
   tabBar: {
     position: 'absolute',
-    bottom: 28,
+    bottom: 39,
     left: 16,
     right: 16,
     height: 72,

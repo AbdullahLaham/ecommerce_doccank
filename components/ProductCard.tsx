@@ -163,7 +163,7 @@ export default function ProductCard({ item }: any) {
 // if (!item) return null;
 
   return (
-     <Pressable className="flex-1 m-1 bg-white rounded-3xl shadow-sm overflow-hidden px-3" onPress={handlePress}>
+     <Pressable className=" m-1 bg-white rounded-3xl shadow-sm overflow-hidden px-3" onPress={handlePress}>
           <View className="relative">
              <Image
         source={{
