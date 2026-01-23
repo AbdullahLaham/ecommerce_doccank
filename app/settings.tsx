@@ -677,7 +677,8 @@ export default function SettingsScreen() {
 
   /** Profile */
   const [name, setName] = useState(user?.name || "");
-  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState(user?.email || "");
+  const [phone, setPhone] = useState(user?.phone_number || "");
 
   /** Password */
   const [currentPassword, setCurrentPassword] = useState("");
@@ -692,6 +693,44 @@ export default function SettingsScreen() {
 
   const [loading, setLoading] = useState(false);
   const [locating, setLocating] = useState(false);
+
+
+
+
+
+  /* ================== UPDATE SINGLE FIELD ================== */
+const updateProfileField = async () => {
+  try {
+    setLoading(true);
+    const token = await getToken();
+
+    const formData = new FormData();
+    // formData.append(field, value); // فقط الحقل المراد تحديثه
+
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("phone_number", phone);
+
+    const res = await api.post("/updateprofile", formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    // تحديث الـ store بعد التغيير
+    useUserStore.getState().setUser(res.data.user);
+
+    alert(`profile data updated successfully!`);
+  } catch (error: any) {
+    console.log("Update profile error:", error.response?.data || error.message);
+    alert(`Failed to update profile data `);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   /* ================== LOAD ADDRESSES ================== */
   const loadAddresses = async () => {
@@ -873,24 +912,27 @@ const setMainAddress = async (selectedId: number) => {
           </Text>
 
           {/* NAME */}
-          <Section title="اسم المستخدم">
+          <Section title=" بيانات المستخدم">
             <Input value={name} onChangeText={setName} />
-            <Button title="Update Name" onPress={() => {}} />
-          </Section>
-
-          {/* PHONE */}
-          <Section title="رقم الهاتف">
             <Input
               value={phone}
               onChangeText={setPhone}
               keyboardType="phone-pad"
+              placeholder="059*******"
             />
+            <Button title="Update Profile" color={BRAND.secondary} onPress={() => updateProfileField()} />
+          </Section>
+          
+
+          {/* PHONE */}
+          {/* <Section title="رقم الهاتف">
+            
             <Button
               title="Save Phone"
               color={BRAND.secondary}
-              onPress={() => {}}
+              onPress={() => updateProfileField("name", name)} 
             />
-          </Section>
+          </Section> */}
 
           {/* PASSWORD */}
           <Section title="تغيير كلمة المرور">
