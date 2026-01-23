@@ -29,6 +29,7 @@ useEffect(() => {
       try {
         setChecking(true);
       const token = await getToken();
+      console.log(token, 'oooooooooooooooooooooooooooooooooooooooooooo')
 
       if (token) {
         router.replace("/(tabs)/home"); // 🚫 امنع الدخول

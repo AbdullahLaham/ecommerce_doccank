@@ -1,5 +1,5 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
-import { Stack } from 'expo-router'
+import { router, Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import 'react-native-reanimated'
 import '@/global.css'
@@ -9,6 +9,8 @@ import { I18nManager } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import Toast from 'react-native-toast-message'
 import { CustomToast } from '@/components/CustomToast';
+import { useEffect } from 'react'
+import { notificationService } from '@/services/notification.service'
 
 
 // eas build -p android --profile apk
@@ -30,7 +32,47 @@ export const unstable_settings = {
 }
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme()
+  const colorScheme = useColorScheme();
+
+//   function handleNotificationNavigation(data: any) {
+//   switch (data.type) {
+//     case "ORDER":
+//       router.push(`/orders/${data.orderId}`);
+//       break;
+
+//     case "MESSAGE":
+//       router.push(`/chat/${data.chatId}`);
+//       break;
+
+//     case "PROMOTION":
+//       router.push("/offers");
+//       break;
+//   }
+// }
+
+
+
+  // useEffect(() => {
+  //   notificationService.registerForPushNotifications()
+  //     .then(token => {
+  //       console.log("Push Token:", token);
+  //       // 🔥 أرسله للـ backend وخزنه للمستخدم
+  //     });
+
+  //   const sub1 = notificationService.onReceive(notification => {
+  //     console.log("Notification received:", notification);
+  //   });
+
+  //   const sub2 = notificationService.onResponse(response => {
+  //     const data = response.notification.request.content.data;
+  //     handleNotificationNavigation(data);
+  //   });
+
+  //   return () => {
+  //     sub1.remove();
+  //     sub2.remove();
+  //   };
+  // }, []);
 
   return (
     <SafeAreaProvider>

@@ -13,6 +13,7 @@
     },
     "android": {
       "icon": "./assets/images/icon.png",
+      "permissions": ["ACCESS_FINE_LOCATION"],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/icon.png",
@@ -22,6 +23,12 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.abdullah_lahham123.doccank"
+    },
+    "ios": {
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We need your location to deliver orders faster"
+      }
+
     },
     "web": {
       "output": "static",
