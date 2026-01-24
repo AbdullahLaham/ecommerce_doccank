@@ -34,45 +34,45 @@ export const unstable_settings = {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
-//   function handleNotificationNavigation(data: any) {
-//   switch (data.type) {
-//     case "ORDER":
-//       router.push(`/orders/${data.orderId}`);
-//       break;
+  function handleNotificationNavigation(data: any) {
+  switch (data.type) {
+    case "ORDER":
+      router.push(`/orders/${data.orderId}`);
+      break;
 
-//     case "MESSAGE":
-//       router.push(`/chat/${data.chatId}`);
-//       break;
+    case "MESSAGE":
+      router.push(`/chat/${data.chatId}`);
+      break;
 
-//     case "PROMOTION":
-//       router.push("/offers");
-//       break;
-//   }
-// }
+    case "PROMOTION":
+      router.push("/offers");
+      break;
+  }
+}
 
 
 
-  // useEffect(() => {
-  //   notificationService.registerForPushNotifications()
-  //     .then(token => {
-  //       console.log("Push Token:", token);
-  //       // 🔥 أرسله للـ backend وخزنه للمستخدم
-  //     });
+  useEffect(() => {
+    notificationService.registerForPushNotifications()
+      .then(token => {
+        console.log("Push Token:", token);
+        // 🔥 أرسله للـ backend وخزنه للمستخدم
+      });
 
-  //   const sub1 = notificationService.onReceive(notification => {
-  //     console.log("Notification received:", notification);
-  //   });
+    const sub1 = notificationService.onReceive(notification => {
+      console.log("Notification received:", notification);
+    });
 
-  //   const sub2 = notificationService.onResponse(response => {
-  //     const data = response.notification.request.content.data;
-  //     handleNotificationNavigation(data);
-  //   });
+    const sub2 = notificationService.onResponse(response => {
+      const data = response.notification.request.content.data;
+      handleNotificationNavigation(data);
+    });
 
-  //   return () => {
-  //     sub1.remove();
-  //     sub2.remove();
-  //   };
-  // }, []);
+    return () => {
+      sub1.remove();
+      sub2.remove();
+    };
+  }, []);
 
   return (
     <SafeAreaProvider>

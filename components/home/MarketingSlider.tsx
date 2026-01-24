@@ -54,8 +54,44 @@
 
 import { View, Text, Image, ScrollView, Dimensions, Pressable } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const { width } = Dimensions.get("window")
+
+
+const MOCK_SLIDER_DATA = [
+  {
+    id: "1",
+    title: "Summer Sale",
+    description: "Up to 50% off on all items",
+    image: "https://via.placeholder.com/800x400",
+  },
+  {
+    id: "2",
+    title: "New Arrivals",
+    description: "Discover our latest collection",
+    image: "https://via.placeholder.com/800x400",
+  },
+];
+
+const SliderSkeleton = () => {
+  return (
+    <View
+      className="w-full h-[220px] rounded-2xl bg-gray-300 overflow-hidden"
+    >
+      {/* Image placeholder */}
+      <View className="absolute inset-0 bg-gray-400" />
+
+      {/* Text placeholders */}
+      <View className="absolute bottom-4 left-4 space-y-2">
+        <View className="w-40 h-5 bg-gray-500 rounded-md" />
+        <View className="w-56 h-4 bg-gray-500 rounded-md" />
+        <View className="w-24 h-9 bg-gray-500 rounded-lg mt-2" />
+      </View>
+    </View>
+  );
+};
 
 const SLIDE_WIDTH = width * 0.9
 const SLIDE_SPACING = 10
@@ -69,6 +105,31 @@ const COLORS = {
 }
 
 export function MarketingSlider() {
+
+  const [slides, setSlides] = useState(MOCK_SLIDER_DATA);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSliderData = async () => {
+      try {
+        const response = await axios.get("/marketing-slider");
+        setSlides(response.data);
+      } catch (error) {
+        console.log("Slider API error:", error.message);
+      } finally {
+        setTimeout(() => setLoading(false), 800);
+      }
+    };
+
+    fetchSliderData();
+  }, []);
+
+
+
+
+
+
+
   return (
     <ScrollView
       horizontal
@@ -79,7 +140,9 @@ export function MarketingSlider() {
         paddingHorizontal: (width - SLIDE_WIDTH) / 2,
       }}
     >
-      {[1, 2, 3].map((_, index) => (
+      {
+      loading ? <SliderSkeleton /> : (
+        slides.map((slide, index) => (
         <View
           key={index}
           style={{
@@ -91,7 +154,7 @@ export function MarketingSlider() {
           {/* Background Image */}
           <Image
             source={{
-              uri: "https://images.unsplash.com/photo-1607082350899-7e105aa886ae",
+              uri: slide?.image,
             }}
             className="w-full h-full"
             resizeMode="cover"
@@ -111,11 +174,11 @@ export function MarketingSlider() {
             {/* Text Section */}
             <View className="max-w-[70%]">
               <Text className="text-white text-2xl font-extrabold mb-1">
-                أفضل العروض  - كل شيئ في مكان واحد
+               {slide?.title || " أفضل العروض  - كل شيئ في مكان واحد"}
               </Text>
 
-              <Text className="text-white text-sm opacity-90 leading-5 font-bold mt-1">
-                خصومات قوية على أشهر المنتجات في السوق
+              <Text className="text-white text-md opacity-90 leading-5 font-bold mt-1">
+               {slide?.description || " خصومات قوية على أشهر المنتجات في السوق"}
               </Text>
 
 
@@ -161,7 +224,10 @@ export function MarketingSlider() {
 
           </LinearGradient>
         </View>
-      ))}
+      ))
+      )
+      
+      }
     </ScrollView>
   )
 }

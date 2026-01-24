@@ -122,102 +122,235 @@
 
 
 
-import { StyleSheet, Text, View } from 'react-native'
+// import { StyleSheet, Text, View } from 'react-native'
+// import React from 'react'
+// import { Pressable, Image } from 'react-native'
+// import { useCartStore } from '@/store/cartStore'
+// import { router } from 'expo-router';
+// import Toast from 'react-native-toast-message'
+// import { useProductStore } from '@/store/useProductStore';
+
+// export default function ProductCard({ item }: any) {
+//   const setProduct = useProductStore((s) => s.setProduct)
+
+//   const handlePress = () => {
+//     setProduct(item)
+//     router.push(`/product/${item?.id}`)
+//   }
+
+
+//   const addItem = useCartStore(state => state.addItem);
+ 
+//   const addToCart = () => {
+//        if (item) {
+//          addItem({
+//           id: item?.id,
+//           name: item?.name,
+//           price: item.price,
+//           quantity: 1,
+//           image: item.image,
+    
+//         });
+//        }
+//         Toast.show({
+//       type: 'success',
+//       text1: "success",
+//       text2: 'تمت الإضافة إلى السلة بنجاح',
+//     });
+//     console.log('Item added to cart');
+//       }
+
+// // if (!item) return null;
+
+//   return (
+//      <Pressable className=" m-1 bg-white rounded-3xl shadow-sm overflow-hidden px-3" onPress={handlePress}>
+//           <View className="relative">
+//              <Image
+//         source={{
+//           uri: `https://docank.mahmoudalbatran.com/storage/${item?.image}`,
+//         }}
+//         className="w-full h-52"
+//         resizeMode="cover"
+//       />
+//             {item?.isNew && (
+//               <View className="absolute top-3 left-3 bg-[#6FB7D6] px-3 py-1 rounded-full">
+//                 <Text className="text-white text-xs font-bold">جديد</Text>
+//               </View>
+//             )}
+//             {item?.hasDiscount && (
+//               <View className="absolute top-3 right-3 bg-[#F6A64D] px-3 py-1 rounded-full">
+//                 <Text className="text-white text-xs font-bold">خصم</Text>
+//               </View>
+//             )}
+//           </View>
+    
+//           <View className="p-4">
+//             <Text
+//               className="text-base font-semibold text-[#1F2937] mb-1"
+//               numberOfLines={1}
+//               style={{ writingDirection: 'rtl' }}
+//             >
+//               {item?.name}
+//             </Text>
+//            {/* {item?.category || item?.location && 
+//            <Text
+//               className="text-xs text-neutral-400 mb-3"
+//               style={{ writingDirection: 'rtl' }}
+//             >
+//               {item?.category} · {item?.location}
+//             </Text>} */}
+//             <View className="flex-row items-center justify-between">
+//               <View>
+//                 <Text className="text-lg font-extrabold text-[#1F2937]">
+//                   {item?.price} ₪
+//                 </Text>
+//                 {item?.hasDiscount && (
+//                   <Text className="text-xs text-neutral-400 line-through">
+//                     {item?.oldPrice} ₪
+//                   </Text>
+//                 )}
+//               </View>
+//               <Pressable className="bg-[#7CC7A4] px-3 py-2 rounded-full ml-3" onPress={() => addToCart()}>
+//                 <Text className="text-white text-xs font-bold">أضف للسلة</Text>
+//               </Pressable>
+//             </View>
+//           </View>
+//         </Pressable>
+//   )
+// }
+
+
+// const styles = StyleSheet.create({})
+
+
+
+
+
+
+
+
+
+
+
+
 import React from 'react'
-import { Pressable, Image } from 'react-native'
-import { useCartStore } from '@/store/cartStore'
-import { router } from 'expo-router';
+import { View, Text, Pressable, Image } from 'react-native'
+import { router } from 'expo-router'
 import Toast from 'react-native-toast-message'
-import { useProductStore } from '@/store/useProductStore';
+import { Ionicons } from '@expo/vector-icons'
+
+import { useCartStore } from '@/store/cartStore'
+import { useFavoritesStore } from '@/store/favoritesStore'
+import { useProductStore } from '@/store/useProductStore'
 
 export default function ProductCard({ item }: any) {
-  const setProduct = useProductStore((s) => s.setProduct)
+  const setProduct = useProductStore(s => s.setProduct)
+  const addItem = useCartStore(state => state.addItem)
+
+  const toggleFavorite = useFavoritesStore(s => s.toggleFavorite)
+  const isFavorite = useFavoritesStore(s => s.isFavorite(item?.id))
 
   const handlePress = () => {
     setProduct(item)
     router.push(`/product/${item?.id}`)
   }
 
-
-  const addItem = useCartStore(state => state.addItem);
- 
   const addToCart = () => {
-       if (item) {
-         addItem({
-          id: item?.id,
-          name: item?.name,
-          price: item.price,
-          quantity: 1,
-          image: item.image,
-    
-        });
-       }
-        Toast.show({
-      type: 'success',
-      text1: "success",
-      text2: 'تمت الإضافة إلى السلة بنجاح',
-    });
-    console.log('Item added to cart');
-      }
+    addItem({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      quantity: 1,
+      image: item.image,
+    })
 
-// if (!item) return null;
+    Toast.show({
+      type: 'success',
+      text1: 'تم بنجاح',
+      text2: 'تمت الإضافة إلى السلة',
+    })
+  }
+
+  const handleFavorite = () => {
+    const added = toggleFavorite({
+      // id: item.id,
+      // name: item.name,
+      // price: item.price,
+      // image: item.image,
+      ...item,
+    })
+
+    Toast.show({
+      type: 'success',
+      text1: added ? 'أضيف للمفضلة ❤️' : 'أزيل من المفضلة',
+    })
+  }
 
   return (
-     <Pressable className=" m-1 bg-white rounded-3xl shadow-sm overflow-hidden px-3" onPress={handlePress}>
-          <View className="relative">
-             <Image
-        source={{
-          uri: `https://docank.mahmoudalbatran.com/storage/${item?.image}`,
-        }}
-        className="w-full h-52"
-        resizeMode="cover"
-      />
-            {item?.isNew && (
-              <View className="absolute top-3 left-3 bg-[#6FB7D6] px-3 py-1 rounded-full">
-                <Text className="text-white text-xs font-bold">جديد</Text>
-              </View>
-            )}
-            {item?.hasDiscount && (
-              <View className="absolute top-3 right-3 bg-[#F6A64D] px-3 py-1 rounded-full">
-                <Text className="text-white text-xs font-bold">خصم</Text>
-              </View>
-            )}
-          </View>
-    
-          <View className="p-4">
-            <Text
-              className="text-base font-semibold text-[#1F2937] mb-1"
-              numberOfLines={1}
-              style={{ writingDirection: 'rtl' }}
-            >
-              {item?.name}
-            </Text>
-           {/* {item?.category || item?.location && 
-           <Text
-              className="text-xs text-neutral-400 mb-3"
-              style={{ writingDirection: 'rtl' }}
-            >
-              {item?.category} · {item?.location}
-            </Text>} */}
-            <View className="flex-row items-center justify-between">
-              <View>
-                <Text className="text-lg font-extrabold text-[#1F2937]">
-                  {item?.price} ₪
-                </Text>
-                {item?.hasDiscount && (
-                  <Text className="text-xs text-neutral-400 line-through">
-                    {item?.oldPrice} ₪
-                  </Text>
-                )}
-              </View>
-              <Pressable className="bg-[#7CC7A4] px-3 py-2 rounded-full ml-3" onPress={() => addToCart()}>
-                <Text className="text-white text-xs font-bold">أضف للسلة</Text>
-              </Pressable>
-            </View>
-          </View>
+    <Pressable
+      className="m-1 bg-white rounded-3xl shadow-sm overflow-hidden px-3"
+      onPress={handlePress}
+    >
+      {/* IMAGE */}
+      <View className="relative">
+        <Image
+          source={{
+            uri: `https://docank.mahmoudalbatran.com/storage/${item.image}`,
+          }}
+          className="w-full h-52"
+          resizeMode="cover"
+        />
+
+        {/* ❤️ FAVORITE BUTTON */}
+        <Pressable
+          onPress={handleFavorite}
+          className="absolute top-3 right-3 bg-white/90 p-2 rounded-full"
+          hitSlop={10}
+        >
+          <Ionicons
+            name={isFavorite ? 'heart' : 'heart-outline'}
+            size={22}
+            color={isFavorite ? '#ef4444' : '#374151'}
+          />
         </Pressable>
+
+        {item?.isNew && (
+          <View className="absolute top-3 left-3 bg-[#6FB7D6] px-3 py-1 rounded-full">
+            <Text className="text-white text-xs font-bold">جديد</Text>
+          </View>
+        )}
+      </View>
+
+      {/* CONTENT */}
+      <View className="p-4">
+        <Text
+          className="text-base font-semibold text-[#1F2937] mb-1"
+          numberOfLines={1}
+          style={{ writingDirection: 'rtl' }}
+        >
+          {item.name}
+        </Text>
+
+        <View className="flex-row items-center justify-between">
+          <View>
+            <Text className="text-lg font-extrabold text-[#1F2937]">
+              {item.price} ₪
+            </Text>
+            {item?.hasDiscount && (
+              <Text className="text-xs text-neutral-400 line-through">
+                {item.oldPrice} ₪
+              </Text>
+            )}
+          </View>
+
+          <Pressable
+            className="bg-[#7CC7A4] px-3 py-2 rounded-full"
+            onPress={addToCart}
+          >
+            <Text className="text-white text-xs font-bold">أضف للسلة</Text>
+          </Pressable>
+        </View>
+      </View>
+    </Pressable>
   )
 }
-
-
-const styles = StyleSheet.create({})

@@ -638,87 +638,93 @@ export default function ProductsPage() {
     categoryName?: string
   }>()
 
-  const fetchProducts = async () => {
-
-    setLoading(true)
-    try {
-      const token = await getToken()
-
-      const res = await axios.get(
-        'https://docank.mahmoudalbatran.com/api/products',
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          params: {
-            page,
-            type: filters.categoryId || categoryName,
-            // condition: filters.condition,
-            // search,
-            per_page: 20,
-          },
-        }
-      )
+  // const fetchProducts = async () => {
 
 
-      setProducts(res.data.products.data || [])
-    } catch (err) {
-      console.log('Fetch products error:', err)
-    } finally {
-      setLoading(false)
-    }
+  //   setLoading(true)
+  //   try {
+  //     const token = await getToken()
+
+  //     const res = await axios.get(
+  //       'https://docank.mahmoudalbatran.com/api/products',
+  //       {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //         params: {
+  //           page,
+  //           type: filters.categoryId || categoryName,
+  //           // condition: filters.condition,
+  //           // search,
+  //           per_page: 20,
+  //         },
+  //       }
+  //     )
+
+
+  //     setProducts(res.data.products.data || [])
+  //   } catch (err) {
+  //     console.log('Fetch products error:', err)
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
+
+
+
+const fetchProducts = async () => {
+  if (loading) return
+
+  setLoading(true)
+  try {
+    const token = await getToken()
+
+    const res = await axios.get(
+      'https://docank.mahmoudalbatran.com/api/products',
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          page,
+          type: filters.categoryId || categoryName,
+          per_page: 20,
+        },
+      }
+    )
+
+    const pagination = res.data.products
+    const newProducts = pagination.data
+
+    setProducts(prev =>
+      page === 1 ? newProducts : [...prev, ...newProducts]
+    )
+
+    // ✅ only stop pagination for NEXT pages
+    setHasMore(pagination.next_page_url !== null)
+  } catch (err) {
+    console.log('Fetch products error:', err)
+  } finally {
+    setLoading(false)
   }
+}
 
-
-
-
-
-
-
-
-
-
-
-//   const fetchProducts = async () => {
-//   if (loading || !hasMore) return
-
-//   setLoading(true)
-//   try {
-//     const token = await getToken()
-
-//     const res = await axios.get(
-//       'https://docank.mahmoudalbatran.com/api/products',
-//       {
-//         headers: { Authorization: `Bearer ${token}` },
-//         params: {
-//           page,
-//           type: filters.categoryId || categoryName,
-//           per_page: 20,
-//         },
-//       }
-//     )
-
-//     const pagination = res.data.products
-//     const newProducts = pagination.data
-
-//     setProducts(prev =>
-//       page === 1 ? newProducts : [...prev, ...newProducts]
-//     )
-
-//     // 🔴 هنا التحديد الصحيح
-//     setHasMore(pagination.next_page_url !== null)
-
-//   } catch (err) {
-//     console.log('Fetch products error:', err)
-//   } finally {
-//     setLoading(false)
-//   }
-// }
 
 
 
   // Fetch when filters/search/page change
+  // useEffect(() => {
+  //   fetchProducts()
+  // }, [filters, search, page])
+
+
   useEffect(() => {
-    fetchProducts()
-  }, [filters, search, page])
+  fetchProducts()
+}, [page])
+
+
+useEffect(() => {
+  setProducts([])
+  setPage(1)
+  setHasMore(true)
+}, [filters, search])
+
 
   return (
     <SafeView className="flex-1 bg-[#F8FAFC] pt-4">
@@ -759,6 +765,11 @@ export default function ProductsPage() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 120 }}
           renderItem={({ item }) => <ProductCard item={item} />}
+          onEndReached={() => {
+  if (!loading && hasMore) {
+    setPage(prev => prev + 1)
+  }
+}}
         />
       )}
 
@@ -771,6 +782,7 @@ export default function ProductsPage() {
           setFilters(newFilters)
           setPage(1)
         }}
+        
       />
     </SafeView>
   )

@@ -4,10 +4,20 @@ import { icons } from '@/constants'
 import { useFavoritesStore } from '@/store/favoritesStore'
 import SafeView from '@/components/SafeView'
 import { Ionicons } from '@expo/vector-icons'
+import { useProductStore } from '@/store/useProductStore'
 
 export default function FavoritesPage() {
   const router = useRouter()
-  const favorites = useFavoritesStore(state => state.items)
+  const favorites = useFavoritesStore(state => state.items);
+
+  const setProduct = useProductStore(s => s.setProduct) ;
+
+  const handlePress = (item: any) => {
+      setProduct(item)
+      router.push(`/product/${item?.id}`)
+    }
+
+
 //   const favorites = [
 //   {
 //     id: '1',
@@ -82,13 +92,15 @@ export default function FavoritesPage() {
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <Pressable
-            onPress={() => router.push(`/product/${item.id}`)}
+            onPress={() => handlePress(item)}
             className="w-[48%] bg-white rounded-3xl mb-4 shadow-lg overflow-hidden active:scale-[0.98]"
           >
             {/* Image */}
             <View className="relative">
               <Image
-                source={{ uri: item.image }}
+                source={{
+          uri: `https://docank.mahmoudalbatran.com/storage/${item.image}`,
+        }}
                 className="w-full h-44"
                 resizeMode="cover"
               />

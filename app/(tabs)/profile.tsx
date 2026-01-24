@@ -88,11 +88,11 @@ export default function ProfileScreen() {
               className="text-lg font-bold text-neutral-900 dark:text-white"
               style={{ writingDirection: "rtl" }}
             >
-              {user.name}
+              {user?.name}
             </Text>
 
             <Text className="text-neutral-500 dark:text-neutral-400 mt-1">
-              {user.email}
+              {user?.email}
             </Text>
           </View>
 
@@ -103,8 +103,8 @@ export default function ProfileScreen() {
 
         {/* Info */}
         <View className="mx-6 mt-6 bg-white dark:bg-neutral-800 rounded-3xl p-5 border border-brand-primary/10">
-          <ProfileRow label="رقم الهاتف" value={user.phone_number} />
-          <ProfileRow label="البريد الإلكتروني" value={user.email} />
+          <ProfileRow label="رقم الهاتف" value={user?.phone_number} />
+          <ProfileRow label="البريد الإلكتروني" value={user?.email} />
         </View>
 
         {/* Menu */}
@@ -125,7 +125,7 @@ export default function ProfileScreen() {
                 className="flex-1 mx-4 text-base font-medium text-neutral-900 dark:text-white"
                 style={{ writingDirection: "rtl" }}
               >
-                {item.title}
+                {item?.title}
               </Text>
 
               <Ionicons
