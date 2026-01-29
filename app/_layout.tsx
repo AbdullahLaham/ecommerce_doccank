@@ -3,6 +3,7 @@ import { router, Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import 'react-native-reanimated'
 import '@/global.css'
+import NetInfo from '@react-native-community/netinfo'
 
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { I18nManager } from 'react-native'
@@ -65,6 +66,7 @@ export default function RootLayout() {
 
     const sub2 = notificationService.onResponse(response => {
       const data = response.notification.request.content.data;
+      if (!data || !data.type) return;
       handleNotificationNavigation(data);
     });
 
@@ -73,6 +75,20 @@ export default function RootLayout() {
       sub2.remove();
     };
   }, []);
+
+
+
+
+    useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      if (!state.isConnected || !state.isInternetReachable) {
+        router.replace('/no-internet')
+      }
+    })
+
+    return () => unsubscribe()
+  }, [])
+
 
   return (
     <SafeAreaProvider>

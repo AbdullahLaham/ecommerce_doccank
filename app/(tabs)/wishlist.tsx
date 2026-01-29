@@ -1,6 +1,5 @@
 import { View, Text, FlatList, Image, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
-import { icons } from '@/constants'
 import { useFavoritesStore } from '@/store/favoritesStore'
 import SafeView from '@/components/SafeView'
 import { Ionicons } from '@expo/vector-icons'
@@ -110,10 +109,7 @@ export default function FavoritesPage() {
                 onPress={() => removeFavorite(item.id)}
                 className="absolute top-3 right-3 bg-white/90 p-2 rounded-full shadow"
               >
-                <Image
-                  source={icons.trash}
-                  className="w-5 h-5 tint-brand-secondary"
-                />
+                <Ionicons name='trash-outline' size={17} />
               </Pressable>
             </View>
 

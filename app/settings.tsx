@@ -1040,21 +1040,21 @@ const setMainAddress = async (selectedId: number) => {
               <View style={{ marginTop: 16 }}>
                 <View style={{ flexDirection: "row", gap: 10, marginBottom: 8, }}>
                   <AddressTypeButton
-                    label="Home"
+                    label="المنزل"
                     icon="home-outline"
                     BRAND={BRAND}
                     addressType={addressType}
                     setAddressType={setAddressType}
                   />
                   <AddressTypeButton
-                    label="Work"
+                    label="العمل"
                     icon="briefcase-outline"
                     BRAND={BRAND}
                     addressType={addressType}
                     setAddressType={setAddressType}
                   />
                   <AddressTypeButton
-                    label="Other"
+                    label="أخرى"
                     icon="location-outline"
                     BRAND={BRAND}
                     addressType={addressType}
@@ -1103,7 +1103,7 @@ const setMainAddress = async (selectedId: number) => {
                       fontWeight: "700",
                     }}
                   >
-                    {locating ? "Locating..." : "Use current location"}
+                    {locating ? "Locating..." : "استخدم موقعك الحالي"}
                   </Text>
                 </TouchableOpacity>
 

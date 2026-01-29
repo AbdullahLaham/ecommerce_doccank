@@ -52,10 +52,11 @@
 
 
 
-import { View, Text, Image, ScrollView, Dimensions, Pressable } from "react-native"
+import { View, Text, Image, ScrollView, Dimensions, Pressable, NativeSyntheticEvent, NativeScrollEvent } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
+import { getToken } from "@/lib/auth-storage";
 
 const { width } = Dimensions.get("window")
 
@@ -76,6 +77,8 @@ const MOCK_SLIDER_DATA = [
 ];
 
 const SliderSkeleton = () => {
+
+  
   return (
     <View
       className="w-full h-[220px] rounded-2xl bg-gray-300 overflow-hidden"
@@ -106,9 +109,78 @@ const COLORS = {
 
 export function MarketingSlider() {
 
-  const [slides, setSlides] = useState(MOCK_SLIDER_DATA);
-  const [loading, setLoading] = useState(true);
+  // const [slides, setSlides] = useState(MOCK_SLIDER_DATA);
+  // const [loading, setLoading] = useState(true);
 
+
+
+  const [slides, setSlides] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+  const [fetchingMore, setFetchingMore] = useState(false)
+
+  /* ---------------- Fetch Function ---------------- */
+  const fetchSliders = async (pageNumber = 1) => {
+    if (!hasMore && pageNumber !== 1) return
+
+    pageNumber === 1 ? setLoading(true) : setFetchingMore(true)
+
+    try {
+      const token = await getToken()
+
+      const res = await axios.get(
+        "https://docank.mahmoudalbatran.com/api/sliders",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            page: pageNumber,
+            per_page: 8,
+          },
+        }
+      )
+
+      const pagination = res.data.sliders
+      const newSlides = pagination.data || []
+
+      setSlides(prev =>
+        pageNumber === 1 ? newSlides : [...prev, ...newSlides]
+      )
+
+      setHasMore(pagination.next_page_url !== null)
+      setPage(pageNumber)
+    } catch (err) {
+      console.log("Slider API error:", err)
+    } finally {
+      setLoading(false)
+      setFetchingMore(false)
+    }
+  }
+
+  /* ---------------- Initial Load ---------------- */
+  useEffect(() => {
+    fetchSliders(1)
+  }, [])
+
+  /* ---------------- Pagination on Scroll ---------------- */
+  const handleScrollEnd = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent
+
+      const isNearEnd =
+        contentOffset.x + layoutMeasurement.width >=
+        contentSize.width - 80
+
+      if (isNearEnd && hasMore && !fetchingMore) {
+        fetchSliders(page + 1)
+      }
+    },
+    [page, hasMore, fetchingMore]
+  )
+
+  /* ---------------- Render ---------------- */
   useEffect(() => {
     const fetchSliderData = async () => {
       try {
@@ -135,6 +207,7 @@ export function MarketingSlider() {
       horizontal
       showsHorizontalScrollIndicator={false}
       decelerationRate="fast"
+      onScroll={handleScrollEnd}
       snapToInterval={SLIDE_WIDTH + SLIDE_SPACING}
       contentContainerStyle={{
         paddingHorizontal: (width - SLIDE_WIDTH) / 2,
@@ -153,9 +226,7 @@ export function MarketingSlider() {
         >
           {/* Background Image */}
           <Image
-            source={{
-              uri: slide?.image,
-            }}
+            source={{ uri: `https://docank.mahmoudalbatran.com/storage/${slide.image}` }}
             className="w-full h-full"
             resizeMode="cover"
           />

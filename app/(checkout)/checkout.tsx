@@ -202,7 +202,15 @@
 
 
 
-
+const BRAND = {
+  primary: "#7CC7A4",
+  secondary: "#6FB7D6",
+  accent: "#F6A64D",
+  dark: "#1F2937",
+  light: "#F8FAFC",
+  muted: "#9CA3AF",
+  danger: "#EF4444",
+};
 
 import {
   View,
@@ -211,11 +219,17 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Image,
+  Pressable,
 } from 'react-native'
 import { useCartStore } from '@/store/cartStore'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import SafeView from '@/components/SafeView'
 import { router } from 'expo-router'
+import { api } from '@/lib/api'
+import { getToken } from '@/lib/auth-storage'
+import { useUserStore } from '@/store/user.store'
+import { Ionicons } from '@expo/vector-icons'
+import axios from 'axios';
 
 export default function OrderDetailsScreen() {
   const items = useCartStore(state => state.items)
@@ -223,18 +237,94 @@ export default function OrderDetailsScreen() {
   const clearCart = useCartStore(state => state?.clearCart)
 
   const [delivery, setDelivery] = useState<'standard' | 'express'>('standard')
-  const [payment, setPayment] = useState<'card' | 'cash'>('card')
+  const [payment, setPayment] = useState<'card' | 'cash'>('card');
+
+
+  const [loading, setLoading] = useState(false);
+  const [ordering, setOrdering] = useState(false);
+  const [addresses, setAddresses] = useState<any[]>([]);
+  const [mainAddress, setMainAddress] = useState();
+  
+
+  const user = useUserStore((s) => s.user);
+    const userId = user?.id;
+
 
   const shipping = delivery === 'express' ? 20 : 10
   const total = subtotal + shipping;
 
 
-  const confirmOrder = () => {  
+  const confirmOrder = async () => {  
+    const token = await getToken();
+    console.log({
+        address_id: mainAddress,
+        total_price: subtotal,
+        carts: items?.map((item) => {
+          return {
+            unit_price: item?.price,
+            quantity: item?.quantity,
+            product_id: item?.id,
+          }
+        })
+      }, 'uuuuuuuuu')
 
-    router.push('/(order)/success');
+    try {
+      setOrdering(true);
+      const res = await axios.post("https://docank.mahmoudalbatran.com/api/orders", {
+        address_id: mainAddress,
+        total_price: subtotal,
+        carts: items?.map((item) => {
+          return {
+            unit_price: item?.price,
+            quantity: item?.quantity,
+            product_id: item?.id,
+          }
+        })
+      }, {
+        headers : {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      console.log(res?.data, 'ooooooooooooooooooooooooooooooooooooooooooooo');
+      if (res?.data) {
+        router.push('/(order)/success');
     clearCart();
 
+      }
+
+    } catch (error) {
+      console.log(error);
+
+    } finally {
+      setOrdering(false)
+    }
+
   }
+
+    /* ================== LOAD ADDRESSES ================== */
+    const loadAddresses = async () => {
+      try {
+        setLoading(true);
+        const token = await getToken();
+  
+        const res = await api.get("/addresses", {
+          params: { user_id: userId },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        setAddresses(res.data.address?.data || []);
+      } catch (e) {
+        console.log("Load addresses error:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+     useEffect(() => {
+        loadAddresses();
+      }, []);
+  
 
   return (
     <SafeView className="flex-1 bg-neutral-50 dark:bg-neutral-900">
@@ -304,7 +394,7 @@ export default function OrderDetailsScreen() {
 
         {/* ===== Shipping Address ===== */}
         <Card title="عنوان الشحن">
-          <TouchableOpacity className="border border-neutral-200 dark:border-neutral-700 rounded-2xl p-4">
+          {/* <TouchableOpacity className="border border-neutral-200 dark:border-neutral-700 rounded-2xl p-4">
             <Text
               className="font-medium text-neutral-900 dark:text-white"
               style={{ writingDirection: 'rtl' }}
@@ -317,11 +407,60 @@ export default function OrderDetailsScreen() {
             >
               الرياض، حي النرجس، شارع الملك سلمان
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
+          {addresses.map((a) => (
+              <Pressable
+                key={a.id}
+                onPress={() => setMainAddress(a.id)}
+                style={{
+                  padding: 14,
+                  borderRadius: 16,
+                  borderWidth: 2,
+                  borderColor: a.id == mainAddress
+                    ? BRAND.primary
+                    : "#E5E7EB",
+                  backgroundColor: a.id == mainAddress
+                    ? "#ECFDF5"
+                    : "#fff",
+                  marginBottom: 12,
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Text>
+                    <Ionicons
+                    name={
+                      a.name === "Home"
+                        ? "home-outline"
+                        : a.name === "Work"
+                        ? "briefcase-outline"
+                        : "location-outline"
+                    }
+                    size={22}
+                    color={BRAND.primary}
+                  />
+                  </Text>
+
+                  <View style={{ marginLeft: 12, flex: 1 }}>
+                    <Text style={{ fontWeight: "700" }}>{a.name}</Text>
+                    <Text style={{ color: BRAND.muted, fontSize: 13 }}>
+                      {a.city} - {a.address}
+                    </Text>
+                  </View>
+
+                  {a.id == mainAddress && (
+                    <Text><Ionicons
+                      name="checkmark-circle"
+                      size={22}
+                      color={BRAND.primary}
+                    /></Text>
+                  )}
+                </View>
+              </Pressable>
+            ))}
         </Card>
 
         {/* ===== Delivery ===== */}
-        <Card title="التوصيل">
+        {/* <Card title="التوصيل">
           <Option
             label="توصيل عادي"
             value="10 $"
@@ -334,15 +473,15 @@ export default function OrderDetailsScreen() {
             active={delivery === 'express'}
             onPress={() => setDelivery('express')}
           />
-        </Card>
+        </Card> */}
 
         {/* ===== Payment ===== */}
         <Card title="طريقة الدفع">
-          <Option
+          {/* <Option
             label="بطاقة بنكية"
             active={payment === 'card'}
             onPress={() => setPayment('card')}
-          />
+          /> */}
           <Option
             label="الدفع عند الاستلام"
             active={payment === 'cash'}
@@ -371,7 +510,7 @@ export default function OrderDetailsScreen() {
             className="text-center text-white dark:text-black text-lg font-extrabold"
             style={{ writingDirection: 'rtl' }}
           >
-            تأكيد الطلب
+           {ordering ? "جار الطلب...." : " تأكيد الطلب"}
           </Text>
         </TouchableOpacity>
       </View>
