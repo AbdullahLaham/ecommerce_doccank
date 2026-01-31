@@ -90,6 +90,19 @@ export default function RootLayout() {
   }, [])
 
 
+  useEffect(() => {
+  const init = async () => {
+    // await checkAuth()
+    // await preloadAssets()
+    // await checkInternet()
+    router.replace('/(tabs)/home')
+  }
+
+  init()
+}, [])
+
+
+
   return (
     <SafeAreaProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

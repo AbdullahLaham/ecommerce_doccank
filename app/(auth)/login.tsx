@@ -97,7 +97,7 @@ export default function SignupScreen() {
             setOtpModal(true)
 
         } catch (err: any) {
-            setError(err.message)
+            setError(err.response?.data?.message);
         } finally {
             setLoading(false)
         }

@@ -42,6 +42,19 @@ I18nManager.allowRTL(true);
   //   return <CustomSplash />;
   // }
 
+  // Keep the native splash visible
+SplashScreen.preventAutoHideAsync();
+
+
+useEffect(() => {
+    // Optional: you can hide it after JS is loaded
+    const timer = setTimeout(async () => {
+      await SplashScreen.hideAsync() // hide native splash
+    }, 500) // wait a tiny bit so your custom splash is ready
+    return () => clearTimeout(timer)
+  }, [])
+  
+
 
   
  return <Redirect href="/(auth)/login" />

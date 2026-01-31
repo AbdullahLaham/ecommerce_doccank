@@ -301,13 +301,14 @@ import Header from '@/components/home/Header'
 import { MarketingSlider } from '@/components/home/MarketingSlider'
 import ProductCard from '@/components/ProductCard'
 import SafeView from '@/components/SafeView'
-import React from 'react'
+import React, { useState } from 'react'
 import { View, Text, Image, ScrollView, Pressable, Dimensions, FlatList } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
 import NewMarketsSection from '@/components/home/NewMarkets'
 import CategorySection from '@/components/CategorySection'
 import { useCategoriesStore } from '@/store/categories.store'
 import ProductsCategoriesList from '@/components/ProductsCategoriesList'
+import SplashOverlay from '@/components/SplashOverlay'
 
 const { width } = Dimensions.get('window')
 
@@ -319,8 +320,10 @@ const { width } = Dimensions.get('window')
 // Home Screen
 // =========================
 export default function HomeScreen() {
-  const { fetchCategories, categories, loading } = useCategoriesStore()
-  return (
+  const { fetchCategories, categories, loading } = useCategoriesStore();
+  const [showSplash, setShowSplash] = useState(true);
+  if (!showSplash) {
+    return (
     <SafeView>
       <ScrollView className="flex-1 bg-gray-100" contentContainerStyle={{ paddingBottom: 40 }}>
 
@@ -347,4 +350,7 @@ export default function HomeScreen() {
     </SafeView>
 
   )
+  } else {
+    return <SplashOverlay onFinish={() => setShowSplash(false)} />
+  }
 }
