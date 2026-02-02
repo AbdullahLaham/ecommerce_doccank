@@ -624,6 +624,7 @@ import AddressTypeButton from "@/components/AddressTypeButton";
 import { useUserStore } from "@/store/user.store";
 import { api } from "@/lib/api";
 import { getToken } from "@/lib/auth-storage";
+import Toast from "react-native-toast-message";
 
 const BRAND = {
   primary: "#7CC7A4",
@@ -656,7 +657,7 @@ const Input = (props: any) => (
   />
 );
 
-const Button = ({ title, onPress, color }: any) => (
+const Button = ({ title, onPress, color, loading }: any) => (
   <TouchableOpacity
     onPress={onPress}
     style={{
@@ -667,7 +668,7 @@ const Button = ({ title, onPress, color }: any) => (
       marginTop: 6,
     }}
   >
-    <Text style={{ color: "#fff", fontWeight: "700" }}>{title}</Text>
+    <Text style={{ color: "#fff", fontWeight: "700" }}>{loading ? "جار التحميل...." : title}</Text>
   </TouchableOpacity>
 );
 
@@ -692,6 +693,9 @@ export default function SettingsScreen() {
   const [addressValue, setAddressValue] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(false);
+  const [loadingAddress, setLoadingAddress] = useState(false);
+
   const [locating, setLocating] = useState(false);
 
 
@@ -701,7 +705,7 @@ export default function SettingsScreen() {
   /* ================== UPDATE SINGLE FIELD ================== */
 const updateProfileField = async () => {
   try {
-    setLoading(true);
+    setLoadingProfile(true);
     const token = await getToken();
 
     const formData = new FormData();
@@ -721,12 +725,17 @@ const updateProfileField = async () => {
     // تحديث الـ store بعد التغيير
     useUserStore.getState().setUser(res.data.user);
 
-    alert(`profile data updated successfully!`);
+    // alert(`profile data updated successfully!`);
+    Toast.show({
+          type: 'success',
+          text1: 'تم بنجاح',
+          text2: 'تمت تحديث بيانات ملفك الشخصي بنجاح',
+        })
   } catch (error: any) {
     console.log("Update profile error:", error.response?.data || error.message);
     alert(`Failed to update profile data `);
   } finally {
-    setLoading(false);
+    setLoadingProfile(false);
   }
 };
 
@@ -762,6 +771,7 @@ const updateProfileField = async () => {
     if (!addressValue.trim() || !city.trim()) return;
 
     try {
+      setLoadingAddress(true)
       const token = await getToken();
 
       await api.post(
@@ -786,6 +796,8 @@ const updateProfileField = async () => {
       loadAddresses();
     } catch (e) {
       console.log("Create address error:", e);
+    } finally {
+      setLoadingAddress(false)
     }
   };
 
@@ -920,7 +932,7 @@ const setMainAddress = async (selectedId: number) => {
               keyboardType="phone-pad"
               placeholder="059*******"
             />
-            <Button title="Update Profile" color={BRAND.secondary} onPress={() => updateProfileField()} />
+            <Button title="تحديث الملف الشخصي" color={BRAND.secondary} onPress={() => updateProfileField()} loading={loadingProfile} />
           </Section>
           
 
@@ -934,8 +946,11 @@ const setMainAddress = async (selectedId: number) => {
             />
           </Section> */}
 
+
+
+
           {/* PASSWORD */}
-          <Section title="تغيير كلمة المرور">
+          {/* <Section title="تغيير كلمة المرور">
             <Input
               placeholder="Current Password"
               secureTextEntry
@@ -953,7 +968,7 @@ const setMainAddress = async (selectedId: number) => {
               color={BRAND.danger}
               onPress={() => {}}
             />
-          </Section>
+          </Section> */}
 
           {/* ADDRESSES */}
           <Section title="عناوين التوصيل">
@@ -1075,7 +1090,7 @@ const setMainAddress = async (selectedId: number) => {
                   style={{ height: 80 }}
                 />
 
-                <Button title="Save Address" onPress={createAddress} />
+                <Button title="حفظ العنوان" onPress={createAddress} loading={loadingAddress} />
 
                 <TouchableOpacity
                   onPress={getCurrentLocation}

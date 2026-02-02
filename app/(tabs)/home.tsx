@@ -321,8 +321,42 @@ const { width } = Dimensions.get('window')
 // =========================
 export default function HomeScreen() {
   const { fetchCategories, categories, loading } = useCategoriesStore();
-  const [showSplash, setShowSplash] = useState(true);
-  if (!showSplash) {
+  // const [showSplash, setShowSplash] = useState(true);
+
+
+
+  // if (!showSplash) {
+  //   return (
+  //   <SafeView>
+  //     <ScrollView className="flex-1 bg-gray-100" contentContainerStyle={{ paddingBottom: 40 }}>
+
+  //       {/* Header */}
+  //       <Header />
+
+  //       {/* Marketing Slider */}
+  //       <MarketingSlider />
+
+  //       {/* Categories Slider */}
+  //       <CategoriesSlider />
+
+  //       {/* <NewMarketsSection /> */}
+
+  //       <ProductsCategoriesList categories={categories} />
+        
+        
+
+
+
+
+  //     </ScrollView>
+  //     <View style={{ height: 40 }} />
+  //   </SafeView>
+
+  // )
+  // } else {
+  //   return <SplashOverlay onFinish={() => setShowSplash(false)} />
+  // }
+
     return (
     <SafeView>
       <ScrollView className="flex-1 bg-gray-100" contentContainerStyle={{ paddingBottom: 40 }}>
@@ -350,7 +384,4 @@ export default function HomeScreen() {
     </SafeView>
 
   )
-  } else {
-    return <SplashOverlay onFinish={() => setShowSplash(false)} />
-  }
 }

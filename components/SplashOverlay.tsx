@@ -219,7 +219,7 @@ export default function ModernSplash({ onFinish }: { onFinish: () => void }) {
           style={{ color: brand.dark }}
           className="text-3xl font-bold tracking-tight"
         >
-          Docank
+          Dukanak
         </Text>
         <Text
           style={{ color: brand.dark }}

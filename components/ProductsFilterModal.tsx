@@ -504,6 +504,215 @@
 // }
 
 
+
+
+
+
+
+
+// import React, { useEffect, useState } from 'react'
+// import {
+//   View,
+//   Text,
+//   Modal,
+//   ScrollView,
+//   Pressable,
+//   ActivityIndicator,
+// } from 'react-native'
+// import { useCategoriesStore } from '@/store/categories.store'
+
+// export interface ProductsFilterValues {
+//   categoryId: number | null
+//   condition: 'new' | 'used' | null
+// }
+
+// interface Props {
+//   visible: boolean
+//   values: ProductsFilterValues
+//   onApply: (values: ProductsFilterValues) => void
+//   onClose: () => void
+// }
+
+// export default function ProductsFilterModal({
+//   visible,
+//   values,
+//   onApply,
+//   onClose,
+// }: Props) {
+//   const { categories, loading } = useCategoriesStore()
+//   const [localValues, setLocalValues] = useState(values)
+
+//   useEffect(() => {
+//     if (visible) setLocalValues(values)
+//   }, [visible])
+
+//   const toggleCategory = (id: number) => {
+//     setLocalValues(prev => ({
+//       ...prev,
+//       categoryId: prev.categoryId === id ? null : id,
+//     }))
+//   }
+
+//   const toggleCondition = (condition: 'new' | 'used') => {
+//     setLocalValues(prev => ({
+//       ...prev,
+//       condition: prev.condition === condition ? null : condition,
+//     }))
+//   }
+
+//   return (
+//     <Modal
+//       visible={visible}
+//       transparent
+//       animationType="slide"
+//       onRequestClose={onClose}
+//     >
+//       {/* Overlay */}
+//       <Pressable
+//         className="flex-1 bg-black/40 justify-end"
+//         onPress={onClose}
+//       >
+//         {/* Sheet */}
+//         <Pressable
+//           className="bg-brand-light rounded-t-3xl px-6 pt-6 pb-8 max-h-[75%]"
+//           onPress={() => {}}
+//         >
+//           {/* Header */}
+//           <View className="flex-row items-center justify-between mb-5">
+//             <Text className="text-lg font-extrabold text-brand-dark">
+//               تصفية المنتجات
+//             </Text>
+
+//             <Pressable
+//               onPress={() =>
+//                 setLocalValues({ categoryId: null, condition: null })
+//               }
+//             >
+//               <Text className="text-sm font-bold text-brand-accent">
+//                 إعادة تعيين
+//               </Text>
+//             </Pressable>
+//           </View>
+
+//           <ScrollView showsVerticalScrollIndicator={false}>
+//             {/* Categories */}
+//             <Text className="font-semibold text-brand-dark mb-3">
+//               الفئة
+//             </Text>
+
+//             {loading ? (
+//               <ActivityIndicator className="my-4" />
+//             ) : (
+//               <View className="flex-row flex-wrap mb-6">
+//                 {categories.map(cat => {
+//                   const active = localValues.categoryId === cat.name
+//                   return (
+//                     <Pressable
+//                       key={cat.id}
+//                       onPress={() => toggleCategory(cat.name)}
+//                       className={`px-4 py-2 m-1 rounded-full border ${
+//                         active
+//                           ? 'bg-brand-primary border-brand-primary'
+//                           : 'border-brand-primary/30'
+//                       }`}
+//                     >
+//                       <Text
+//                         className={`text-sm font-semibold ${
+//                           active
+//                             ? 'text-white'
+//                             : 'text-brand-dark'
+//                         }`}
+//                       >
+//                         {cat.name}
+//                       </Text>
+//                     </Pressable>
+//                   )
+//                 })}
+//               </View>
+//             )}
+
+//             {/* Condition */}
+//             <Text className="font-semibold text-brand-dark mb-3">
+//               الحالة
+//             </Text>
+
+//             <View className="flex-row gap-3 mb-8">
+//               {[
+//                 { key: 'new', label: 'جديد' },
+//                 { key: 'used', label: 'مستعمل' },
+//               ].map(item => {
+//                 const active = localValues.condition === item.key
+//                 return (
+//                   <Pressable
+//                     key={item.key}
+//                     onPress={() =>
+//                       toggleCondition(item.key as 'new' | 'used')
+//                     }
+//                     className={`flex-1 py-3 rounded-full border ${
+//                       active
+//                         ? 'bg-brand-secondary border-brand-secondary'
+//                         : 'border-brand-secondary/40'
+//                     }`}
+//                   >
+//                     <Text
+//                       className={`text-center font-bold ${
+//                         active
+//                           ? 'text-white'
+//                           : 'text-brand-dark'
+//                       }`}
+//                     >
+//                       {item.label}
+//                     </Text>
+//                   </Pressable>
+//                 )
+//               })}
+//             </View>
+//           </ScrollView>
+
+//           {/* Actions */}
+//           <View className="flex-row gap-3">
+//             <Pressable
+//               onPress={onClose}
+//               className="flex-1 py-3 rounded-full border border-brand-dark/20"
+//             >
+//               <Text className="text-center font-semibold text-brand-dark">
+//                 إلغاء
+//               </Text>
+//             </Pressable>
+
+//             <Pressable
+//               onPress={() => {
+//                 onApply(localValues)
+//                 onClose()
+//               }}
+//               className="flex-1 py-3 rounded-full bg-brand-primary"
+//             >
+//               <Text className="text-white text-center font-extrabold">
+//                 تطبيق
+//               </Text>
+//             </Pressable>
+//           </View>
+//         </Pressable>
+//       </Pressable>
+//     </Modal>
+//   )
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useEffect, useState } from 'react'
 import {
   View,
@@ -516,7 +725,8 @@ import {
 import { useCategoriesStore } from '@/store/categories.store'
 
 export interface ProductsFilterValues {
-  categoryId: number | null
+  category: string | null
+  subCategory: string | null
   condition: 'new' | 'used' | null
 }
 
@@ -533,17 +743,23 @@ export default function ProductsFilterModal({
   onApply,
   onClose,
 }: Props) {
-  const { categories, loading } = useCategoriesStore()
+  const { categories, loading, fetchCategories } =
+    useCategoriesStore()
+
   const [localValues, setLocalValues] = useState(values)
 
   useEffect(() => {
-    if (visible) setLocalValues(values)
+    if (visible) {
+      fetchCategories()
+      setLocalValues(values)
+    }
   }, [visible])
 
-  const toggleCategory = (id: number) => {
+  const toggleCategory = (name: string) => {
     setLocalValues(prev => ({
       ...prev,
-      categoryId: prev.categoryId === id ? null : id,
+      category: prev.category === name ? null : name,
+      subCategory: null, // reset sub
     }))
   }
 
@@ -561,25 +777,27 @@ export default function ProductsFilterModal({
       animationType="slide"
       onRequestClose={onClose}
     >
-      {/* Overlay */}
       <Pressable
         className="flex-1 bg-black/40 justify-end"
         onPress={onClose}
       >
-        {/* Sheet */}
         <Pressable
           className="bg-brand-light rounded-t-3xl px-6 pt-6 pb-8 max-h-[75%]"
           onPress={() => {}}
         >
           {/* Header */}
-          <View className="flex-row items-center justify-between mb-5">
+          <View className="flex-row justify-between mb-5">
             <Text className="text-lg font-extrabold text-brand-dark">
               تصفية المنتجات
             </Text>
 
             <Pressable
               onPress={() =>
-                setLocalValues({ categoryId: null, condition: null })
+                setLocalValues({
+                  category: null,
+                  subCategory: null,
+                  condition: null,
+                })
               }
             >
               <Text className="text-sm font-bold text-brand-accent">
@@ -599,7 +817,9 @@ export default function ProductsFilterModal({
             ) : (
               <View className="flex-row flex-wrap mb-6">
                 {categories.map(cat => {
-                  const active = localValues.categoryId === cat.name
+                  const active =
+                    localValues.category === cat.name
+
                   return (
                     <Pressable
                       key={cat.id}
@@ -635,12 +855,16 @@ export default function ProductsFilterModal({
                 { key: 'new', label: 'جديد' },
                 { key: 'used', label: 'مستعمل' },
               ].map(item => {
-                const active = localValues.condition === item.key
+                const active =
+                  localValues.condition === item.key
+
                 return (
                   <Pressable
                     key={item.key}
                     onPress={() =>
-                      toggleCondition(item.key as 'new' | 'used')
+                      toggleCondition(
+                        item.key as 'new' | 'used'
+                      )
                     }
                     className={`flex-1 py-3 rounded-full border ${
                       active

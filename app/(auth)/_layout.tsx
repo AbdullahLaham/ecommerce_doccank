@@ -24,26 +24,28 @@ useEffect(() => {
 
     verify();
   }, []);
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        setChecking(true);
-      const token = await getToken();
-      console.log(token, 'oooooooooooooooooooooooooooooooooooooooooooo')
+  
+  // useEffect(() => {
+  //   const checkAuth = async () => {
+  //     try {
+  //       setChecking(true);
+  //     const token = await getToken();
+  //     console.log(token, 'oooooooooooooooooooooooooooooooooooooooooooo')
 
-      if (token) {
-        router.replace("/(tabs)/home"); // 🚫 امنع الدخول
-      }
-      } catch (error) {
-        setChecking(false);
-      } finally {
-        setChecking(false);
+  //     if (token) {
+  //       router.replace("/(tabs)/home"); // 🚫 امنع الدخول
+  //     }
 
-      }
-    };
+  //     } catch (error) {
+  //       setChecking(false);
+  //     } finally {
+  //       setChecking(false);
 
-    checkAuth();
-  }, []);
+  //     }
+  //   };
+
+  //   checkAuth();
+  // }, []);
 
   if (checking) {
     return (
