@@ -278,9 +278,9 @@ export function MarketingSlider() {
               <LinearGradient
                 colors={[
                   // "rgba(31,41,55,0.45)", // أخف بكثير
-                  COLORS.primary + "cc",
+                  COLORS.primary + "10",
                   COLORS.primary + "20", // شفافية أقل
-                  COLORS.secondary + "cc",
+                  COLORS.secondary + "20",
                 ]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
@@ -330,12 +330,6 @@ export function MarketingSlider() {
 
                   </View>
                 </Pressable> */}
-
-
-
-
-
-
               </LinearGradient>
             </View>
           ))

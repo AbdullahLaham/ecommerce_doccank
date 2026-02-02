@@ -612,7 +612,7 @@ export default function ProductCard({ item }: { item: Product }) {
         </Pressable>
 
         {/* NEW BADGE */}
-        {item.isNew ? (
+        {item?.type == "new" ? (
           <LinearGradient
             colors={['#6FB7D6', '#7CC7A4']}
             start={{ x: 0, y: 0 }}

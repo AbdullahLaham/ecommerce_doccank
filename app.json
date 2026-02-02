@@ -8,12 +8,13 @@
     "scheme": "doccank",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
       "icon": "./assets/images/icon.png",
-      "permissions": ["ACCESS_FINE_LOCATION"],
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "NOTIFICATIONS"
+      ],
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/icon.png",
@@ -25,10 +26,16 @@
       "package": "com.abdullah_lahham123.doccank"
     },
     "ios": {
+      "bundleIdentifier": "com.abdullah.lahham123.doccank",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "supportsTablet": true,
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "We need your location to deliver orders faster"
+        "NSLocationWhenInUseUsageDescription": "We need your location to deliver orders faster",
+        "UIBackgroundModes": [
+          "remote-notification"
+        ],
+        "FirebaseAppDelegateProxyEnabled": false
       }
-
     },
     "web": {
       "output": "static",
