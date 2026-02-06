@@ -309,6 +309,7 @@ import CategorySection from '@/components/CategorySection'
 import { useCategoriesStore } from '@/store/categories.store'
 import ProductsCategoriesList from '@/components/ProductsCategoriesList'
 import SplashOverlay from '@/components/SplashOverlay'
+import AppBackground from '@/components/AppBackground'
 
 const { width } = Dimensions.get('window')
 
@@ -359,7 +360,8 @@ export default function HomeScreen() {
 
     return (
     <SafeView>
-      <ScrollView className="flex-1 bg-gray-100" contentContainerStyle={{ paddingBottom: 40 }}>
+      <AppBackground>
+        <ScrollView className="flex-1 " contentContainerStyle={{ paddingBottom: 40 }}>
 
         {/* Header */}
         <Header />
@@ -381,6 +383,7 @@ export default function HomeScreen() {
 
       </ScrollView>
       <View style={{ height: 40 }} />
+      </AppBackground>
     </SafeView>
 
   )

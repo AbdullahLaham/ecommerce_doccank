@@ -199,7 +199,7 @@ export default function OrderSuccessScreen() {
         </View>
 
         {/* Order Summary Card */}
-        <View
+        {/* <View
           className="mx-6 bg-white rounded-3xl p-6 mt-3"
           style={{
             shadowColor: '#000',
@@ -226,7 +226,7 @@ export default function OrderSuccessScreen() {
             <Text className="text-lg font-extrabold text-neutral-900">الإجمالي</Text>
             <Text className="text-2xl font-extrabold text-[#88c1c5]">541.97 $</Text>
           </View>
-        </View>
+        </View> */}
 
         {/* Status Timeline */}
         <View className="mx-6 mt-8 bg-white rounded-3xl p-6 shadow-sm">

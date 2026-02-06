@@ -234,7 +234,10 @@ import axios from 'axios';
 export default function OrderDetailsScreen() {
   const items = useCartStore(state => state.items)
   const subtotal = useCartStore(state => state.subtotal())
-  const clearCart = useCartStore(state => state?.clearCart)
+  const clearCart = useCartStore(state => state?.clearCart);
+
+
+  
 
   const [delivery, setDelivery] = useState<'standard' | 'express'>('standard')
   const [payment, setPayment] = useState<'card' | 'cash'>('card');
@@ -244,6 +247,11 @@ export default function OrderDetailsScreen() {
   const [ordering, setOrdering] = useState(false);
   const [addresses, setAddresses] = useState<any[]>([]);
   const [mainAddress, setMainAddress] = useState();
+
+  const hasItems = items.length > 0;
+const hasAddress = !!mainAddress;
+const canOrder = hasItems && hasAddress && !ordering;
+
   
 
   const user = useUserStore((s) => s.user);
@@ -255,6 +263,17 @@ export default function OrderDetailsScreen() {
 
 
   const confirmOrder = async () => {  
+
+    if (!hasItems) {
+    alert("🛒 السلة فارغة، أضف منتجات أولاً");
+    return;
+  }
+
+  if (!hasAddress) {
+    alert("📍 الرجاء اختيار عنوان الشحن");
+    return;
+  }
+
     const token = await getToken();
     console.log({
         address_id: mainAddress,
@@ -457,6 +476,28 @@ export default function OrderDetailsScreen() {
                 </View>
               </Pressable>
             ))}
+
+            {/* Add New Address */}
+<Pressable
+  onPress={() => router.push("/settings")}
+  style={{
+    padding: 14,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderColor: BRAND.primary,
+    alignItems: "center",
+    marginTop: 6,
+  }}
+>
+  <View style={{ flexDirection: "row", alignItems: "center" }}>
+    <Ionicons name="add-circle-outline" size={22} color={BRAND.primary} />
+    <Text style={{ marginLeft: 8, color: BRAND.primary, fontWeight: "700" }}>
+      إضافة عنوان جديد
+    </Text>
+  </View>
+</Pressable>
+
         </Card>
 
         {/* ===== Delivery ===== */}
@@ -596,3 +637,16 @@ function Row({
     </View>
   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

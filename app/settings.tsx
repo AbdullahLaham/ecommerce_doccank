@@ -1046,7 +1046,7 @@ const setMainAddress = async (selectedId: number) => {
                 }}
               >
                 <Text style={{ color: BRAND.primary, fontWeight: "700" }}>
-                  + Add New Address
+                  + اضافة عنوان جديد
                 </Text>
               </Pressable>
             )}

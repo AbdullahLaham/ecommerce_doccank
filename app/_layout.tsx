@@ -507,10 +507,12 @@ import { Stack, router, useRootNavigationState } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 import "@/global.css";
+import "@/firebase.background";
+
 
 import { useEffect, useRef, useState } from "react";
 import NetInfo from "@react-native-community/netinfo";
-import { I18nManager } from "react-native";
+import { I18nManager, Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import Toast from "react-native-toast-message";
@@ -521,14 +523,39 @@ import SplashOverlay from "@/components/SplashOverlay";
 import { notificationService } from "@/services/notification.service";
 import { useSplashStore } from "@/store/splash.store";
 import { FirebaseMessagingTypes } from "@react-native-firebase/messaging";
+import * as Notifications from "expo-notifications";
+import { setupRTL } from "@/utils/rtl";
+
+
+
+
+
+
+
+async function setupNotificationChannel() {
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "Default",
+      importance: Notifications.AndroidImportance.MAX,
+      sound: "default",
+    });
+  }
+}
+
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+
 
 /* -------------------------------------------------------------------------- */
 /*                               GLOBAL CONFIG                                */
 /* -------------------------------------------------------------------------- */
-
-// ✅ RTL configured ONCE
-I18nManager.allowRTL(true);
-I18nManager.forceRTL(true);
 
 // ✅ Toast config
 export const toastConfig = {
@@ -558,26 +585,12 @@ type NotificationData = {
 /* -------------------------------------------------------------------------- */
 
 function handleNotificationNavigation(data: NotificationData) {
-  switch (data.type) {
-    case "ORDER":
-      if (data.orderId) {
-        router.push(`/orders/${String(data.orderId)}`);
+  if (data.orderId) {
+        router.push(`/(order)/order-details/${String(data.orderId)}`);
       }
-      break;
 
-    case "MESSAGE":
-      if (data.chatId) {
-        router.push(`/chat/${String(data.chatId)}`);
-      }
-      break;
 
-    case "PROMOTION":
-      router.push("/offers");
-      break;
 
-    default:
-      console.warn("Unknown notification type:", data);
-  }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -608,46 +621,76 @@ export default function RootLayout() {
     setShowSplash(false);
   };
 
-  /* ---------------------------------------------------------------------- */
-  /*                         PUSH NOTIFICATIONS (FCM)                        */
-  /* ---------------------------------------------------------------------- */
+
   useEffect(() => {
-    if (!navState?.key) return;
+  if (!navState?.key) return;
 
-    // 1️⃣ Register FCM token
-    notificationService.registerForPushNotifications();
+  
+  // 🔥 REQUIRED: create Android channel BEFORE FCM
+  setupNotificationChannel();
 
-    // 2️⃣ Foreground notifications
-    const unsubscribeOnMessage = notificationService.onReceive(
-      (message: FirebaseMessagingTypes.RemoteMessage) => {
-        const data = message.data as NotificationData;
+  notificationService.registerForPushNotifications();
 
-        if (data?.type === "MESSAGE") {
-          Toast.show({
-            type: "info",
-            text1: "رسالة جديدة",
-          });
-        }
+  const unsubscribeOnMessage = notificationService.onReceive(async message => {
+  console.log("🟢 Foreground:", message);
+
+  // Show system notification
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: message.notification?.title || "New Notification",
+      body: message.notification?.body || "",
+      data: message.data, // keep data for navigation
+      sound: "default",
+    },
+    trigger: null, // null = immediate
+  });
+});
+
+
+
+  // 2️⃣ App opened from background
+  const unsubscribeOnOpen =
+    notificationService.onNotificationOpened(message => {
+      handledInitialNotification.current = true;
+
+      const data = message.data as NotificationData;
+      console.log("🟡 Opened from background:", data);
+
+      if (data) {
+        handleNotificationNavigation(data);
       }
-    );
+    });
 
-    // 3️⃣ Background / quit → notification tap
-    notificationService.onResponse(
-      (message: FirebaseMessagingTypes.RemoteMessage) => {
-        if (handledInitialNotification.current) return;
-        handledInitialNotification.current = true;
+  // 3️⃣ App opened from killed state
+  (async () => {
+    const initialMessage =
+      await notificationService.getInitialNotification();
 
-        const data = message.data as NotificationData;
-        if (data?.type) {
-          handleNotificationNavigation(data);
-        }
+    if (initialMessage && !handledInitialNotification.current) {
+      handledInitialNotification.current = true;
+
+      const data = initialMessage.data as NotificationData;
+      console.log("🔴 Cold start:", data);
+
+      if (data) {
+        handleNotificationNavigation(data);
       }
-    );
+    }
+  })();
 
-    return () => {
-      unsubscribeOnMessage();
-    };
-  }, [navState?.key]);
+  return () => {
+    unsubscribeOnMessage();
+    unsubscribeOnOpen();
+  };
+}, [navState?.key]);
+
+
+
+useEffect(() => {
+  setupRTL();
+}, []);
+
+
 
   /* ---------------------------------------------------------------------- */
   /*                         INTERNET CONNECTION                              */
@@ -665,16 +708,7 @@ export default function RootLayout() {
   /* ---------------------------------------------------------------------- */
   /*                        INITIAL SAFE REDIRECT                             */
   /* ---------------------------------------------------------------------- */
-  useEffect(() => {
-    const init = async () => {
-      // ✅ If app NOT opened from notification
-      if (!handledInitialNotification.current) {
-        router.replace("/(tabs)/home");
-      }
-    };
 
-    init();
-  }, []);
 
   /* ---------------------------------------------------------------------- */
   /*                                   UI                                   */
@@ -695,4 +729,63 @@ export default function RootLayout() {
       <Toast config={toastConfig} />
     </SafeAreaProvider>
   );
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // useEffect(() => {
+  //   const init = async () => {
+  //     // ✅ If app NOT opened from notification
+  //     if (!handledInitialNotification.current) {
+  //       router.replace("/(tabs)/home");
+  //     }
+  //   };
+
+  //   init();
+  // }, []);
+
+
+  // switch (data.type) {
+  //   case "ORDER":
+  //     if (data.orderId) {
+  //       router.push(`/orders/${String(data.orderId)}`);
+  //     }
+  //     break;
+
+  //   case "MESSAGE":
+  //     if (data.chatId) {
+  //       router.push(`/chat/${String(data.chatId)}`);
+  //     }
+  //     break;
+
+  //   case "PROMOTION":
+  //     router.push("/offers");
+  //     break;
+
+  //   default:
+  //     console.warn("Unknown notification type:", data);
+  // }

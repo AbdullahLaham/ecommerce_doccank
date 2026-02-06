@@ -1397,7 +1397,7 @@ export default function ProductsPage() {
     useState<ProductsFilterValues>({
       category: null,
       subCategory: null,
-      condition: null,
+      typeProduct: null,
     })
 
   const [page, setPage] = useState(1)
@@ -1451,7 +1451,7 @@ export default function ProductsPage() {
             type:
               filters.category || categoryName,
             typeSub: filters.subCategory,
-            condition: filters.condition,
+            typeProduct: filters.condition,
             search: debouncedSearch,
           },
         }

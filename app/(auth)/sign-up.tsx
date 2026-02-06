@@ -279,7 +279,7 @@ export default function SignupScreen() {
         <View className="mb-10 items-center">
           <View className="w-14 h-14 rounded-2xl bg-brand-primary/15 items-center justify-center mb-4">
             <Image
-              source={require("@/assets/images/icon.jpeg")}
+              source={require("@/assets/images/micon.jpeg")}
               style={{ width: 120, height: 60, transform: [{ scale: 1.5 }] }}
             />
           </View>

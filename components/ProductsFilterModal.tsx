@@ -727,7 +727,7 @@ import { useCategoriesStore } from '@/store/categories.store'
 export interface ProductsFilterValues {
   category: string | null
   subCategory: string | null
-  condition: 'new' | 'used' | null
+  condition: 'new' | 'old' | null
 }
 
 interface Props {
@@ -763,7 +763,7 @@ export default function ProductsFilterModal({
     }))
   }
 
-  const toggleCondition = (condition: 'new' | 'used') => {
+  const toggleCondition = (condition: 'new' | 'old') => {
     setLocalValues(prev => ({
       ...prev,
       condition: prev.condition === condition ? null : condition,

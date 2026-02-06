@@ -160,7 +160,7 @@ export default function SignupScreen() {
                 {/* Header */}
                 <View className="mb-10 items-center">
                     <View className="w-14 h-14 rounded-2xl bg-brand-primary/15 items-center justify-center mb-4">
-                        <Image source={require("@/assets/images/icon.jpeg")} style={{ width: 120, height: 60, transform: [{ scale: 1.5 }], }} />
+                        <Image source={require("@/assets/images/micon.jpeg")} style={{ width: 120, height: 60, transform: [{ scale: 1.5 }], }} />
                     </View>
 
                     <Text className="text-3xl mt-3 font-extrabold text-brand-dark text-gray-600">
