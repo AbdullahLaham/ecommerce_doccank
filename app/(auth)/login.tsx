@@ -163,7 +163,7 @@ export default function SignupScreen() {
                         <Image source={require("@/assets/images/micon.jpeg")} style={{ width: 120, height: 60, transform: [{ scale: 1.5 }], }} />
                     </View>
 
-                    <Text className="text-3xl mt-3 font-extrabold text-brand-dark text-gray-600">
+                    <Text className="text-3xl mt-3 font-extrabold text-gray-600">
                         تسجيل الدخول
                     </Text>
 
