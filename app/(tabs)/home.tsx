@@ -35,6 +35,9 @@ export default function HomeScreen() {
       </AppBackground>
     </SafeView>
 
+
+
+
   )
 }
 //eas build --profile production --platform android
