@@ -1,169 +1,4 @@
 
-// import { router } from 'expo-router'
-// import { useEffect, useRef, useState } from 'react'
-// import {
-//   View,
-//   Text,
-//   TextInput,
-//   Pressable,
-//   Modal,
-//   ActivityIndicator,
-//   TouchableWithoutFeedback,
-// } from 'react-native'
-
-// export default function SignupScreen() {
-//   const [form, setForm] = useState({
-//     name: '',
-//     email: '',
-//     password: '',
-//     phone: '',
-//   })
-
-//   const [method, setMethod] = useState<'sms' | 'whatsapp'>('sms')
-//   const [loading, setLoading] = useState(false)
-//   const [error, setError] = useState<string | null>(null)
-
-//   const [otpModal, setOtpModal] = useState(false)
-//   const [otp, setOtp] = useState(['', '', '', '', ''])
-//   const inputsRef = useRef<TextInput[]>([])
-
-//   const [timer, setTimer] = useState(60)
-
-//   /* ---------------- TIMER ---------------- */
-//   useEffect(() => {
-//     if (!otpModal || timer === 0) return
-//     const interval = setInterval(() => setTimer(t => t - 1), 1000)
-//     return () => clearInterval(interval)
-//   }, [otpModal, timer])
-
-//   /* ---------------- VALIDATION ---------------- */
-//   const validate = () => {
-//     if (!form.name) return 'الاسم مطلوب'
-//     if (!form.email.includes('@')) return 'إيميل غير صالح'
-//     if (form.password.length < 6) return 'كلمة المرور ضعيفة'
-//     if (form.phone.length < 9) return 'رقم الجوال غير صالح'
-//     return null
-//   }
-
-//   /* ---------------- REGISTER ---------------- */
-//   const handleRegister = async () => {
-//     const err = validate()
-//     if (err) return setError(err)
-
-//     try {
-//       setLoading(true)
-//       setError(null)
-
-//       // await fetch('https://your-api.com/auth/register', {
-//       //   method: 'POST',
-//       //   headers: { 'Content-Type': 'application/json' },
-//       //   body: JSON.stringify({ ...form, method }),
-//       // })
-
-//       setTimer(60)
-//       setOtpModal(true)
-//     } catch {
-//       setError('فشل إنشاء الحساب')
-//     } finally {
-//       setLoading(false)
-//     }
-//   }
-
-//   /* ---------------- VERIFY OTP ---------------- */
-//   const verifyOtp = async () => {
-//     const code = otp.join('')
-//     if (code.length !== 5) return setError('أدخل الرمز كامل')
-
-//     try {
-//       setLoading(true)
-//       await fetch('https://your-api.com/auth/verify-otp', {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ phone: form.phone, otp: code }),
-//       })
-
-//       router.replace('/(tabs)/home')
-//     } catch {
-//       setError('رمز غير صحيح')
-//     } finally {
-//       setLoading(false)
-//     }
-//   }
-
-//   /* ---------------- RESEND ---------------- */
-//   const resendOtp = async () => {
-//     setTimer(60)
-//     await fetch('https://your-api.com/auth/resend-otp', {
-//       method: 'POST',
-//       body: JSON.stringify({ phone: form.phone, method }),
-//     })
-//   }
-
-//   return (
-//     <View className="flex-1 bg-[#88c1c5] justify-center px-5">
-
-//       {/* CARD */}
-//       <View className="bg-white rounded-[32px] px-7 py-10 shadow-2xl">
-//         <Text className="text-3xl font-extrabold text-center">إنشاء حساب</Text>
-
-//         {error && <Text className="text-red-500 text-center mt-3">{error}</Text>}
-
-//         {/* Inputs */}
-//         <View className="gap-4 mt-6">
-//           {['name', 'email', 'password', 'phone'].map((field, i) => (
-//             <TextInput
-//               key={field}
-//               placeholder={
-//                 field === 'phone'
-//                   ? 'رقم الجوال'
-//                   : field.charAt(0).toUpperCase() + field.slice(1)
-//               }
-//               keyboardType={field === 'phone' ? 'phone-pad' : 'default'}
-//               secureTextEntry={field === 'password'}
-//               className="border rounded-2xl px-5 py-4 bg-gray-50"
-//               onChangeText={t => setForm({ ...form, [field]: t })}
-//             />
-//           ))}
-//         </View>
-
-//         {/* OTP Method */}
-//         <View className="flex-row justify-center gap-4 mt-6">
-//           {['sms', 'whatsapp'].map(m => (
-//             <Pressable
-//               key={m}
-//               onPress={() => setMethod(m as any)}
-//               className={`px-6 py-2 rounded-full ${
-//                 method === m ? 'bg-[#1f3a5f]' : 'bg-gray-200'
-//               }`}
-//             >
-//               <Text className={method === m ? 'text-white' : ''}>
-//                 {m === 'sms' ? 'SMS' : 'WhatsApp'}
-//               </Text>
-//             </Pressable>
-//           ))}
-//         </View>
-
-//         {/* Submit */}
-//         <Pressable
-//           onPress={handleRegister}
-//           className="mt-8 bg-[#1f3a5f] py-4 rounded-2xl"
-//         >
-//           {loading ? (
-//             <ActivityIndicator color="white" />
-//           ) : (
-//             <Text className="text-white text-center font-bold text-lg">
-//               تسجيل
-//             </Text>
-//           )}
-//         </Pressable>
-//       </View>
-
-//       {/* ---------------- OTP MODAL ---------------- */}
-
-//     </View>
-//   )
-// }
-
 
 import OTPModal from "@/components/OTPModal";
 import { api } from "@/lib/api";
@@ -355,7 +190,7 @@ export default function SignupScreen() {
         )}
 
 
-        <Pressable
+        {/* <Pressable
           disabled={loading}
           onPress={() => router.push('/(tabs)/home')}
           className="mt-8 border border-brand-primary py-4 rounded-2xl shadow-lg shadow-brand-primary/30"
@@ -367,7 +202,9 @@ export default function SignupScreen() {
               الدخول ك زائر
             </Text>
           )}
-        </Pressable>
+        </Pressable> */}
+
+        
         {/* Button */}
         <Pressable
           disabled={loading}

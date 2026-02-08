@@ -163,7 +163,7 @@ const API_URL = 'https://docank.mahmoudalbatran.com/api/orders'
 
 export default function TrackOrderScreen() {
   const { orderId } = useLocalSearchParams<{ orderId: string }>()
-  const [status, setStatus] = useState<OrderStatus>('processing')
+  const [status, setStatus] = useState<OrderStatus>('processing');
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

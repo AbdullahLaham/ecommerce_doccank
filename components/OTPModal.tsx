@@ -139,7 +139,7 @@ const OTPModal = ({
         }
       );
       if (res?.data) {
-        console.log(res?.data, 'uuuuuuuuuuuuuuuuuuuuu');
+        // console.log(res?.data, 'uuuuuuuuuuuuuuuuuuuuu');
         await saveToken(res?.data);
          // ✅ SUCCESS
       setOtpModal(false);

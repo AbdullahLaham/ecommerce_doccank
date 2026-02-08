@@ -910,6 +910,7 @@ export default function ProductsFilterModal({
               </Text>
             </Pressable>
           </View>
+          <View className='h-10' />
         </Pressable>
       </Pressable>
     </Modal>
