@@ -25,5 +25,5 @@ export async function handleLogin(email: string, password: string) {
   useCartStore.getState().setItems(mergedCart)
 
   // 6️⃣ Sync merged cart back to server
-  useCartStore.getState().syncCart()
+  // useCartStore.getState().syncCart()
 }

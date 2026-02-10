@@ -66,25 +66,14 @@ useEffect(() => {
         await checkAuth(); // 👈 تحقق من التوكن
         setChecking(false);
       } catch {
-        router.replace("/(auth)/login");
+        // router.replace("/(auth)/login");
+      }
+      finally{
+        setChecking(false);
       }
     };
 
     verify();
-  }, []);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const token = await getToken();
-
-      if (!token) {
-        router.replace("/(auth)/login");
-      }
-
-      setChecking(false);
-    };
-
-    checkAuth();
   }, []);
 
   if (checking) {

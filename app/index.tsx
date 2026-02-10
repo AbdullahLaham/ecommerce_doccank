@@ -3,7 +3,7 @@ import { Redirect } from 'expo-router';
 import "@/global.css"
 import { useEffect } from 'react';
 export default function HomeScreen() {
-  return <Redirect href="/(auth)/login" />
+  return <Redirect href="/(tabs)/home" />
 }
 
 const styles = StyleSheet.create({});

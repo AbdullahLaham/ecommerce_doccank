@@ -311,6 +311,7 @@ const menuItems = [
 
 export default function ProfileScreen() {
   const user = useUserStore((s) => s.user)
+  const {clearUser} = useUserStore();
 
   // ---------------- Supplier Form States ----------------
   const [showSupplierForm, setShowSupplierForm] = useState(false)
@@ -322,7 +323,8 @@ export default function ProfileScreen() {
   const [loading, setLoading] = useState(false)
 
   const onLogout = async () => {
-    await removeToken()
+    await removeToken();
+    clearUser();
     router.replace("/(auth)/login")
   }
 
@@ -343,6 +345,53 @@ export default function ProfileScreen() {
       setShowSupplierForm(false) // hide after submit
     }, 1500)
   }
+
+
+
+
+  if (!user?.name) {
+  return (
+    <SafeView className="flex-1 bg-brand-light dark:bg-brand-dark">
+      <View className="flex-1 items-center justify-center px-8">
+        <Ionicons
+          name="person-circle-outline"
+          size={110}
+          color="#9CA3AF"
+          style={{ marginBottom: 20 }}
+        />
+
+        <Text
+          className="text-2xl font-extrabold text-neutral-900 dark:text-white mb-3"
+          style={{ writingDirection: "rtl" }}
+        >
+          لا يوجد مستخدم مسجل
+        </Text>
+
+        <Text
+          className="text-neutral-500 dark:text-neutral-400 text-center mb-8"
+          style={{ writingDirection: "rtl" }}
+        >
+          يرجى تسجيل الدخول للوصول إلى حسابك
+          ومتابعة الطلبات والإعدادات
+        </Text>
+
+        <TouchableOpacity
+          onPress={() => router.replace("/(auth)/login")}
+          className="bg-brand-primary px-10 py-4 rounded-full"
+        >
+          <Text
+            className="text-white font-extrabold text-lg"
+            style={{ writingDirection: "rtl" }}
+          >
+            تسجيل الدخول
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </SafeView>
+  )
+}
+
+
 
   return (
     <SafeView className="flex-1 bg-brand-light dark:bg-brand-dark">

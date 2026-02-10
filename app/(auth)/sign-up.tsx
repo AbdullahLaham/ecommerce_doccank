@@ -190,7 +190,7 @@ export default function SignupScreen() {
         )}
 
 
-        {/* <Pressable
+        <Pressable
           disabled={loading}
           onPress={() => router.push('/(tabs)/home')}
           className="mt-8 border border-brand-primary py-4 rounded-2xl shadow-lg shadow-brand-primary/30"
@@ -202,7 +202,7 @@ export default function SignupScreen() {
               الدخول ك زائر
             </Text>
           )}
-        </Pressable> */}
+        </Pressable> 
 
         
         {/* Button */}

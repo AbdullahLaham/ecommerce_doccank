@@ -625,6 +625,7 @@ import { useUserStore } from "@/store/user.store";
 import { api } from "@/lib/api";
 import { getToken } from "@/lib/auth-storage";
 import Toast from "react-native-toast-message";
+import { useAddressStore } from "@/store/address.store";
 
 const BRAND = {
   primary: "#7CC7A4",
@@ -686,7 +687,15 @@ export default function SettingsScreen() {
   const [newPassword, setNewPassword] = useState("");
 
   /** Addresses */
-  const [addresses, setAddresses] = useState<any[]>([]);
+  // const [addresses, setAddresses] = useState<any[]>([]);
+  const {
+  addresses,
+  // setAddresses,
+  setMainAddress,
+  fetchAddresses,
+  deleteAddress,
+  
+} = useAddressStore();
   const [showForm, setShowForm] = useState(false);
   const [addressType, setAddressType] = useState("Home");
   const [city, setCity] = useState("");
@@ -742,28 +751,28 @@ const updateProfileField = async () => {
 
 
   /* ================== LOAD ADDRESSES ================== */
-  const loadAddresses = async () => {
-    try {
-      setLoading(true);
-      const token = await getToken();
+  // const loadAddresses = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const token = await getToken();
 
-      const res = await api.get("/addresses", {
-        params: { user_id: userId },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  //     const res = await api.get("/addresses", {
+  //       params: { user_id: userId },
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
 
-      setAddresses(res.data.address?.data || []);
-    } catch (e) {
-      console.log("Load addresses error:", e);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     setAddresses(res.data.address?.data || []);
+  //   } catch (e) {
+  //     console.log("Load addresses error:", e);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
-    loadAddresses();
+    fetchAddresses();
   }, []);
 
   /* ================== CREATE ADDRESS ================== */
@@ -774,7 +783,7 @@ const updateProfileField = async () => {
       setLoadingAddress(true)
       const token = await getToken();
 
-      await api.post(
+      const res = await api.post(
         "/addresses",
         {
           name: addressType,
@@ -788,12 +797,13 @@ const updateProfileField = async () => {
           },
         }
       );
+      console.log(res, 'tttttttttttttttttttt')
 
       setAddressValue("");
       setCity("");
       setAddressType("Home");
       setShowForm(false);
-      loadAddresses();
+      fetchAddresses();
     } catch (e) {
       console.log("Create address error:", e);
     } finally {
@@ -802,16 +812,18 @@ const updateProfileField = async () => {
   };
 
 
-const setMainAddress = async (selectedId: number) => {
+const setMain = async (selectedId: number) => {
   try {
     const token = await getToken();
+    setMainAddress(selectedId); // تحديث فوري للـ UI
 
-    setAddresses((prev) =>
-      prev.map((address) => ({
-        ...address,
-        isMain: address.id === selectedId,
-      }))
-    );
+
+    // setAddresses((prev) =>
+    //   prev.map((address) => ({
+    //     ...address,
+    //     isMain: address.id === selectedId,
+    //   }))
+    // );
 
     await Promise.all(
       addresses.map((address) =>
@@ -830,8 +842,10 @@ const setMainAddress = async (selectedId: number) => {
       )
     );
 
+    console.log('success')
+
     // reload to sync UI with backend
-    loadAddresses();
+    fetchAddresses();
   } catch (error) {
     console.log("Failed to update main address:", error);
   }
@@ -840,21 +854,7 @@ const setMainAddress = async (selectedId: number) => {
 
 
   /* ================== DELETE ================== */
-  const deleteAddress = async (id: number) => {
-    try {
-      const token = await getToken();
-
-      await api.delete(`/addresses/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setAddresses((prev) => prev.filter((a) => a.id !== id));
-    } catch (e) {
-      console.log("Delete error:", e);
-    }
-  };
+  
 
   /* ================== LOCATION ================== */
   const getCurrentLocation = async () => {
@@ -975,7 +975,7 @@ const setMainAddress = async (selectedId: number) => {
             {addresses.map((a) => (
               <Pressable
                 key={a.id}
-                onPress={() => setMainAddress(a.id)}
+                onPress={() => setMain(a.id)}
                 style={{
                   padding: 14,
                   borderRadius: 16,
@@ -990,7 +990,6 @@ const setMainAddress = async (selectedId: number) => {
                 }}
               >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Text>
                     <Ionicons
                     name={
                       a.name === "Home"
@@ -1002,7 +1001,6 @@ const setMainAddress = async (selectedId: number) => {
                     size={22}
                     color={BRAND.primary}
                   />
-                  </Text>
 
                   <View style={{ marginLeft: 12, flex: 1 }}>
                     <Text style={{ fontWeight: "700" }}>{a.name}</Text>
@@ -1012,11 +1010,11 @@ const setMainAddress = async (selectedId: number) => {
                   </View>
 
                   {a.isMain && (
-                    <Text><Ionicons
+                    <Ionicons
                       name="checkmark-circle"
                       size={22}
                       color={BRAND.primary}
-                    /></Text>
+                    />
                   )}
                 </View>
 

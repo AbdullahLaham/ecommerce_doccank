@@ -19,6 +19,7 @@
 
 
 
+import { useAddressStore } from "@/store/address.store";
 import * as SecureStore from "expo-secure-store";
 
 const TOKEN_KEY = "auth_token";
@@ -50,4 +51,6 @@ export const getUser = async () => {
 export const logout = async () => {
   await removeToken();
   await SecureStore.deleteItemAsync(USER_KEY);
+  useAddressStore.getState().clearAddresses();
+
 };

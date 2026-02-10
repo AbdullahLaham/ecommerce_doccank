@@ -124,7 +124,7 @@ export default function FavoritesPage() {
               </Text>
 
               <Text className="text-lg font-extrabold text-brand-primary">
-                {item.price} ر.س
+                {item.price} شيكل
               </Text>
             </View>
           </Pressable>

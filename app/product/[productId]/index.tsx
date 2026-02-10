@@ -605,7 +605,9 @@ export default function ProductDetails() {
         const res = await axios.get(
           'https://docank.mahmoudalbatran.com/api/products',
           {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: { 
+              // Authorization: `Bearer ${token}`
+             },
             params: {
               type: product.category?.name,
               per_page: 20,

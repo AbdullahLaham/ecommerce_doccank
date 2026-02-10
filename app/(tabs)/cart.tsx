@@ -11,8 +11,11 @@ import SafeView from "@/components/SafeView";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import CartCard from "@/components/CartCard";
+import { useUserStore } from "@/store/user.store";
 
 export default function CartScreen() {
+
+  const { user } = useUserStore();
 
   const {
     items: cartItems,
@@ -21,9 +24,11 @@ export default function CartScreen() {
     removeItem,
     clearCart,
     subtotal,
+    shippingCost
   } = useCartStore();
 
-  const shipping = cartItems.length > 0 ? 12 : 0
+
+  const shipping = shippingCost();
   const total = subtotal() + shipping
 
 
@@ -52,7 +57,7 @@ export default function CartScreen() {
       >
         {cartItems.map((item, i) => (
           <CartCard key={i} item={item} i={i} increaseQty={increaseQty} decreaseQty={decreaseQty} removeItem={removeItem} />
-          
+
         ))}
 
         {/* Summary */}
@@ -72,7 +77,7 @@ export default function CartScreen() {
               المجموع الفرعي
             </Text>
             <Text className="font-medium text-neutral-900 dark:text-white">
-              {total.toFixed(2)} ₪
+              {(total - shipping).toFixed(2)} ₪
             </Text>
           </View>
 
@@ -96,14 +101,14 @@ export default function CartScreen() {
               الإجمالي
             </Text>
             <Text className="text-xl font-extrabold text-neutral-900 dark:text-white">
-              {(total + shipping).toFixed(2)} ₪
+              {(total).toFixed(2)} ₪
             </Text>
           </View>
         </View>
 
 
 
-        <View className="  px-6 py-6 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 mb-[80px]">
+        {user?.name ? <View className="  px-6 py-6 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 mb-[80px]">
           <TouchableOpacity className="bg-brand-primary rounded-2xl py-4 shadow-md active:opacity-90" onPress={() => router.push('/(checkout)/checkout')}>
             <Text
               className="text-center text-white dark:text-black text-lg font-extrabold"
@@ -113,6 +118,24 @@ export default function CartScreen() {
             </Text>
           </TouchableOpacity>
         </View>
+          :
+          <View>
+            <Text className="text-center mt-5">ليس لديك حساب ... قم بتسجيل الدخول </Text>
+            <TouchableOpacity
+              onPress={() => router.replace("/(auth)/login")}
+              className="bg-brand-primary px-10 py-4 rounded-full mt-3"
+            >
+              <Text
+                className="text-white font-extrabold text-lg text-center"
+                style={{ writingDirection: "rtl" }}
+              >
+                تسجيل الدخول
+              </Text>
+            </TouchableOpacity>
+          </View>
+        }
+
+        <View className="h-32" />
 
 
       </ScrollView>

@@ -163,7 +163,9 @@ export default function CategorySection({ category }: any) {
       const res = await axios.get(
         'https://docank.mahmoudalbatran.com/api/products',
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            //  Authorization: `Bearer ${token}` 
+            },
           params: { 
             type: category?.name,
             // condition: filters.condition,

@@ -11,6 +11,7 @@ import { getToken } from "@/lib/auth-storage";
 class NotificationService {
 
   async registerForPushNotifications(): Promise<string | null> {
+    
     try {
       // 1️⃣ iOS permission (Android auto-granted)
       const authStatus = await messaging().requestPermission();
@@ -50,6 +51,10 @@ class NotificationService {
 
   private async sendTokenToBackend(token: string, deviceName: string) {
     const authToken = await getToken();
+
+    if (!authToken) {
+      return;
+    }
 
     await axios.post(
       "https://docank.mahmoudalbatran.com/api/device-tokens",

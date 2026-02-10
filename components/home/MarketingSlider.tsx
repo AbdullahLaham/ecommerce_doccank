@@ -144,7 +144,7 @@ export function MarketingSlider() {
         "https://docank.mahmoudalbatran.com/api/sliders",
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            // Authorization: `Bearer ${token}`,
           },
           params: {
             page: pageNumber,

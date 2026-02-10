@@ -11,6 +11,8 @@ export type CartItem = {
   image?: string
 }
 
+
+
 type CartStore = {
   items: CartItem[]
   lastSyncedAt: number | null
@@ -20,7 +22,7 @@ type CartStore = {
   increaseQty: (id: string) => void
   decreaseQty: (id: string) => void
   removeItem: (id: string) => void
-  
+
   clearCart: () => void
   setItems: (items: CartItem[]) => void
 
@@ -28,8 +30,13 @@ type CartStore = {
   subtotal: () => number
   getTotalItems: () => number
 
-  syncCart: () => Promise<void>
+  shippingCost: () => number   // 👈 جديد
+  totalWithShipping: () => number // 👈 اختياري 🔥
+
+  // syncCart: () => Promise<void>
 }
+
+
 
 export const useCartStore = create<CartStore>()(
   persist(
@@ -88,32 +95,46 @@ export const useCartStore = create<CartStore>()(
         ),
       /* ---------- API Sync ---------- */
 
-      syncCart: async () => {
-        try {
-          const { items } = get()
+      // syncCart: async () => {
+      //   try {
+      //     const { items } = get()
 
-          // 🛑 skip sync if cart empty
-          if (!items.length) return
+      //     // 🛑 skip sync if cart empty
+      //     if (!items.length) return
 
-          await fetch('https://your-api.com/cart/sync', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: 'Bearer USER_TOKEN', // replace dynamically
-            },
-            body: JSON.stringify({
-              items: items.map(i => ({
-                product_id: i.id,
-                quantity: i.quantity,
-              })),
-            }),
-          })
+      //     await fetch('https://your-api.com/cart/sync', {
+      //       method: 'POST',
+      //       headers: {
+      //         'Content-Type': 'application/json',
+      //         Authorization: 'Bearer USER_TOKEN', // replace dynamically
+      //       },
+      //       body: JSON.stringify({
+      //         items: items.map(i => ({
+      //           product_id: i.id,
+      //           quantity: i.quantity,
+      //         })),
+      //       }),
+      //     })
 
-          set({ lastSyncedAt: Date.now() })
-        } catch (error) {
-          console.log('Cart sync failed', error)
-        }
+      //     set({ lastSyncedAt: Date.now() })
+      //   } catch (error) {
+      //     console.log('Cart sync failed', error)
+      //   }
+      // },
+
+      shippingCost: () => {
+        const itemTypesCount = get().items.length
+
+        if (itemTypesCount === 0) return 0
+        if (itemTypesCount <= 3) return 25
+
+        return 25 + (itemTypesCount - 3) * 5
       },
+
+      totalWithShipping: () => {
+        return get().subtotal() + get().shippingCost()
+      },
+
     }),
 
     {

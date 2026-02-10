@@ -3,7 +3,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native
 import { Stack, router, useRootNavigationState } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import Toast from "react-native-toast-message";
@@ -18,9 +18,10 @@ import "react-native-reanimated";
 
 
 
-// import "@/firebase.background";
-// import { FirebaseMessagingTypes } from "@react-native-firebase/messaging";
-// import { notificationService } from "@/services/notification.service";
+import "@/firebase.background";
+import { FirebaseMessagingTypes } from "@react-native-firebase/messaging";
+import { notificationService } from "@/services/notification.service";
+import { Platform } from "react-native";
 
 
 
@@ -28,26 +29,26 @@ import "react-native-reanimated";
 
 
 
-// async function setupNotificationChannel() {
-//   if (Platform.OS === "android") {
-//     await Notifications.setNotificationChannelAsync("default", {
-//       name: "Default",
-//       importance: Notifications.AndroidImportance.MAX,
-//       sound: "default",
-//     });
-//   }
-// }
+async function setupNotificationChannel() {
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "Default",
+      importance: Notifications.AndroidImportance.MAX,
+      sound: "default",
+    });
+  }
+}
 
 
-// Notifications.setNotificationHandler({
-//   handleNotification: async () => ({
-//     shouldShowAlert: true,
-//     shouldPlaySound: true,
-//     shouldSetBadge: false,
-//     shouldShowBanner: true,
-//     shouldShowList: true,
-//   }),
-// });
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 
 
@@ -86,21 +87,21 @@ export const unstable_settings = {
 /*                                   TYPES                                    */
 /* -------------------------------------------------------------------------- */
 
-// type NotificationData = {
-//   type: "ORDER" | "MESSAGE" | "PROMOTION" | "SYSTEM";
-//   orderId?: string | number;
-//   chatId?: string | number;
-// };
+type NotificationData = {
+  type: "ORDER" | "MESSAGE" | "PROMOTION" | "SYSTEM";
+  orderId?: string | number;
+  chatId?: string | number;
+};
 
 /* -------------------------------------------------------------------------- */
 /*                         CENTRALIZED NAVIGATION                              */
 /* -------------------------------------------------------------------------- */
 
-// function handleNotificationNavigation(data: NotificationData) {
-//   if (data.orderId) {
-//         router.push(`/(order)/order-details/${String(data.orderId)}`);
-//       }
-// }
+function handleNotificationNavigation(data: NotificationData) {
+  if (data.orderId) {
+        router.push(`/(order)/order-details/${String(data.orderId)}`);
+      }
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                 ROOT LAYOUT                                */
@@ -114,7 +115,7 @@ export default function RootLayout() {
   const [showSplash, setShowSplash] = useState(false);
 
   // 🧠 Prevent double handling (especially iOS)
-  // const handledInitialNotification = useRef(false);
+  const handledInitialNotification = useRef(false);
 
   /* ---------------------------------------------------------------------- */
   /*                               SPLASH                                    */
@@ -131,67 +132,67 @@ export default function RootLayout() {
   };
 
 
-//   useEffect(() => {
-//   if (!navState?.key) return;
+  useEffect(() => {
+  if (!navState?.key) return;
 
   
-//   // 🔥 REQUIRED: create Android channel BEFORE FCM
-//   setupNotificationChannel();
+  // 🔥 REQUIRED: create Android channel BEFORE FCM
+  setupNotificationChannel();
 
-//   notificationService.registerForPushNotifications();
+  notificationService.registerForPushNotifications();
 
-//   const unsubscribeOnMessage = notificationService.onReceive(async message => {
-//   console.log("🟢 Foreground:", message);
+  const unsubscribeOnMessage = notificationService.onReceive(async message => {
+  console.log("🟢 Foreground:", message);
 
-//   // Show system notification
-//   await Notifications.scheduleNotificationAsync({
-//     content: {
-//       title: message.notification?.title || "New Notification",
-//       body: message.notification?.body || "",
-//       data: message.data, // keep data for navigation
-//       sound: "default",
-//     },
-//     trigger: null, // null = immediate
-//   });
-// });
+  // Show system notification
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: message.notification?.title || "New Notification",
+      body: message.notification?.body || "",
+      data: message.data, // keep data for navigation
+      sound: "default",
+    },
+    trigger: null, // null = immediate
+  });
+});
 
 
 
-//   // 2️⃣ App opened from background
-//   const unsubscribeOnOpen =
-//     notificationService.onNotificationOpened(message => {
-//       handledInitialNotification.current = true;
+  // 2️⃣ App opened from background
+  const unsubscribeOnOpen =
+    notificationService.onNotificationOpened(message => {
+      handledInitialNotification.current = true;
 
-//       const data = message.data as NotificationData;
-//       console.log("🟡 Opened from background:", data);
+      const data = message.data as NotificationData;
+      console.log("🟡 Opened from background:", data);
 
-//       if (data) {
-//         handleNotificationNavigation(data);
-//       }
-//     });
+      if (data) {
+        handleNotificationNavigation(data);
+      }
+    });
 
-//   // 3️⃣ App opened from killed state
-//   (async () => {
-//     const initialMessage =
-//       await notificationService.getInitialNotification();
+  // 3️⃣ App opened from killed state
+  (async () => {
+    const initialMessage =
+      await notificationService.getInitialNotification();
 
-//     if (initialMessage && !handledInitialNotification.current) {
-//       handledInitialNotification.current = true;
+    if (initialMessage && !handledInitialNotification.current) {
+      handledInitialNotification.current = true;
 
-//       const data = initialMessage.data as NotificationData;
-//       console.log("🔴 Cold start:", data);
+      const data = initialMessage.data as NotificationData;
+      console.log("🔴 Cold start:", data);
 
-//       if (data) {
-//         handleNotificationNavigation(data);
-//       }
-//     }
-//   })();
+      if (data) {
+        handleNotificationNavigation(data);
+      }
+    }
+  })();
 
-//   return () => {
-//     unsubscribeOnMessage();
-//     unsubscribeOnOpen();
-//   };
-// }, [navState?.key]);
+  return () => {
+    unsubscribeOnMessage();
+    unsubscribeOnOpen();
+  };
+}, [navState?.key]);
 
 
 
@@ -204,6 +205,8 @@ useEffect(() => {
   /* ---------------------------------------------------------------------- */
   /*                         INTERNET CONNECTION                              */
   /* ---------------------------------------------------------------------- */
+
+
   // useEffect(() => {
   //   const unsubscribe = NetInfo.addEventListener(state => {
   //     if (!state.isConnected || !state.isInternetReachable) {

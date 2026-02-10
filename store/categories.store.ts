@@ -32,9 +32,9 @@ export const useCategoriesStore = create<CategoriesStore>((set, get) => ({
       const token = await getToken()
       const res = await axios.get(
         'https://docank.mahmoudalbatran.com/api/categories',
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        // {
+        //   headers: { Authorization: `Bearer ${token}` },
+        // }
       )
 
       set({

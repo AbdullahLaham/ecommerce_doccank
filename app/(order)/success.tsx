@@ -288,14 +288,18 @@ export default function OrderSuccessScreen() {
         </TouchableOpacity>
 
         {/* Tertiary CTA */}
-        <TouchableOpacity
+
+        
+        {/* <TouchableOpacity
           onPress={() => router.push(`/track?orderId=5`)}
           className="rounded-2xl py-4 border border-neutral-300 bg-white"
         >
           <Text className="text-center font-bold text-neutral-800">
             تتبع الطلب
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+
+
       </View>
     </SafeView>
   )

@@ -26,11 +26,23 @@ import { getToken } from '@/lib/auth-storage'
 import { useUserStore } from '@/store/user.store'
 import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios';
+import { useAddressStore } from "@/store/address.store";
+
+
 
 export default function OrderDetailsScreen() {
   const items = useCartStore(state => state.items)
   const subtotal = useCartStore(state => state.subtotal())
   const clearCart = useCartStore(state => state?.clearCart);
+  
+
+  const {
+    items: cartItems,
+    increaseQty,
+    decreaseQty,
+    removeItem,
+    shippingCost
+  } = useCartStore();
 
 
   
@@ -41,11 +53,21 @@ export default function OrderDetailsScreen() {
 
   const [loading, setLoading] = useState(false);
   const [ordering, setOrdering] = useState(false);
-  const [addresses, setAddresses] = useState<any[]>([]);
-  const [mainAddress, setMainAddress] = useState();
+  // const [addresses, setAddresses] = useState<any[]>([]);
+  // const [mainAddress, setMainAddress] = useState();
+
+  const {
+  addresses,
+  mainAddressId,
+  setMainAddress,
+  fetchAddresses,
+} = useAddressStore();
+
+
+
 
   const hasItems = items.length > 0;
-const hasAddress = !!mainAddress;
+const hasAddress = !!mainAddressId;
 const canOrder = hasItems && hasAddress && !ordering;
 
   
@@ -54,7 +76,8 @@ const canOrder = hasItems && hasAddress && !ordering;
     const userId = user?.id;
 
 
-  const shipping = delivery === 'express' ? 20 : 10
+  const shipping = shippingCost();
+
   const total = subtotal + shipping;
 
 
@@ -72,8 +95,8 @@ const canOrder = hasItems && hasAddress && !ordering;
 
     const token = await getToken();
     console.log({
-        address_id: mainAddress,
-        total_price: subtotal,
+        address_id: mainAddressId,
+        total_price: total,
         carts: items?.map((item) => {
           return {
             unit_price: item?.price,
@@ -86,8 +109,8 @@ const canOrder = hasItems && hasAddress && !ordering;
     try {
       setOrdering(true);
       const res = await axios.post("https://docank.mahmoudalbatran.com/api/orders", {
-        address_id: mainAddress,
-        total_price: subtotal,
+        address_id: mainAddressId,
+        total_price: total,
         carts: items?.map((item) => {
           return {
             unit_price: item?.price,
@@ -117,27 +140,9 @@ const canOrder = hasItems && hasAddress && !ordering;
   }
 
     /* ================== LOAD ADDRESSES ================== */
-    const loadAddresses = async () => {
-      try {
-        setLoading(true);
-        const token = await getToken();
-  
-        const res = await api.get("/addresses", {
-          params: { user_id: userId },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
-        setAddresses(res.data.address?.data || []);
-      } catch (e) {
-        console.log("Load addresses error:", e);
-      } finally {
-        setLoading(false);
-      }
-    };
+
      useEffect(() => {
-        loadAddresses();
+        fetchAddresses();
       }, []);
   
 
@@ -198,7 +203,7 @@ const canOrder = hasItems && hasAddress && !ordering;
                       × {item.quantity}
                     </Text>
                     <Text className="font-bold text-neutral-900 dark:text-white">
-                      {(item.price * item.quantity).toFixed(2)} $
+                      {(item.price * item.quantity).toFixed(2)} ₪
                     </Text>
                   </View>
                 </View>
@@ -209,20 +214,6 @@ const canOrder = hasItems && hasAddress && !ordering;
 
         {/* ===== Shipping Address ===== */}
         <Card title="عنوان الشحن">
-          {/* <TouchableOpacity className="border border-neutral-200 dark:border-neutral-700 rounded-2xl p-4">
-            <Text
-              className="font-medium text-neutral-900 dark:text-white"
-              style={{ writingDirection: 'rtl' }}
-            >
-              محمد أحمد
-            </Text>
-            <Text
-              className="text-neutral-500 dark:text-neutral-400 mt-1"
-              style={{ writingDirection: 'rtl' }}
-            >
-              الرياض، حي النرجس، شارع الملك سلمان
-            </Text>
-          </TouchableOpacity> */}
           {addresses.map((a) => (
               <Pressable
                 key={a.id}
@@ -231,10 +222,10 @@ const canOrder = hasItems && hasAddress && !ordering;
                   padding: 14,
                   borderRadius: 16,
                   borderWidth: 2,
-                  borderColor: a.id == mainAddress
+                  borderColor: a.id == mainAddressId
                     ? BRAND.primary
                     : "#E5E7EB",
-                  backgroundColor: a.id == mainAddress
+                  backgroundColor: a.id == mainAddressId
                     ? "#ECFDF5"
                     : "#fff",
                   marginBottom: 12,
@@ -262,7 +253,7 @@ const canOrder = hasItems && hasAddress && !ordering;
                     </Text>
                   </View>
 
-                  {a.id == mainAddress && (
+                  {a.id == mainAddressId && (
                     <Text><Ionicons
                       name="checkmark-circle"
                       size={22}
@@ -314,11 +305,6 @@ const canOrder = hasItems && hasAddress && !ordering;
 
         {/* ===== Payment ===== */}
         <Card title="طريقة الدفع">
-          {/* <Option
-            label="بطاقة بنكية"
-            active={payment === 'card'}
-            onPress={() => setPayment('card')}
-          /> */}
           <Option
             label="الدفع عند الاستلام"
             active={payment === 'cash'}
@@ -328,12 +314,12 @@ const canOrder = hasItems && hasAddress && !ordering;
 
         {/* ===== Summary ===== */}
         <Card title="ملخص الطلب" last>
-          <Row label="المجموع الفرعي" value={`${subtotal.toFixed(2)} $`} />
-          <Row label="الشحن" value={`${shipping.toFixed(2)} $`} />
+          <Row label="المجموع الفرعي" value={`${subtotal.toFixed(2)} ₪`} />
+          <Row label="الشحن" value={`${shipping.toFixed(2)} ₪`} />
           <View className="border-t border-neutral-200 dark:border-neutral-700 pt-3 mt-3">
             <Row
               label="الإجمالي"
-              value={`${total.toFixed(2)} $`}
+              value={`${total.toFixed(2)} ₪`}
               bold
             />
           </View>
