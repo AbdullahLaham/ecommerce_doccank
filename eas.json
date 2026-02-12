@@ -21,6 +21,11 @@
       "autoIncrement": true,
       "android": {
         "buildType": "app-bundle"
+      },
+      "ios": {
+        "distribution": "store",
+        "autoIncrement": true,
+        "simulator": false
       }
     }
   },

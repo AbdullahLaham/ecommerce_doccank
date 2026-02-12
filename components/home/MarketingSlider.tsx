@@ -152,6 +152,7 @@ export function MarketingSlider() {
           },
         }
       )
+      console.log(res?.data?.sliders?.data[1], 'ttttttttttttttttttttt')
 
       const pagination = res.data.sliders
       const newSlides = pagination.data || []
@@ -216,7 +217,7 @@ export function MarketingSlider() {
             >
               {/* Background Image */}
               <Image
-                source={{ uri: `https://docank.mahmoudalbatran.com/storage/${slide.image}` }}
+                source={{ uri: `${slide.image}` }}
                 className="w-full h-full"
                 resizeMode="cover"
               />

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "دكانك",
+    "name": "dukanak world",
     "slug": "doccank",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -30,9 +30,11 @@
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "We need your location to deliver orders faster",
         "UIBackgroundModes": [
+          "remote-notification",
           "remote-notification"
         ],
-        "FirebaseAppDelegateProxyEnabled": false
+        "FirebaseAppDelegateProxyEnabled": false,
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "web": {

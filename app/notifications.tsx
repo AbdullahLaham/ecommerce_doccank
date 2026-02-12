@@ -447,6 +447,10 @@ export default function NotificationsPage() {
 
   /* Mark all notifications as read */
   const markAllAsRead = async () => {
+
+    if (!(notifications?.length > 0)) return;
+
+    
     try {
       const token = await getToken()
       await api.post(

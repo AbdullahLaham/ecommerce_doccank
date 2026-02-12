@@ -202,7 +202,7 @@
 //   const addAddress = () => {
 //     if (!addressValue.trim()) return;
 //     const newAddress = {
-      
+
 //         name: addressType,
 //         address: addressValue,
 //         city: city,
@@ -585,7 +585,7 @@
 
 
 
-        
+
 //         </ScrollView>
 //       </KeyboardAwareScrollView>
 
@@ -679,23 +679,25 @@ export default function SettingsScreen() {
 
   /** Profile */
   const [name, setName] = useState(user?.name || "");
-  const [email, setEmail] = useState(user?.email || "");
+  // const [email, setEmail] = useState(user?.email || "");
   const [phone, setPhone] = useState(user?.phone_number || "");
 
   /** Password */
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loadingPassword, setLoadingPassword] = useState(false);
 
   /** Addresses */
   // const [addresses, setAddresses] = useState<any[]>([]);
   const {
-  addresses,
-  // setAddresses,
-  setMainAddress,
-  fetchAddresses,
-  deleteAddress,
-  
-} = useAddressStore();
+    addresses,
+    // setAddresses,
+    setMainAddress,
+    fetchAddresses,
+    deleteAddress,
+
+  } = useAddressStore();
   const [showForm, setShowForm] = useState(false);
   const [addressType, setAddressType] = useState("Home");
   const [city, setCity] = useState("");
@@ -707,46 +709,133 @@ export default function SettingsScreen() {
 
   const [locating, setLocating] = useState(false);
 
+  const safeAddresses = Array.isArray(addresses) ? addresses.map(a => ({
+    id: Number(a.id) || 0,
+    name: String(a.name ?? "—"),
+    city: String(a.city ?? "—"),
+    address: String(a.address ?? "—"),
+    isMain: !!a.isMain,
+  })) : [];
+
+
 
 
 
 
   /* ================== UPDATE SINGLE FIELD ================== */
-const updateProfileField = async () => {
-  try {
-    setLoadingProfile(true);
-    const token = await getToken();
+  const updateProfileField = async () => {
+    try {
+      setLoadingProfile(true);
+      const token = await getToken();
 
-    const formData = new FormData();
-    // formData.append(field, value); // فقط الحقل المراد تحديثه
+      if (!token) return;
 
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("phone_number", phone);
 
-    const res = await api.post("/updateprofile", formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
+      const formData = new FormData();
+      // formData.append(field, value); // فقط الحقل المراد تحديثه
 
-    // تحديث الـ store بعد التغيير
-    useUserStore.getState().setUser(res.data.user);
+      if (!name?.trim()) return;
 
-    // alert(`profile data updated successfully!`);
-    Toast.show({
-          type: 'success',
-          text1: 'تم بنجاح',
-          text2: 'تمت تحديث بيانات ملفك الشخصي بنجاح',
-        })
-  } catch (error: any) {
-    console.log("Update profile error:", error.response?.data || error.message);
-    alert(`Failed to update profile data `);
-  } finally {
-    setLoadingProfile(false);
-  }
-};
+
+      formData.append("name", name);
+      // formData.append("email", email);
+      // formData.append("phone_number", phone);
+
+      const res = await api.post("/updateprofile", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log(res?.data);
+
+      // تحديث الـ store بعد التغيير
+      useUserStore.getState().setUser(res.data.user);
+
+      // alert(`profile data updated successfully!`);
+      Toast.show({
+        type: 'success',
+        text1: 'تم بنجاح',
+        text2: 'تمت تحديث بيانات ملفك الشخصي بنجاح',
+      })
+    } catch (error: any) {
+      console.log("Update profile error:", error.response?.data || error.message);
+      Toast.show({
+        type: "error",
+        text1: "خطأ",
+        text2: "تعذر تحديث الملف الشخصي",
+      });
+    } finally {
+      setLoadingProfile(false);
+    }
+  };
+
+
+
+
+  const updatePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      Toast.show({
+        type: "error",
+        text1: "خطأ",
+        text2: "جميع الحقول مطلوبة",
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      Toast.show({
+        type: "error",
+        text1: "خطأ",
+        text2: "كلمة المرور الجديدة غير متطابقة",
+      });
+      return;
+    }
+
+    try {
+      setLoadingPassword(true);
+      const token = await getToken();
+
+      if (!token) return;
+
+
+      await api.post(
+        "/updatepassword",
+        {
+          old_password: currentPassword,
+          new_password: newPassword,
+          confirm_password: confirmPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      Toast.show({
+        type: "success",
+        text1: "تم بنجاح",
+        text2: "تم تغيير كلمة المرور بنجاح",
+      });
+
+      // Reset fields
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error: any) {
+      console.log("Update password error:", error.response?.data || error.message);
+
+      Toast.show({
+        type: "error",
+        text1: "فشل العملية",
+        text2: error.response?.data?.message || "حدث خطأ أثناء تغيير كلمة المرور",
+      });
+    } finally {
+      setLoadingPassword(false);
+    }
+  };
 
 
 
@@ -772,8 +861,17 @@ const updateProfileField = async () => {
   // };
 
   useEffect(() => {
-    fetchAddresses();
+    let mounted = true;
+
+    if (mounted) {
+      fetchAddresses?.();
+    }
+
+    return () => {
+      mounted = false;
+    };
   }, []);
+
 
   /* ================== CREATE ADDRESS ================== */
   const createAddress = async () => {
@@ -782,6 +880,9 @@ const updateProfileField = async () => {
     try {
       setLoadingAddress(true)
       const token = await getToken();
+
+      if (!token) return;
+
 
       const res = await api.post(
         "/addresses",
@@ -812,49 +913,55 @@ const updateProfileField = async () => {
   };
 
 
-const setMain = async (selectedId: number) => {
-  try {
-    const token = await getToken();
-    setMainAddress(selectedId); // تحديث فوري للـ UI
+  const setMain = async (selectedId: number) => {
+    try {
+
+      if (!selectedId || !Number.isFinite(selectedId)) return;
+
+      const token = await getToken();
+      if (!token) return;
+
+      setMainAddress(selectedId); // تحديث فوري للـ UI
 
 
-    // setAddresses((prev) =>
-    //   prev.map((address) => ({
-    //     ...address,
-    //     isMain: address.id === selectedId,
-    //   }))
-    // );
+      // setAddresses((prev) =>
+      //   prev.map((address) => ({
+      //     ...address,
+      //     isMain: address.id === selectedId,
+      //   }))
+      // );
 
-    await Promise.all(
-      addresses.map((address) =>
-        api.put(
-          `/addresses/${address.id}`,
-          {
-            ...address,
-            isMain: address.id === selectedId,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
+      await Promise.all(
+        safeAddresses.map((address) =>
+          api.put(
+            `/addresses/${address.id}`,
+            {
+              ...address,
+              isMain: address.id === selectedId,
             },
-          }
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+            .catch(() => null) // 🔥 يمنع crash iOS
         )
-      )
-    );
+      );
 
-    console.log('success')
+      console.log('success')
 
-    // reload to sync UI with backend
-    fetchAddresses();
-  } catch (error) {
-    console.log("Failed to update main address:", error);
-  }
-};
+      // reload to sync UI with backend
+      fetchAddresses();
+    } catch (error) {
+      console.log("Failed to update main address:", error);
+    }
+  };
 
 
 
   /* ================== DELETE ================== */
-  
+
 
   /* ================== LOCATION ================== */
   const getCurrentLocation = async () => {
@@ -865,7 +972,11 @@ const setMain = async (selectedId: number) => {
         await Location.requestForegroundPermissionsAsync();
 
       if (status !== "granted") {
-        alert("Location permission denied");
+        Toast.show({
+          type: "error",
+          text1: "الإذن مرفوض",
+          text2: "يرجى تفعيل الموقع",
+        });
         return;
       }
 
@@ -890,13 +1001,17 @@ const setMain = async (selectedId: number) => {
           );
           return;
         }
-      } catch {}
+      } catch { }
 
       setAddressValue(
         `Lat: ${latitude.toFixed(5)}, Lng: ${longitude.toFixed(5)}`
       );
     } catch {
-      alert("Unable to get location");
+      Toast.show({
+        type: "error",
+        text1: "خطأ",
+        text2: "تعذر تحديد الموقع",
+      });
     } finally {
       setLocating(false);
     }
@@ -926,15 +1041,15 @@ const setMain = async (selectedId: number) => {
           {/* NAME */}
           <Section title=" بيانات المستخدم">
             <Input value={name} onChangeText={setName} />
-            <Input
+            {/* <Input
               value={phone}
               onChangeText={setPhone}
               keyboardType="phone-pad"
               placeholder="059*******"
-            />
+            /> */}
             <Button title="تحديث الملف الشخصي" color={BRAND.secondary} onPress={() => updateProfileField()} loading={loadingProfile} />
           </Section>
-          
+
 
           {/* PHONE */}
           {/* <Section title="رقم الهاتف">
@@ -950,76 +1065,113 @@ const setMain = async (selectedId: number) => {
 
 
           {/* PASSWORD */}
-          {/* <Section title="تغيير كلمة المرور">
+          <Section title="تغيير كلمة المرور">
             <Input
-              placeholder="Current Password"
+              placeholder="كلمة المرور الحالية"
               secureTextEntry
               value={currentPassword}
               onChangeText={setCurrentPassword}
             />
+
             <Input
-              placeholder="New Password"
+              placeholder="كلمة المرور الجديدة"
               secureTextEntry
               value={newPassword}
               onChangeText={setNewPassword}
             />
-            <Button
-              title="Change Password"
-              color={BRAND.danger}
-              onPress={() => {}}
+
+            <Input
+              placeholder="تأكيد كلمة المرور الجديدة"
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
             />
-          </Section> */}
+
+            <Button
+              title="تغيير كلمة المرور"
+              color={BRAND.danger}
+              onPress={updatePassword}
+              loading={loadingPassword}
+            />
+          </Section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
           {/* ADDRESSES */}
           <Section title="عناوين التوصيل">
-            {addresses.map((a) => (
+            {safeAddresses?.map?.((a) => (
               <Pressable
-                key={a.id}
-                onPress={() => setMain(a.id)}
+                key={a?.id}
+                onPress={() => setMain(a?.id)}
                 style={{
                   padding: 14,
                   borderRadius: 16,
                   borderWidth: 2,
-                  borderColor: a.isMain
-                    ? BRAND.primary
-                    : "#E5E7EB",
-                  backgroundColor: a.isMain
-                    ? "#ECFDF5"
-                    : "#fff",
+                  borderColor: a?.isMain ? BRAND.primary : "#E5E7EB",
+                  backgroundColor: a?.isMain ? "#ECFDF5" : "#fff",
                   marginBottom: 12,
                 }}
               >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Ionicons
+
+                  <Ionicons
                     name={
-                      a.name === "Home"
+                      a?.name === "Home"
                         ? "home-outline"
-                        : a.name === "Work"
-                        ? "briefcase-outline"
-                        : "location-outline"
+                        : a?.name === "Work"
+                          ? "briefcase-outline"
+                          : "location-outline"
                     }
                     size={22}
                     color={BRAND.primary}
                   />
 
                   <View style={{ marginLeft: 12, flex: 1 }}>
-                    <Text style={{ fontWeight: "700" }}>{a.name}</Text>
+                    <Text style={{ fontWeight: "700" }}>{a?.name ?? "—"}</Text>
                     <Text style={{ color: BRAND.muted, fontSize: 13 }}>
-                      {a.city} - {a.address}
+                      {`${a?.city ?? "—"} - ${a?.address ?? "—"}`}
                     </Text>
                   </View>
 
-                  {a.isMain && (
+                  {/* {a?.isMain && (
                     <Ionicons
                       name="checkmark-circle"
                       size={22}
                       color={BRAND.primary}
                     />
-                  )}
+                  )} */}
+
+
                 </View>
 
                 <Pressable
-                  onPress={() => deleteAddress(a.id)}
+                  onPress={() => {
+                    if (!a?.id || !Number.isFinite(a.id)) return;
+                    deleteAddress(a.id);
+                  }}
+
                   style={{ marginTop: 8, alignSelf: "flex-end" }}
                 >
                   <Ionicons
@@ -1030,6 +1182,7 @@ const setMain = async (selectedId: number) => {
                 </Pressable>
               </Pressable>
             ))}
+
 
             {!showForm && (
               <Pressable
@@ -1134,3 +1287,15 @@ const setMain = async (selectedId: number) => {
     </SafeView>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+// can you give me a full prombet to use un a new chat to help me solve all the network problms and api fetches problems in my app to avoid any fail in my ios release .......................

@@ -100,7 +100,10 @@ export function CategoryGridCard({ item, bgColor, onPress }: any) {
       >
         {/* IMAGE */}
         <ImageBackground
-          source={{ uri: `https://docank.mahmoudalbatran.com/storage/${item.icon}` }}
+          source={{ 
+            // uri: `https://docank.mahmoudalbatran.com/storage/${item.icon}` 
+            uri: `${item.icon}`
+          }}
           resizeMode="cover"
           style={{
             height: 120,

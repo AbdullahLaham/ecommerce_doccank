@@ -434,15 +434,15 @@ const onRefresh = async () => {
 
         {/* SUMMARY */}
         <View className="bg-white rounded-[28px] px-6 py-6 mb-10">
-          {/* <View className="flex-row justify-between mb-2">
+          <View className="flex-row justify-between mb-2">
             <Text>المجموع</Text>
             <Text>{subtotal} شيكل</Text>
           </View>
 
           <View className="flex-row justify-between mb-2">
             <Text>الشحن</Text>
-            <Text>0 شيكل</Text>
-          </View> */}
+            <Text>{order?.total_price - subtotal} شيكل</Text>
+          </View>
 
           <View className="flex-row justify-between border-t pt-3">
             <Text className="font-extrabold">الإجمالي</Text>

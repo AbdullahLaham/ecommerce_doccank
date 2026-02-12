@@ -96,7 +96,7 @@ const OTPModal = ({
   otpModal,
   setOtpModal,
   inputsRef,
-  email,
+  phoneNumber
 }: any) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
@@ -134,7 +134,7 @@ const OTPModal = ({
       const res = await axios.post(
         "https://docank.mahmoudalbatran.com/api/login/verify",
         {
-          email,
+         phone_number: phoneNumber,
           login_code: code,
         }
       );
@@ -165,7 +165,7 @@ const OTPModal = ({
 
       await axios.post(
         "https://docank.mahmoudalbatran.com/api/login",
-        { email }
+        { phone_number: phoneNumber}
       );
 
       setOtp(["", "", "", "", "", ""]);
@@ -191,10 +191,10 @@ const OTPModal = ({
               </Text>
 
               <Text className="text-center text-gray-500 mt-2">
-                تم إرسال رمز مكوّن من 6 أرقام الى بريدك الالكتروني
+                تم إرسال رمز مكوّن من 6 أرقام الى  رقم الهاتف الخاص بك
               </Text>
               <Text className="text-center text-gray-500 mt-2">
-                {email}
+                {phoneNumber}
               </Text>
 
               {/* OTP INPUTS */}

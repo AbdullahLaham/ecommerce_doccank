@@ -4,6 +4,7 @@ import { useFavoritesStore } from '@/store/favoritesStore'
 import SafeView from '@/components/SafeView'
 import { Ionicons } from '@expo/vector-icons'
 import { useProductStore } from '@/store/useProductStore'
+import Toast from 'react-native-toast-message'
 
 export default function FavoritesPage() {
   const router = useRouter()
@@ -98,7 +99,10 @@ export default function FavoritesPage() {
             <View className="relative">
               <Image
                 source={{
-          uri: `https://docank.mahmoudalbatran.com/storage/${item.image}`,
+
+          // uri: `https://docank.mahmoudalbatran.com/storage/${item.image}`,
+          uri: `${item.image}`,
+        
         }}
                 className="w-full h-44"
                 resizeMode="cover"
@@ -106,7 +110,14 @@ export default function FavoritesPage() {
 
               {/* Remove Button */}
               <Pressable
-                onPress={() => removeFavorite(item.id)}
+                onPress={() => {
+                  removeFavorite(item.id);
+                  Toast.show({
+                          type: "success",
+                          text1: "تم بنجاح",
+                          text2: "تمت ازلة المنتج من المفضلة بنجاح",
+                        });
+                }}
                 className="absolute top-3 right-3 bg-white/90 p-2 rounded-full shadow"
               >
                 <Ionicons name='trash-outline' size={17} />
@@ -130,6 +141,7 @@ export default function FavoritesPage() {
           </Pressable>
         )}
       />
+      <View className='h-32' />
     </SafeView>
   )
 }

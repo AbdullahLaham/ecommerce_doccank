@@ -419,9 +419,9 @@ export default function ProfileScreen() {
               >
                 {user?.name}
               </Text>
-              <Text className="text-neutral-500 dark:text-neutral-400 mt-1">
+              {/* <Text className="text-neutral-500 dark:text-neutral-400 mt-1">
                 {user?.email}
-              </Text>
+              </Text> */}
             </View>
             <TouchableOpacity
               className="bg-brand-accent/20 p-3 rounded-full"
@@ -434,7 +434,7 @@ export default function ProfileScreen() {
           {/* Info */}
           <View className="mx-6 mt-6 bg-white dark:bg-neutral-800 rounded-3xl p-5 border border-brand-primary/10">
             <ProfileRow label="رقم الهاتف" value={user?.phone_number} />
-            <ProfileRow label="البريد الإلكتروني" value={user?.email} />
+            {/* <ProfileRow label="البريد الإلكتروني" value={user?.email} /> */}
           </View>
 
           {/* Menu */}
@@ -456,6 +456,89 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             ))}
           </View>
+
+          {/* Logout */}
+          <View className="mx-6 mt-10 mb-20">
+            <TouchableOpacity
+              className="bg-brand-primary rounded-2xl py-4"
+              onPress={onLogout}
+            >
+              <Text
+                className="text-center text-white font-extrabold text-lg"
+                style={{ writingDirection: "rtl" }}
+              >
+                تسجيل الخروج
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeView>
+  )
+}
+
+/* ---------------- Reusable Row ---------------- */
+function ProfileRow({ label, value }: { label: string; value: string }) {
+  return (
+    <View className="flex-row justify-between py-3">
+      <Text
+        className="text-neutral-500 dark:text-neutral-400"
+        style={{ writingDirection: "rtl" }}
+      >
+        {label}
+      </Text>
+      <Text className="font-semibold text-neutral-900 dark:text-white">
+        {value}
+      </Text>
+    </View>
+  )
+}
+
+/* ---------------- Reusable Input Field ---------------- */
+interface InputFieldProps {
+  label: string
+  value: string
+  onChangeText: (text: string) => void
+  icon?: keyof typeof Ionicons.glyphMap
+}
+
+function InputField({ label, value, onChangeText, icon }: InputFieldProps) {
+  return (
+    <View className="flex-col">
+      <Text className="text-sm font-semibold text-neutral-900 dark:text-white mb-1">
+        {label}
+      </Text>
+      <View className="flex-row items-center bg-white dark:bg-neutral-700 rounded-xl border border-neutral-200 dark:border-neutral-600 px-3 h-12">
+        {icon && <Ionicons name={icon} size={20} color="#7CC7A4" />}
+        <TextInput
+          className="flex-1 ml-2 text-neutral-900 dark:text-white"
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={label}
+          placeholderTextColor="#9CA3AF"
+        />
+      </View>
+    </View>
+  )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
           {/* Toggle Supplier Form Button */}
           {/* <View className="mx-6 mt-6">
@@ -529,68 +612,3 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             </View>
           )} */}
-
-          {/* Logout */}
-          <View className="mx-6 mt-10 mb-20">
-            <TouchableOpacity
-              className="bg-brand-primary rounded-2xl py-4"
-              onPress={onLogout}
-            >
-              <Text
-                className="text-center text-white font-extrabold text-lg"
-                style={{ writingDirection: "rtl" }}
-              >
-                تسجيل الخروج
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeView>
-  )
-}
-
-/* ---------------- Reusable Row ---------------- */
-function ProfileRow({ label, value }: { label: string; value: string }) {
-  return (
-    <View className="flex-row justify-between py-3">
-      <Text
-        className="text-neutral-500 dark:text-neutral-400"
-        style={{ writingDirection: "rtl" }}
-      >
-        {label}
-      </Text>
-      <Text className="font-semibold text-neutral-900 dark:text-white">
-        {value}
-      </Text>
-    </View>
-  )
-}
-
-/* ---------------- Reusable Input Field ---------------- */
-interface InputFieldProps {
-  label: string
-  value: string
-  onChangeText: (text: string) => void
-  icon?: keyof typeof Ionicons.glyphMap
-}
-
-function InputField({ label, value, onChangeText, icon }: InputFieldProps) {
-  return (
-    <View className="flex-col">
-      <Text className="text-sm font-semibold text-neutral-900 dark:text-white mb-1">
-        {label}
-      </Text>
-      <View className="flex-row items-center bg-white dark:bg-neutral-700 rounded-xl border border-neutral-200 dark:border-neutral-600 px-3 h-12">
-        {icon && <Ionicons name={icon} size={20} color="#7CC7A4" />}
-        <TextInput
-          className="flex-1 ml-2 text-neutral-900 dark:text-white"
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={label}
-          placeholderTextColor="#9CA3AF"
-        />
-      </View>
-    </View>
-  )
-}

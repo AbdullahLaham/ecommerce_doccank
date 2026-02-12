@@ -26,18 +26,29 @@ class NotificationService {
 
       // 2️⃣ Get REAL FCM token
       const fcmToken = await messaging().getToken();
+
+       if (!fcmToken) {
+      console.warn("⚠️ FCM token is null");
+      return null;
+    }
+
+
       console.log("🔥 FCM TOKEN:", fcmToken);
 
       // 3️⃣ Device name
       const deviceName = await DeviceInfo.getDeviceName();
 
       // 4️⃣ Send token to backend
-      await this.sendTokenToBackend(fcmToken, deviceName);
+      this.sendTokenToBackend(fcmToken, deviceName).catch((err) => {
+      console.warn("⚠️ Failed to send FCM token to backend:", err?.message || err);
+    });
 
       // 5️⃣ Listen for token refresh (VERY IMPORTANT)
       messaging().onTokenRefresh(async newToken => {
         console.log("🔄 FCM token refreshed:", newToken);
-        await this.sendTokenToBackend(newToken, deviceName);
+        this.sendTokenToBackend(newToken, deviceName).catch((err) => {
+        console.warn("⚠️ Failed to refresh FCM token:", err?.message || err);
+      });
       });
 
       return fcmToken;

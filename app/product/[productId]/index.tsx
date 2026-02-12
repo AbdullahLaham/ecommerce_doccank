@@ -653,7 +653,8 @@ export default function ProductDetails() {
           <View className="mx-5 bg-white rounded-3xl shadow-lg shadow-black/10 overflow-hidden">
             <Image
               source={{
-                uri: `https://docank.mahmoudalbatran.com/storage/${product.image}`,
+                // uri: `https://docank.mahmoudalbatran.com/storage/${product.image}`,
+                uri: `${product.image}`,
               }}
               className="w-full h-72"
               resizeMode="contain"

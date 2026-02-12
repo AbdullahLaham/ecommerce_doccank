@@ -19,7 +19,6 @@ import "react-native-reanimated";
 
 
 import "@/firebase.background";
-import { FirebaseMessagingTypes } from "@react-native-firebase/messaging";
 import { notificationService } from "@/services/notification.service";
 import { Platform } from "react-native";
 
@@ -147,8 +146,8 @@ export default function RootLayout() {
   // Show system notification
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: message.notification?.title || "New Notification",
-      body: message.notification?.body || "",
+      title: String(message.notification?.title) || "New Notification",
+      body: String(message.notification?.body) || "",
       data: message.data, // keep data for navigation
       sound: "default",
     },

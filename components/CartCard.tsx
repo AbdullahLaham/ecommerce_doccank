@@ -12,7 +12,8 @@ const CartCard = ({item, i, increaseQty, decreaseQty, removeItem}: any) => {
             {/* Image */}
             <Image
               source={{
-          uri: `https://docank.mahmoudalbatran.com/storage/${item.image}`,
+          // uri: `https://docank.mahmoudalbatran.com/storage/${item.image}`,
+          uri: `${item.image}`,
         }}
               className="w-28 h-28"
               resizeMode="cover"

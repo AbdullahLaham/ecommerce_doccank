@@ -348,7 +348,10 @@ export default function CategoryCard({ item, width, bgColor }: Props) {
       >
         {/* IMAGE */}
         <ImageBackground
-          source={{ uri: `https://docank.mahmoudalbatran.com/storage/${item.icon}` }}
+          source={{ 
+            // uri: `https://docank.mahmoudalbatran.com/storage/${item.icon}`
+            uri: `${item.icon}`
+           }}
           style={{ height: imageHeight, width: '100%' }}
           resizeMode="cover"
         >

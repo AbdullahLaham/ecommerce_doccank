@@ -9,6 +9,13 @@ const BRAND = {
   danger: "#EF4444",
 };
 
+type PaymentMethod =
+  | 'BankOfPalestine'
+  | 'PalPay'
+  | 'Jawwal'
+  | 'OnReceipt'
+  | 'USDT';
+
 import {
   View,
   Text,
@@ -34,6 +41,9 @@ export default function OrderDetailsScreen() {
   const items = useCartStore(state => state.items)
   const subtotal = useCartStore(state => state.subtotal())
   const clearCart = useCartStore(state => state?.clearCart);
+
+  const [payment, setPayment] = useState<PaymentMethod>('OnReceipt');
+  
   
 
   const {
@@ -48,7 +58,6 @@ export default function OrderDetailsScreen() {
   
 
   const [delivery, setDelivery] = useState<'standard' | 'express'>('standard')
-  const [payment, setPayment] = useState<'card' | 'cash'>('card');
 
 
   const [loading, setLoading] = useState(false);
@@ -62,6 +71,20 @@ export default function OrderDetailsScreen() {
   setMainAddress,
   fetchAddresses,
 } = useAddressStore();
+
+
+
+const PAYMENT_METHODS: {
+  key: PaymentMethod;
+  label: string;
+  icon?: keyof typeof Ionicons.glyphMap;
+}[] = [
+  { key: 'OnReceipt', label: 'الدفع عند الاستلام', icon: 'cash-outline' },
+  { key: 'BankOfPalestine', label: 'بنك فلسطين', icon: 'card-outline' },
+  { key: 'PalPay', label: 'PalPay', icon: 'wallet-outline' },
+  { key: 'Jawwal', label: 'جوال باي', icon: 'phone-portrait-outline' },
+  { key: 'USDT', label: 'USDT (عملة رقمية)', icon: 'logo-bitcoin' },
+];
 
 
 
@@ -97,6 +120,7 @@ const canOrder = hasItems && hasAddress && !ordering;
     console.log({
         address_id: mainAddressId,
         total_price: total,
+        payment,
         carts: items?.map((item) => {
           return {
             unit_price: item?.price,
@@ -111,6 +135,7 @@ const canOrder = hasItems && hasAddress && !ordering;
       const res = await axios.post("https://docank.mahmoudalbatran.com/api/orders", {
         address_id: mainAddressId,
         total_price: total,
+        payment: payment,
         carts: items?.map((item) => {
           return {
             unit_price: item?.price,
@@ -183,7 +208,9 @@ const canOrder = hasItems && hasAddress && !ordering;
               >
                 <Image
                               source={{
-                          uri: `https://docank.mahmoudalbatran.com/storage/${item.image}`,
+                          // uri: `https://docank.mahmoudalbatran.com/storage/${item.image}`,
+                          uri: `${item.image}`,
+
                         }}
                               className="w-28 h-28"
                               resizeMode="cover"
@@ -305,12 +332,64 @@ const canOrder = hasItems && hasAddress && !ordering;
 
         {/* ===== Payment ===== */}
         <Card title="طريقة الدفع">
-          <Option
-            label="الدفع عند الاستلام"
-            active={payment === 'cash'}
-            onPress={() => setPayment('cash')}
-          />
-        </Card>
+  {PAYMENT_METHODS.map((method) => {
+    const active = payment === method.key;
+
+    return (
+      <Pressable
+        key={method.key}
+        onPress={() => setPayment(method.key)}
+        style={{
+          padding: 14,
+          borderRadius: 16,
+          borderWidth: 2,
+          borderColor: active ? BRAND.primary : '#E5E7EB',
+          backgroundColor: active ? '#ECFDF5' : '#fff',
+          marginBottom: 12,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          {/* Left */}
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {method.icon && (
+              <Ionicons
+                name={method.icon}
+                size={22}
+                color={BRAND.primary}
+              />
+            )}
+
+            <Text
+              style={{
+                marginLeft: 10,
+                fontWeight: '700',
+                fontSize: 15,
+              }}
+            >
+              {method.label}
+            </Text>
+          </View>
+
+          {/* Right (radio) */}
+          {active && (
+            <Ionicons
+              name="checkmark-circle"
+              size={22}
+              color={BRAND.primary}
+            />
+          )}
+        </View>
+      </Pressable>
+    );
+  })}
+</Card>
+
 
         {/* ===== Summary ===== */}
         <Card title="ملخص الطلب" last>
