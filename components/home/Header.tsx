@@ -23,39 +23,59 @@ export default function Header({ count = 0 }: HomeHeaderProps) {
 
   const cartCount = useCartStore(state => state.getTotalItems())
 
-  const handleSearch = async () => {
-    const trimmed = query.trim()
-    if (trimmed.length < 2) {
-      Alert.alert('تنبيه', 'الرجاء إدخال كلمتين على الأقل')
-      return
-    }
+  // const handleSearch = async () => {
+  //   const trimmed = query.trim()
+  //   if (trimmed.length < 2) {
+  //     Alert.alert('تنبيه', 'الرجاء إدخال كلمتين على الأقل')
+  //     return
+  //   }
 
-    try {
-      setLoading(true)
-      const response = await fetch(
-        `https://your-api.com/products/search?q=${encodeURIComponent(trimmed)}`
-      )
-      if (!response.ok) throw new Error('Request failed')
+  //   try {
+  //     setLoading(true)
+  //     const response = await fetch(
+  //       `https://your-api.com/products/search?q=${encodeURIComponent(trimmed)}`
+  //     )
+  //     if (!response.ok) throw new Error('Request failed')
 
-      const data = await response.json()
-      if (!Array.isArray(data) || data.length === 0) {
-        Alert.alert('لا توجد نتائج', 'لم يتم العثور على منتجات')
-        return
-      }
+  //     const data = await response.json()
+  //     if (!Array.isArray(data) || data.length === 0) {
+  //       Alert.alert('لا توجد نتائج', 'لم يتم العثور على منتجات')
+  //       return
+  //     }
 
-      router.push({
-        pathname: '/products',
-        params: {
-          q: trimmed,
-          results: JSON.stringify(data),
-        },
-      })
-    } catch {
-      Alert.alert('خطأ', 'حدث خطأ أثناء البحث')
-    } finally {
-      setLoading(false)
-    }
+  //     router.push({
+  //       pathname: '/products',
+  //       params: {
+  //         q: trimmed,
+  //         results: JSON.stringify(data),
+  //       },
+  //     })
+  //   } catch {
+  //     Alert.alert('خطأ', 'حدث خطأ أثناء البحث')
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
+
+
+  const handleSearch = () => {
+  const trimmed = query.trim()
+
+  if (trimmed.length < 2) {
+    Alert.alert('تنبيه', 'الرجاء إدخال كلمتين على الأقل')
+    return
   }
+
+  router.push({
+    pathname: '/products',
+    params: {
+      search: trimmed,
+    },
+  })
+
+  setQuery('')
+}
+
 
   return (
     <View className="bg-[#F8FAFC] px-4 pt-2 pb-4">

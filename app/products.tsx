@@ -196,8 +196,11 @@ import { getToken } from '@/lib/auth-storage'
 import { useCategoriesStore } from '@/store/categories.store'
 
 export default function ProductsPage() {
-  const { categoryName } =
-    useLocalSearchParams<{ categoryName?: string }>()
+  const { categoryName, search: searchParam } =
+    useLocalSearchParams<{
+       categoryName?: string
+       search?: string 
+      }>()
 
   const { categories } = useCategoriesStore()
 
@@ -217,14 +220,23 @@ export default function ProductsPage() {
   const [refreshing, setRefreshing] = useState(false)
   const [filterVisible, setFilterVisible] = useState(false)
 
-  const requestLock = useRef(false)
+  const requestLock = useRef(false);
+  const initialized = useRef(false);
+
 
   /* Debounce */
   useEffect(() => {
-    const t = setTimeout(
-      () => setDebouncedSearch(search),
-      500
-    )
+    // const t = setTimeout(
+    //   () => setDebouncedSearch(search),
+    //   500
+    // )
+    const t = setTimeout(() => {
+    setDebouncedSearch(search)
+
+    if (!initialized.current) {
+      initialized.current = true
+    }
+  }, 500)
     return () => clearTimeout(t)
   }, [search])
 
@@ -288,6 +300,7 @@ export default function ProductsPage() {
   }
 
   useEffect(() => {
+    if (!initialized.current) return
     setHasMore(true)
     fetchProducts(1, true)
   }, [filters, debouncedSearch]);
@@ -301,6 +314,15 @@ export default function ProductsPage() {
     }))
   }
 }, [categoryName])
+
+
+useEffect(() => {
+  if (searchParam) {
+    setSearch(searchParam);
+    // setDebouncedSearch(searchParam);
+  }
+}, [searchParam])
+
 
 
   const loadMore = () => {
