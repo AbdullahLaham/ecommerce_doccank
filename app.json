@@ -33,7 +33,7 @@
           "remote-notification",
           "remote-notification"
         ],
-        "FirebaseAppDelegateProxyEnabled": false,
+        "FirebaseAppDelegateProxyEnabled": true,
         "ITSAppUsesNonExemptEncryption": false
       }
     },
@@ -57,9 +57,17 @@
         }
       ],
       "expo-secure-store",
-      "@react-native-firebase/app",
-      "@react-native-firebase/messaging",
-      "expo-font"
+      // "@react-native-firebase/app",
+      // "@react-native-firebase/messaging",
+      "expo-font",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useModularHeaders": true
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
