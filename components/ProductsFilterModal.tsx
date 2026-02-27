@@ -322,7 +322,7 @@
 //       </View>
 //     </Pressable>
 //   </Pressable>
-      
+
 //     </Modal>
 //   )
 // }
@@ -721,14 +721,22 @@ import {
   ScrollView,
   Pressable,
   ActivityIndicator,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native'
 import { useCategoriesStore } from '@/store/categories.store'
 
 export interface ProductsFilterValues {
   category: string | null
   subCategory: string | null
-  condition: 'new' | 'old' | null
+  condition: 'new' | 'old' | null,
+  priceRange: {
+    min: number
+    max: number
+  } | null
 }
+
 
 interface Props {
   visible: boolean
@@ -746,14 +754,20 @@ export default function ProductsFilterModal({
   const { categories, loading, fetchCategories } =
     useCategoriesStore()
 
-  const [localValues, setLocalValues] = useState(values)
+  const [localValues, setLocalValues] = useState(values);
+  const [minPrice, setMinPrice] = useState('')
+  const [maxPrice, setMaxPrice] = useState('')
 
   useEffect(() => {
     if (visible) {
       fetchCategories()
       setLocalValues(values)
     }
+    setMinPrice(values.priceRange?.min?.toString() || '')
+    setMaxPrice(values.priceRange?.max?.toString() || '')
   }, [visible])
+
+
 
   const toggleCategory = (name: string) => {
     setLocalValues(prev => ({
@@ -771,7 +785,16 @@ export default function ProductsFilterModal({
   }
 
   return (
-    <Modal
+    <KeyboardAvoidingView
+  behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+  keyboardVerticalOffset={80}
+  style={{ flex: 1 }}
+>
+  <ScrollView
+    showsVerticalScrollIndicator={false}
+    keyboardShouldPersistTaps="handled"
+  >
+     <Modal
       visible={visible}
       transparent
       animationType="slide"
@@ -783,7 +806,7 @@ export default function ProductsFilterModal({
       >
         <Pressable
           className="bg-brand-light rounded-t-3xl px-6 pt-6 pb-8 max-h-[75%]"
-          onPress={() => {}}
+          onPress={() => { }}
         >
           {/* Header */}
           <View className="flex-row justify-between mb-5">
@@ -806,7 +829,46 @@ export default function ProductsFilterModal({
             </Pressable>
           </View>
 
-          <ScrollView showsVerticalScrollIndicator={false}>
+           {/* Price Range */}
+            <Text className="font-semibold text-brand-dark mb-3">
+              السعر
+            </Text>
+
+            <View className="flex-row gap-3 mb-8">
+              {/* Min */}
+              <View className="flex-1">
+                <Text className="text-xs text-brand-dark mb-1">
+                  من
+                </Text>
+                <View className="bg-white rounded-xl px-4 h-12 justify-center border border-brand-dark/10 shadow-sm">
+                  <TextInput
+                    value={minPrice}
+                    onChangeText={setMinPrice}
+                    placeholder="0"
+                    keyboardType="numeric"
+                    className="text-sm"
+                  />
+                </View>
+              </View>
+
+              {/* Max */}
+              <View className="flex-1">
+                <Text className="text-xs text-brand-dark mb-1">
+                  إلى
+                </Text>
+                <View className="bg-white rounded-xl px-4 h-12 justify-center border border-brand-dark/10 shadow-sm">
+                  <TextInput
+                    value={maxPrice}
+                    onChangeText={setMaxPrice}
+                    placeholder="1000"
+                    keyboardType="numeric"
+                    className="text-sm"
+                  />
+                </View>
+              </View>
+            </View>
+
+
             {/* Categories */}
             <Text className="font-semibold text-brand-dark mb-3">
               الفئة
@@ -824,18 +886,16 @@ export default function ProductsFilterModal({
                     <Pressable
                       key={cat.id}
                       onPress={() => toggleCategory(cat.name)}
-                      className={`px-4 py-2 m-1 rounded-full border ${
-                        active
+                      className={`px-4 py-2 m-1 rounded-full border ${active
                           ? 'bg-brand-primary border-brand-primary'
                           : 'border-brand-primary/30'
-                      }`}
+                        }`}
                     >
                       <Text
-                        className={`text-sm font-semibold ${
-                          active
+                        className={`text-sm font-semibold ${active
                             ? 'text-white'
                             : 'text-brand-dark'
-                        }`}
+                          }`}
                       >
                         {cat.name}
                       </Text>
@@ -844,6 +904,7 @@ export default function ProductsFilterModal({
                 })}
               </View>
             )}
+            
 
             {/* Condition */}
             <Text className="font-semibold text-brand-dark mb-3">
@@ -866,18 +927,16 @@ export default function ProductsFilterModal({
                         item.key as 'new' | 'used'
                       )
                     }
-                    className={`flex-1 py-3 rounded-full border ${
-                      active
+                    className={`flex-1 py-3 rounded-full border ${active
                         ? 'bg-brand-secondary border-brand-secondary'
                         : 'border-brand-secondary/40'
-                    }`}
+                      }`}
                   >
                     <Text
-                      className={`text-center font-bold ${
-                        active
+                      className={`text-center font-bold ${active
                           ? 'text-white'
                           : 'text-brand-dark'
-                      }`}
+                        }`}
                     >
                       {item.label}
                     </Text>
@@ -885,8 +944,8 @@ export default function ProductsFilterModal({
                 )
               })}
             </View>
-          </ScrollView>
 
+           
           {/* Actions */}
           <View className="flex-row gap-3">
             <Pressable
@@ -900,7 +959,16 @@ export default function ProductsFilterModal({
 
             <Pressable
               onPress={() => {
-                onApply(localValues)
+                onApply({
+                  ...localValues,
+                  priceRange:
+                    minPrice || maxPrice
+                      ? {
+                        min: minPrice ? Number(minPrice) : null,
+                        max: maxPrice ? Number(maxPrice) : null,
+                      }
+                      : null,
+                })
                 onClose()
               }}
               className="flex-1 py-3 rounded-full bg-brand-primary"
@@ -914,5 +982,9 @@ export default function ProductsFilterModal({
         </Pressable>
       </Pressable>
     </Modal>
+  </ScrollView>
+</KeyboardAvoidingView>
+
+   
   )
 }

@@ -1,86 +1,11 @@
 
 import { View, Text, Image, ScrollView, Dimensions, Pressable, NativeSyntheticEvent, NativeScrollEvent } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { getToken } from "@/lib/auth-storage";
 
 const { width } = Dimensions.get("window")
-// const SliderSkeleton = () => (
-//   <ScrollView
-//     horizontal
-//     showsHorizontalScrollIndicator={false}
-//     contentContainerStyle={{
-//       paddingHorizontal: (width - SLIDE_WIDTH) / 2,
-//     }}
-//   >
-//     {[1, 2, 3].map((_, index) => (
-//       <View
-//         key={index}
-//         style={{
-//           width: SLIDE_WIDTH,
-//           height: 180,
-//           marginRight: SLIDE_SPACING,
-//           borderRadius: 24,
-//           overflow: "hidden",
-//           backgroundColor: "#e0e0e0",
-//         }}
-//       >
-//         {/* Text placeholders */}
-//         <View
-//           style={{
-//             position: "absolute",
-//             bottom: 16,
-//             left: 16,
-//           }}
-//         >
-//           <View
-//             style={{
-//               width: SLIDE_WIDTH * 0.6,
-//               height: 20,
-//               backgroundColor: "#c0c0c0",
-//               borderRadius: 6,
-//               marginBottom: 8,
-//             }}
-//           />
-//           <View
-//             style={{
-//               width: SLIDE_WIDTH * 0.4,
-//               height: 14,
-//               backgroundColor: "#c0c0c0",
-//               borderRadius: 6,
-//               marginBottom: 12,
-//             }}
-//           />
-//           <View
-//             style={{
-//               width: SLIDE_WIDTH * 0.3,
-//               height: 32,
-//               backgroundColor: "#b0b0b0",
-//               borderRadius: 16,
-//             }}
-//           />
-//         </View>
-//       </View>
-//     ))}
-//   </ScrollView>
-// );
-
-
-const MOCK_SLIDER_DATA = [
-  {
-    id: "1",
-    title: "Summer Sale",
-    description: "Up to 50% off on all items",
-    image: "https://via.placeholder.com/800x400",
-  },
-  {
-    id: "2",
-    title: "New Arrivals",
-    description: "Discover our latest collection",
-    image: "https://via.placeholder.com/800x400",
-  },
-];
 
  function SliderSkeleton() {
   return (
@@ -131,6 +56,16 @@ export function MarketingSlider() {
   const [hasMore, setHasMore] = useState(true)
   const [fetchingMore, setFetchingMore] = useState(false)
 
+  const scrollRef = useRef<ScrollView>(null)
+const [currentIndex, setCurrentIndex] = useState(0)
+
+const onMomentumScrollEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+  const index = Math.round(
+    e.nativeEvent.contentOffset.x / (SLIDE_WIDTH + SLIDE_SPACING)
+  )
+  setCurrentIndex(index)
+}
+
   /* ---------------- Fetch Function ---------------- */
   const fetchSliders = async (pageNumber = 1) => {
     if (!hasMore && pageNumber !== 1) return
@@ -171,10 +106,30 @@ export function MarketingSlider() {
     }
   }
 
+
+
   /* ---------------- Initial Load ---------------- */
   useEffect(() => {
     fetchSliders(1)
   }, [])
+
+  useEffect(() => {
+  if (slides.length === 0) return
+
+  const interval = setInterval(() => {
+    const nextIndex =
+      currentIndex === slides.length - 1 ? 0 : currentIndex + 1
+
+    scrollRef.current?.scrollTo({
+      x: nextIndex * (SLIDE_WIDTH + SLIDE_SPACING + SLIDE_SPACING), // + extra spacing for the gap
+      animated: true,
+    })
+
+    setCurrentIndex(nextIndex)
+  }, 3500) // ⏱ كل 3.5 ثواني
+
+  return () => clearInterval(interval)
+}, [currentIndex, slides.length])
 
   /* ---------------- Pagination on Scroll ---------------- */
   const handleScrollEnd = useCallback(
@@ -195,10 +150,15 @@ export function MarketingSlider() {
 
   return (
     <ScrollView
+    className="pt-3"
       horizontal
+      ref={scrollRef}
+      pagingEnabled={false}
       showsHorizontalScrollIndicator={false}
       decelerationRate="fast"
       onScroll={handleScrollEnd}
+      onMomentumScrollEnd={onMomentumScrollEnd}
+      scrollEventThrottle={16}
       snapToInterval={SLIDE_WIDTH + SLIDE_SPACING}
       contentContainerStyle={{
         paddingHorizontal: (width - SLIDE_WIDTH) / 2,
@@ -213,7 +173,7 @@ export function MarketingSlider() {
                 width: SLIDE_WIDTH,
                 marginRight: SLIDE_SPACING,
               }}
-              className="h-44 rounded-3xl overflow-hidden shadow-xl"
+              className="h-44 rounded-2xl overflow-hidden shadow-xl"
             >
               {/* Background Image */}
               <Image
@@ -222,63 +182,6 @@ export function MarketingSlider() {
                 resizeMode="cover"
               />
 
-              {/* Gradient Overlay */}
-              <LinearGradient
-                colors={[
-                  // "rgba(31,41,55,0.45)", // أخف بكثير
-                  COLORS.primary + "10",
-                  COLORS.primary + "20", // شفافية أقل
-                  COLORS.secondary + "20",
-                ]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                className="absolute inset-0 px-6 py-5 justify-between"
-              >
-                {/* Text Section */}
-                {/* <View className="max-w-[70%]">
-                  <Text className="text-white text-2xl font-extrabold mb-1">
-                    {slide?.title || " أفضل العروض  - كل شيئ في مكان واحد"}
-                  </Text>
-
-                  <Text className="text-white text-md opacity-90 leading-5 font-bold mt-1">
-                    {slide?.description || " خصومات قوية على أشهر المنتجات في السوق"}
-                  </Text>
-
-
-
-
-
-
-                </View> */}
-
-                {/* CTA Button */}
-
-                {/* <Pressable
-                  className="w-[50%] self-center active:scale-95 ml-auto mb-2"
-                  style={({ pressed }) => [
-                    {
-                      transform: [{ scale: pressed ? 0.97 : 1 }],
-                    },
-                  ]}
-                >
-                  <View
-                    className="rounded-2xl px-4 py-1 flex flex-row items-center justify-center gap-2 bg-brand-primary"
-                    style={{
-                      shadowColor: '#000',
-                      shadowOpacity: 0.25,
-                      shadowRadius: 10,
-                      shadowOffset: { width: 0, height: 6 },
-                      elevation: 8,
-                    }}
-                  >
-                    <Text className="text-white text-xl font-extrabold">
-                      تسوق الآن
-                    </Text>
-
-
-                  </View>
-                </Pressable> */}
-              </LinearGradient>
             </View>
           ))
         )

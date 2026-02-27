@@ -106,7 +106,7 @@ export function CategoryGridCard({ item, bgColor, onPress }: any) {
           }}
           resizeMode="cover"
           style={{
-            height: 120,
+            height: 150,
             width: '100%',
           }}
         >
@@ -121,7 +121,7 @@ export function CategoryGridCard({ item, bgColor, onPress }: any) {
         </ImageBackground>
 
         {/* CONTENT */}
-        <View className="px-4 py-3">
+        {/* <View className="px-4 py-3">
           <Text
             className="text-base font-extrabold text-gray-800 text-center"
             numberOfLines={1}
@@ -139,7 +139,7 @@ export function CategoryGridCard({ item, bgColor, onPress }: any) {
               {item.description}
             </Text>
           )}
-        </View>
+        </View> */}
       </View>
     </Pressable>
   )

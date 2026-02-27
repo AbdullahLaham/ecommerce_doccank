@@ -23,6 +23,7 @@ import {
   TouchableOpacity,
   Image,
   Pressable,
+  TextInput,
 } from 'react-native'
 import { useCartStore } from '@/store/cartStore'
 import { useEffect, useState } from 'react'
@@ -34,6 +35,7 @@ import { useUserStore } from '@/store/user.store'
 import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios';
 import { useAddressStore } from "@/store/address.store";
+import Toast from 'react-native-toast-message';
 
 
 
@@ -43,8 +45,8 @@ export default function OrderDetailsScreen() {
   const clearCart = useCartStore(state => state?.clearCart);
 
   const [payment, setPayment] = useState<PaymentMethod>('OnReceipt');
-  
-  
+
+
 
   const {
     items: cartItems,
@@ -55,86 +57,155 @@ export default function OrderDetailsScreen() {
   } = useCartStore();
 
 
-  
 
-  const [delivery, setDelivery] = useState<'standard' | 'express'>('standard')
+
+  const [delivery, setDelivery] = useState<'standard' | 'express'>('standard');
+
+  const [promoCode, setPromoCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const [applyingPromo, setApplyingPromo] = useState(false);
+  const [promoApplied, setPromoApplied] = useState(false);
+
+
 
 
   const [loading, setLoading] = useState(false);
   const [ordering, setOrdering] = useState(false);
+  const [codeId, setCodeId] = useState(null);
   // const [addresses, setAddresses] = useState<any[]>([]);
   // const [mainAddress, setMainAddress] = useState();
 
   const {
-  addresses,
-  mainAddressId,
-  setMainAddress,
-  fetchAddresses,
-} = useAddressStore();
+    addresses,
+    mainAddressId,
+    setMainAddress,
+    fetchAddresses,
+  } = useAddressStore();
 
 
 
-const PAYMENT_METHODS: {
-  key: PaymentMethod;
-  label: string;
-  icon?: keyof typeof Ionicons.glyphMap;
-}[] = [
-  { key: 'OnReceipt', label: 'الدفع عند الاستلام', icon: 'cash-outline' },
-  { key: 'BankOfPalestine', label: 'بنك فلسطين', icon: 'card-outline' },
-  { key: 'PalPay', label: 'PalPay', icon: 'wallet-outline' },
-  { key: 'Jawwal', label: 'جوال باي', icon: 'phone-portrait-outline' },
-  { key: 'USDT', label: 'USDT (عملة رقمية)', icon: 'logo-bitcoin' },
-];
+  const PAYMENT_METHODS: {
+    key: PaymentMethod;
+    label: string;
+    icon?: keyof typeof Ionicons.glyphMap;
+  }[] = [
+      { key: 'OnReceipt', label: 'الدفع عند الاستلام', icon: 'cash-outline' },
+      { key: 'BankOfPalestine', label: 'بنك فلسطين', icon: 'card-outline' },
+      { key: 'PalPay', label: 'PalPay', icon: 'wallet-outline' },
+      { key: 'Jawwal', label: 'جوال باي', icon: 'phone-portrait-outline' },
+      { key: 'USDT', label: 'USDT (عملة رقمية)', icon: 'logo-bitcoin' },
+    ];
 
 
 
 
   const hasItems = items.length > 0;
-const hasAddress = !!mainAddressId;
-const canOrder = hasItems && hasAddress && !ordering;
+  const hasAddress = !!mainAddressId;
+  const canOrder = hasItems && hasAddress && !ordering;
 
-  
+
 
   const user = useUserStore((s) => s.user);
-    const userId = user?.id;
+  const userId = user?.id;
 
 
   const shipping = shippingCost();
 
+
+
   const total = subtotal + shipping;
 
+  const discountAmount =
+    discount > 0 ? (subtotal * discount) / 100 : 0;
 
-  const confirmOrder = async () => {  
+  const finalTotal = total - discountAmount;
+
+
+
+
+  const applyPromoCode = async () => {
+    if (!promoCode.trim()) {
+      Toast.show({
+        type: 'error',
+        text1: '❌ رمز الخصم فارغ',
+      });
+      return;
+    }
+
+    try {
+      setApplyingPromo(true);
+      const token = await getToken();
+
+      const res = await axios.get(
+        `https://docank.mahmoudalbatran.com/api/examination-codes?code=${promoCode}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log(res?.data, 'promo response');
+
+      const discountValue = res.data.discountcodes?.Percentage;
+      setCodeId(res.data.discountcodes?.id)
+
+      setDiscount(discountValue);
+      setPromoApplied(true);
+
+      Toast.show({
+        type: 'success',
+        text1: '🎉 تم تطبيق الخصم',
+        text2: `تم خصم ${discountValue}% ₪`,
+      });
+    } catch (error: any) {
+      setDiscount(0);
+      setPromoApplied(false);
+
+      Toast.show({
+        type: 'error',
+        text1: '❌ رمز الخصم غير صالح',
+      });
+    } finally {
+      setApplyingPromo(false);
+    }
+  };
+
+
+
+  const confirmOrder = async () => {
 
     if (!hasItems) {
-    alert("🛒 السلة فارغة، أضف منتجات أولاً");
-    return;
-  }
+      alert("🛒 السلة فارغة، أضف منتجات أولاً");
+      return;
+    }
 
-  if (!hasAddress) {
-    alert("📍 الرجاء اختيار عنوان الشحن");
-    return;
-  }
+    if (!hasAddress) {
+      alert("📍 الرجاء اختيار عنوان الشحن");
+      return;
+    }
 
     const token = await getToken();
     console.log({
-        address_id: mainAddressId,
-        total_price: total,
-        payment,
-        carts: items?.map((item) => {
-          return {
-            unit_price: item?.price,
-            quantity: item?.quantity,
-            product_id: item?.id,
-          }
-        })
-      }, 'uuuuuuuuu')
+      address_id: mainAddressId,
+      total_price: finalTotal,
+      payment,
+      carts: items?.map((item) => {
+        return {
+          unit_price: item?.price,
+          quantity: item?.quantity,
+          product_id: item?.id,
+        }
+      })
+    }, 'uuuuuuuuu')
 
     try {
       setOrdering(true);
       const res = await axios.post("https://docank.mahmoudalbatran.com/api/orders", {
         address_id: mainAddressId,
-        total_price: total,
+        total_price: finalTotal,
+        Price_before_discount: total,
+        code_id: codeId,
         payment: payment,
         carts: items?.map((item) => {
           return {
@@ -144,14 +215,14 @@ const canOrder = hasItems && hasAddress && !ordering;
           }
         })
       }, {
-        headers : {
+        headers: {
           Authorization: `Bearer ${token}`,
         }
       });
       console.log(res?.data, 'ooooooooooooooooooooooooooooooooooooooooooooo');
       if (res?.data) {
         router.push('/(order)/success');
-    clearCart();
+        clearCart();
 
       }
 
@@ -164,12 +235,12 @@ const canOrder = hasItems && hasAddress && !ordering;
 
   }
 
-    /* ================== LOAD ADDRESSES ================== */
+  /* ================== LOAD ADDRESSES ================== */
 
-     useEffect(() => {
-        fetchAddresses();
-      }, []);
-  
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
+
 
   return (
     <SafeView className="flex-1 bg-neutral-50 dark:bg-neutral-900">
@@ -207,14 +278,14 @@ const canOrder = hasItems && hasAddress && !ordering;
                 className="w-44 bg-white dark:bg-neutral-800 rounded-2xl mr-4 overflow-hidden"
               >
                 <Image
-                              source={{
-                          // uri: `https://docank.mahmoudalbatran.com/storage/${item.image}`,
-                          uri: `${item.image}`,
+                  source={{
+                    // uri: `https://docank.mahmoudalbatran.com/storage/${item.image}`,
+                    uri: `${item.image}`,
 
-                        }}
-                              className="w-28 h-28"
-                              resizeMode="cover"
-                            />
+                  }}
+                  className="w-28 h-28"
+                  resizeMode="cover"
+                />
 
                 <View className="p-3">
                   <Text
@@ -242,75 +313,75 @@ const canOrder = hasItems && hasAddress && !ordering;
         {/* ===== Shipping Address ===== */}
         <Card title="عنوان الشحن">
           {addresses.map((a) => (
-              <Pressable
-                key={a.id}
-                onPress={() => setMainAddress(a.id)}
-                style={{
-                  padding: 14,
-                  borderRadius: 16,
-                  borderWidth: 2,
-                  borderColor: a.id == mainAddressId
-                    ? BRAND.primary
-                    : "#E5E7EB",
-                  backgroundColor: a.id == mainAddressId
-                    ? "#ECFDF5"
-                    : "#fff",
-                  marginBottom: 12,
-                }}
-              >
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Text>
-                    <Ionicons
+            <Pressable
+              key={a.id}
+              onPress={() => setMainAddress(a.id)}
+              style={{
+                padding: 14,
+                borderRadius: 16,
+                borderWidth: 2,
+                borderColor: a.id == mainAddressId
+                  ? BRAND.primary
+                  : "#E5E7EB",
+                backgroundColor: a.id == mainAddressId
+                  ? "#ECFDF5"
+                  : "#fff",
+                marginBottom: 12,
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text>
+                  <Ionicons
                     name={
                       a.name === "Home"
                         ? "home-outline"
                         : a.name === "Work"
-                        ? "briefcase-outline"
-                        : "location-outline"
+                          ? "briefcase-outline"
+                          : "location-outline"
                     }
                     size={22}
                     color={BRAND.primary}
                   />
+                </Text>
+
+                <View style={{ marginLeft: 12, flex: 1 }}>
+                  <Text style={{ fontWeight: "700" }}>{a.name}</Text>
+                  <Text style={{ color: BRAND.muted, fontSize: 13 }}>
+                    {a.city} - {a.address}
                   </Text>
-
-                  <View style={{ marginLeft: 12, flex: 1 }}>
-                    <Text style={{ fontWeight: "700" }}>{a.name}</Text>
-                    <Text style={{ color: BRAND.muted, fontSize: 13 }}>
-                      {a.city} - {a.address}
-                    </Text>
-                  </View>
-
-                  {a.id == mainAddressId && (
-                    <Text><Ionicons
-                      name="checkmark-circle"
-                      size={22}
-                      color={BRAND.primary}
-                    /></Text>
-                  )}
                 </View>
-              </Pressable>
-            ))}
 
-            {/* Add New Address */}
-<Pressable
-  onPress={() => router.push("/settings")}
-  style={{
-    padding: 14,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderStyle: "dashed",
-    borderColor: BRAND.primary,
-    alignItems: "center",
-    marginTop: 6,
-  }}
->
-  <View style={{ flexDirection: "row", alignItems: "center" }}>
-    <Ionicons name="add-circle-outline" size={22} color={BRAND.primary} />
-    <Text style={{ marginLeft: 8, color: BRAND.primary, fontWeight: "700" }}>
-      إضافة عنوان جديد
-    </Text>
-  </View>
-</Pressable>
+                {a.id == mainAddressId && (
+                  <Text><Ionicons
+                    name="checkmark-circle"
+                    size={22}
+                    color={BRAND.primary}
+                  /></Text>
+                )}
+              </View>
+            </Pressable>
+          ))}
+
+          {/* Add New Address */}
+          <Pressable
+            onPress={() => router.push("/settings")}
+            style={{
+              padding: 14,
+              borderRadius: 16,
+              borderWidth: 1,
+              borderStyle: "dashed",
+              borderColor: BRAND.primary,
+              alignItems: "center",
+              marginTop: 6,
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Ionicons name="add-circle-outline" size={22} color={BRAND.primary} />
+              <Text style={{ marginLeft: 8, color: BRAND.primary, fontWeight: "700" }}>
+                إضافة عنوان جديد
+              </Text>
+            </View>
+          </Pressable>
 
         </Card>
 
@@ -332,73 +403,103 @@ const canOrder = hasItems && hasAddress && !ordering;
 
         {/* ===== Payment ===== */}
         <Card title="طريقة الدفع">
-  {PAYMENT_METHODS.map((method) => {
-    const active = payment === method.key;
+          {PAYMENT_METHODS.map((method) => {
+            const active = payment === method.key;
 
-    return (
-      <Pressable
-        key={method.key}
-        onPress={() => setPayment(method.key)}
-        style={{
-          padding: 14,
-          borderRadius: 16,
-          borderWidth: 2,
-          borderColor: active ? BRAND.primary : '#E5E7EB',
-          backgroundColor: active ? '#ECFDF5' : '#fff',
-          marginBottom: 12,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          {/* Left */}
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            {method.icon && (
-              <Ionicons
-                name={method.icon}
-                size={22}
-                color={BRAND.primary}
+            return (
+              <Pressable
+                key={method.key}
+                onPress={() => setPayment(method.key)}
+                style={{
+                  padding: 14,
+                  borderRadius: 16,
+                  borderWidth: 2,
+                  borderColor: active ? BRAND.primary : '#E5E7EB',
+                  backgroundColor: active ? '#ECFDF5' : '#fff',
+                  marginBottom: 12,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  {/* Left */}
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {method.icon && (
+                      <Ionicons
+                        name={method.icon}
+                        size={22}
+                        color={BRAND.primary}
+                      />
+                    )}
+
+                    <Text
+                      style={{
+                        marginLeft: 10,
+                        fontWeight: '700',
+                        fontSize: 15,
+                      }}
+                    >
+                      {method.label}
+                    </Text>
+                  </View>
+
+                  {/* Right (radio) */}
+                  {active && (
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={22}
+                      color={BRAND.primary}
+                    />
+                  )}
+                </View>
+              </Pressable>
+            );
+          })}
+        </Card>
+        <Card title="رمز الخصم">
+          <View className="flex-row items-center gap-3">
+            <View className="flex-1 bg-neutral-100 rounded-xl px-4 py-3">
+              <TextInput
+                placeholder="أدخل رمز الخصم"
+                value={promoCode}
+                onChangeText={setPromoCode}
+                editable={!promoApplied}
               />
-            )}
+            </View>
 
-            <Text
-              style={{
-                marginLeft: 10,
-                fontWeight: '700',
-                fontSize: 15,
-              }}
+            <TouchableOpacity
+              disabled={applyingPromo || promoApplied}
+              onPress={applyPromoCode}
+              className={`px-4 py-3 rounded-xl ${promoApplied ? 'bg-green-400' : 'bg-[#6FB7D6]'
+                }`}
             >
-              {method.label}
-            </Text>
+              <Text className="text-white font-bold">
+                {promoApplied ? 'تم' : 'تطبيق'}
+              </Text>
+            </TouchableOpacity>
           </View>
+        </Card>
 
-          {/* Right (radio) */}
-          {active && (
-            <Ionicons
-              name="checkmark-circle"
-              size={22}
-              color={BRAND.primary}
-            />
-          )}
-        </View>
-      </Pressable>
-    );
-  })}
-</Card>
 
 
         {/* ===== Summary ===== */}
         <Card title="ملخص الطلب" last>
           <Row label="المجموع الفرعي" value={`${subtotal.toFixed(2)} ₪`} />
           <Row label="الشحن" value={`${shipping.toFixed(2)} ₪`} />
+          {discount > 0 && (
+            <Row
+              label={`الخصم (${discount}%)`}
+              value={`- ${discountAmount.toFixed(2)} ₪`}
+            />
+          )}
           <View className="border-t border-neutral-200 dark:border-neutral-700 pt-3 mt-3">
             <Row
               label="الإجمالي"
-              value={`${total.toFixed(2)} ₪`}
+              value={`${finalTotal.toFixed(2)} ₪`}
               bold
             />
           </View>
@@ -412,7 +513,7 @@ const canOrder = hasItems && hasAddress && !ordering;
             className="text-center text-white dark:text-black text-lg font-extrabold"
             style={{ writingDirection: 'rtl' }}
           >
-           {ordering ? "جار الطلب...." : " تأكيد الطلب"}
+            {ordering ? "جار الطلب...." : " تأكيد الطلب"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -456,10 +557,9 @@ function Option({
     <TouchableOpacity
       onPress={onPress}
       className={`flex-row justify-between items-center p-4 rounded-2xl mb-3 border
-        ${
-          active
-            ? 'border-black dark:border-white bg-neutral-100 dark:bg-neutral-700'
-            : 'border-neutral-200 dark:border-neutral-700'
+        ${active
+          ? 'border-black dark:border-white bg-neutral-100 dark:bg-neutral-700'
+          : 'border-neutral-200 dark:border-neutral-700'
         }`}
     >
       <Text className="font-medium text-neutral-900 dark:text-white">
@@ -489,9 +589,8 @@ function Row({
         {label}
       </Text>
       <Text
-        className={`${
-          bold ? 'text-lg font-extrabold' : 'font-medium'
-        } text-neutral-900 dark:text-white`}
+        className={`${bold ? 'text-lg font-extrabold' : 'font-medium'
+          } text-neutral-900 dark:text-white`}
       >
         {value}
       </Text>

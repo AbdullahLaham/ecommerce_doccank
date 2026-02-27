@@ -198,9 +198,9 @@ import { useCategoriesStore } from '@/store/categories.store'
 export default function ProductsPage() {
   const { categoryName, search: searchParam } =
     useLocalSearchParams<{
-       categoryName?: string
-       search?: string 
-      }>()
+      categoryName?: string
+      search?: string
+    }>()
 
   const { categories } = useCategoriesStore()
 
@@ -212,6 +212,8 @@ export default function ProductsPage() {
       category: null,
       subCategory: null,
       typeProduct: null,
+      priceRange: null,
+
     })
 
   const [page, setPage] = useState(1)
@@ -219,6 +221,9 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [filterVisible, setFilterVisible] = useState(false)
+
+
+
 
   const requestLock = useRef(false);
   const initialized = useRef(false);
@@ -231,12 +236,12 @@ export default function ProductsPage() {
     //   500
     // )
     const t = setTimeout(() => {
-    setDebouncedSearch(search)
+      setDebouncedSearch(search)
 
-    if (!initialized.current) {
-      initialized.current = true
-    }
-  }, 500)
+      if (!initialized.current) {
+        initialized.current = true
+      }
+    }, 500)
     return () => clearTimeout(t)
   }, [search])
 
@@ -269,7 +274,7 @@ export default function ProductsPage() {
         {
           headers: {
             //  Authorization: `Bearer ${token}` 
-            },
+          },
           params: {
             page: pageToFetch,
             per_page: 5,
@@ -278,6 +283,8 @@ export default function ProductsPage() {
             typeSub: filters.subCategory,
             typeProduct: filters.condition,
             search: debouncedSearch,
+            price_min: filters.priceRange?.min,
+            price_max: filters.priceRange?.max,
           },
         }
       )
@@ -306,22 +313,22 @@ export default function ProductsPage() {
   }, [filters, debouncedSearch]);
 
   useEffect(() => {
-  if (categoryName) {
-    setFilters(prev => ({
-      ...prev,
-      category: categoryName,
-      subCategory: null,
-    }))
-  }
-}, [categoryName])
+    if (categoryName) {
+      setFilters(prev => ({
+        ...prev,
+        category: categoryName,
+        subCategory: null,
+      }))
+    }
+  }, [categoryName])
 
 
-useEffect(() => {
-  if (searchParam) {
-    setSearch(searchParam);
-    // setDebouncedSearch(searchParam);
-  }
-}, [searchParam])
+  useEffect(() => {
+    if (searchParam) {
+      setSearch(searchParam);
+      // setDebouncedSearch(searchParam);
+    }
+  }, [searchParam])
 
 
 
@@ -384,8 +391,7 @@ useEffect(() => {
 
               return (
                 <Pressable
-                  onPress={() =>
-                  {
+                  onPress={() => {
                     resetSearch();
                     setFilters(prev => ({
                       ...prev,
@@ -396,18 +402,16 @@ useEffect(() => {
                     }))
                   }
                   }
-                  className={`px-4 py-2 mr-2 rounded-full border ${
-                    active
+                  className={`px-4 py-2 mr-2 rounded-full border ${active
                       ? 'bg-brand-primary border-brand-primary'
                       : 'border-brand-primary/40'
-                  }`}
+                    }`}
                 >
                   <Text
-                    className={`text-sm font-semibold ${
-                      active
+                    className={`text-sm font-semibold ${active
                         ? 'text-white'
                         : 'text-brand-dark'
-                    }`}
+                      }`}
                   >
                     {item.name}
                   </Text>

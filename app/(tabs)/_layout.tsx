@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons'
 import { HapticTab } from '@/components/haptic-tab'
 import { getToken } from '@/lib/auth-storage'
 import { checkAuth } from '@/lib/check-auth'
+import { AppState } from 'react-native'
+import NetInfo from '@react-native-community/netinfo'
 
 /* ---------------- Icon Component ---------------- */
 
@@ -57,24 +59,48 @@ const TabBarIcon = ({ name, focused, color }: TabBarIconProps) => {
 
 export default function TabLayout() {
 
-  
-const [checking, setChecking] = useState(true);
+  const [checking, setChecking] = useState(true);
+  const appState = useRef(AppState.currentState)
 
-useEffect(() => {
-    const verify = async () => {
-      try {
-        await checkAuth(); // 👈 تحقق من التوكن
-        setChecking(false);
-      } catch {
-        // router.replace("/(auth)/login");
-      }
-      finally{
-        setChecking(false);
-      }
-    };
 
-    verify();
-  }, []);
+  const verifyAuth = async () => {
+    try {
+      await checkAuth(); // 👈 تحقق من التوكن
+      setChecking(false);
+    } catch {
+      // router.replace("/(auth)/login");
+    }
+    finally {
+      setChecking(false);
+    }
+  };
+  useEffect(() => {
+
+
+    verifyAuth();
+    // لما يرجع التطبيق للواجهة
+    const appStateSub = AppState.addEventListener('change', nextState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextState === 'active'
+      ) {
+        verifyAuth()
+      }
+      appState.current = nextState
+    })
+
+    // لما يرجع الإنترنت
+    const netSub = NetInfo.addEventListener(state => {
+      if (state.isConnected) {
+        verifyAuth()
+      }
+    })
+
+    return () => {
+      appStateSub.remove()
+      netSub()
+    }
+  }, [])
 
   if (checking) {
     return (
@@ -83,18 +109,6 @@ useEffect(() => {
       </View>
     );
   }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   return (

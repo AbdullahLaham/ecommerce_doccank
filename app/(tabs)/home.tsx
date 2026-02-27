@@ -14,7 +14,7 @@ import AppBackground from '@/components/AppBackground'
 export default function HomeScreen() {
   const {  categories } = useCategoriesStore();
     return (
-    <SafeView>
+    <SafeView>9*
       <AppBackground>
         {/* <ScrollView className="flex-1 " contentContainerStyle={{ paddingBottom: 40 }}>
 
@@ -40,4 +40,10 @@ export default function HomeScreen() {
 
   )
 }
+
+
+
 //eas build --profile production --platform android
+
+
+

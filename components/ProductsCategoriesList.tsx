@@ -4,26 +4,26 @@ import CategorySection from './CategorySection'
 import CategoriesSlider from '@/components/home/CategoriesSlider'
 import Header from '@/components/home/Header'
 import { MarketingSlider } from '@/components/home/MarketingSlider'
-const ProductsCategoriesList = ({categories}: any) => {
+const ProductsCategoriesList = ({ categories }: any) => {
   return (
     <View className=''>
-        <FlatList
-              data={categories}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <CategorySection category={item} />
-              )}
-              ListHeaderComponent={
-        <>
-          <Header />
-          <MarketingSlider />
-          <CategoriesSlider />
-        </>
-      }
-      contentContainerStyle={{ paddingBottom: 40 }}
+      <FlatList
+        data={categories}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <CategorySection category={item} />
+        )}
+        ListHeaderComponent={
+          <>
+            <Header />
+            <MarketingSlider />
+            <CategoriesSlider />
+          </>
+        }
+        contentContainerStyle={{ paddingBottom: 40 }}
 
-              showsVerticalScrollIndicator={false}
-            />
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   )
 }

@@ -153,11 +153,6 @@ import SuccessCheck from '@/components/SuccessCheck'
 export default function OrderSuccessScreen() {
   const router = useRouter()
 
-  const orderDetails = [
-    { label: 'رقم الطلب', value: '#DK-392184' },
-    { label: 'عدد المنتجات', value: '3' },
-    { label: 'طريقة الدفع', value: 'بطاقة بنكية' },
-  ]
 
   const statusSteps = [
     { title: 'تم استلام الطلب', active: true },
@@ -291,7 +286,7 @@ export default function OrderSuccessScreen() {
 
         
         {/* <TouchableOpacity
-          onPress={() => router.push(`/track?orderId=5`)}
+          onPress={() => router.push(`/(order)/order-details/${id}`)}
           className="rounded-2xl py-4 border border-neutral-300 bg-white"
         >
           <Text className="text-center font-bold text-neutral-800">

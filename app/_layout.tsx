@@ -18,8 +18,8 @@ import "react-native-reanimated";
 
 
 
-// import "@/firebase.background";
-// import { notificationService } from "@/services/notification.service";
+import "@/firebase.background";
+import { notificationService } from "@/services/notification.service";
 
 
 import { Platform } from "react-native";
@@ -133,67 +133,67 @@ export default function RootLayout() {
   };
 
 
-//   useEffect(() => {
-//   if (!navState?.key) return;
+  useEffect(() => {
+  if (!navState?.key) return;
 
   
-//   // 🔥 REQUIRED: create Android channel BEFORE FCM
-//   setupNotificationChannel();
+  // 🔥 REQUIRED: create Android channel BEFORE FCM
+  setupNotificationChannel();
 
-//   notificationService.registerForPushNotifications();
+  notificationService.registerForPushNotifications();
 
-//   const unsubscribeOnMessage = notificationService.onReceive(async message => {
-//   console.log("🟢 Foreground:", message);
+  const unsubscribeOnMessage = notificationService.onReceive(async message => {
+  console.log("🟢 Foreground:", message);
 
-//   // Show system notification
-//   await Notifications.scheduleNotificationAsync({
-//     content: {
-//       title: String(message.notification?.title) || "New Notification",
-//       body: String(message.notification?.body) || "",
-//       data: message.data, // keep data for navigation
-//       sound: "default",
-//     },
-//     trigger: null, // null = immediate
-//   });
-// });
+  // Show system notification
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: String(message.notification?.title) || "New Notification",
+      body: String(message.notification?.body) || "",
+      data: message.data, // keep data for navigation
+      sound: "default",
+    },
+    trigger: null, // null = immediate
+  });
+});
 
 
 
-//   // 2️⃣ App opened from background
-//   const unsubscribeOnOpen =
-//     notificationService.onNotificationOpened(message => {
-//       handledInitialNotification.current = true;
+  // 2️⃣ App opened from background
+  const unsubscribeOnOpen =
+    notificationService.onNotificationOpened(message => {
+      handledInitialNotification.current = true;
 
-//       const data = message.data as NotificationData;
-//       console.log("🟡 Opened from background:", data);
+      const data = message.data as NotificationData;
+      console.log("🟡 Opened from background:", data);
 
-//       if (data) {
-//         handleNotificationNavigation(data);
-//       }
-//     });
+      if (data) {
+        handleNotificationNavigation(data);
+      }
+    });
 
-//   // 3️⃣ App opened from killed state
-//   (async () => {
-//     const initialMessage =
-//       await notificationService.getInitialNotification();
+  // 3️⃣ App opened from killed state
+  (async () => {
+    const initialMessage =
+      await notificationService.getInitialNotification();
 
-//     if (initialMessage && !handledInitialNotification.current) {
-//       handledInitialNotification.current = true;
+    if (initialMessage && !handledInitialNotification.current) {
+      handledInitialNotification.current = true;
 
-//       const data = initialMessage.data as NotificationData;
-//       console.log("🔴 Cold start:", data);
+      const data = initialMessage.data as NotificationData;
+      console.log("🔴 Cold start:", data);
 
-//       if (data) {
-//         handleNotificationNavigation(data);
-//       }
-//     }
-//   })();
+      if (data) {
+        handleNotificationNavigation(data);
+      }
+    }
+  })();
 
-//   return () => {
-//     unsubscribeOnMessage();
-//     unsubscribeOnOpen();
-//   };
-// }, [navState?.key]);
+  return () => {
+    unsubscribeOnMessage();
+    unsubscribeOnOpen();
+  };
+}, [navState?.key]);
 
 
 

@@ -109,7 +109,7 @@ export default function CartScreen() {
 
 
         {user?.name ? <View className="  px-6 py-6 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 mb-[80px]">
-          <TouchableOpacity className="bg-brand-primary rounded-2xl py-4 shadow-md active:opacity-90" onPress={() => router.push('/(checkout)/checkout')}>
+          <TouchableOpacity disabled={cartItems?.length == 0} className="bg-brand-primary rounded-2xl py-4 shadow-md active:opacity-90" onPress={() => router.push('/(checkout)/checkout')}>
             <Text
               className="text-center text-white dark:text-black text-lg font-extrabold"
               style={{ writingDirection: "rtl" }}

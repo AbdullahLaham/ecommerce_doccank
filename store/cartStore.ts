@@ -9,6 +9,7 @@ export type CartItem = {
   price: number
   quantity: number
   image?: string
+  categoryId?: string,
 }
 
 
@@ -122,14 +123,56 @@ export const useCartStore = create<CartStore>()(
       //   }
       // },
 
+      // shippingCost: () => {
+      //   const itemTypesCount = get().items.length
+      //   console.log('Calculating shipping cost for', get().items, 'item types')
+
+      //   if (itemTypesCount === 0) return 0
+      //   if (itemTypesCount <= 3) return 25
+
+      //   return 25 + (itemTypesCount - 3) * 5
+      // },
+
+      // shippingCost: () => {
+      //   const items = get().items
+      //   if (!items.length) return 0
+
+      //   const categoryCount = new Set(
+      //     items.map(item => item.categoryId)
+      //   ).size
+
+      //   if (categoryCount === 1) return 14
+      //   if (categoryCount === 2) return 24
+
+      //   return 24 + (categoryCount - 2) * 4
+      // },
       shippingCost: () => {
-        const itemTypesCount = get().items.length
+  const items = get().items
+  if (!items.length) return 0
 
-        if (itemTypesCount === 0) return 0
-        if (itemTypesCount <= 3) return 25
+  // categoryId => Set of productIds
+  const categoryMap = new Map<number, Set<number>>()
 
-        return 25 + (itemTypesCount - 3) * 5
-      },
+  items.forEach(item => {
+    if (!categoryMap.has(item.categoryId)) {
+      categoryMap.set(item.categoryId, new Set())
+    }
+    categoryMap.get(item.categoryId)!.add(item.id)
+  })
+
+  const categoryCount = categoryMap.size
+
+  // 🟢 حالة خاصة: فئة واحدة + منتج واحد فقط
+  if (categoryCount === 1) {
+    const [products] = categoryMap.values()
+    if (products.size === 1) return 14
+  }
+
+  // 🧱 الأساس
+  return 24 + (categoryCount - 1) * 4
+},
+
+
 
       totalWithShipping: () => {
         return get().subtotal() + get().shippingCost()

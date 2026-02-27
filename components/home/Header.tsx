@@ -81,38 +81,73 @@ export default function Header({ count = 0 }: HomeHeaderProps) {
     <View className="bg-[#F8FAFC] px-4 pt-2 pb-4">
       <View className="flex-row items-center gap-3">
         {/* Logo */}
-        <Image
+        {/* <Image
           source={require('@/assets/images/dokanak.png')}
           style={{
     width: 120,
     height: 60,
     // transform: [{ scale: 1.5 }], // جرّب 1.1 – 1.5
   }}
+        /> */}
+
+        <Image
+          source={require('@/assets/images/icon.png')}
+          style={{
+    width: 60,
+    height: 60,
+    transform: [{ scale: 1.8 }], // جرّب 1.1 – 1.5
+  }}
         />
 
         {/* Search */}
-        <View className="flex-1 flex-row items-center bg-white rounded-2xl px-4 h-12 shadow-sm">
-          <Ionicons
-            name="search-outline"
-            size={18}
-            color="#9CA3AF"
-            style={{ marginRight: 6 }}
-          />
+        {/* Search */}
+<View
+  style={{
+    flex: 1,
+    height: 52,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    paddingHorizontal: 14,
 
-          <TextInput
-            value={query}
-            onChangeText={setQuery}
-            placeholder="ابحث عن المنتجات"
-            placeholderTextColor="#9CA3AF"
-            className="flex-1 text-sm text-[#1F2937]"
-            returnKeyType="search"
-            onSubmitEditing={handleSearch}
-          />
+    // iOS shadow
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
 
-          {loading && (
-            <ActivityIndicator size="small" color="#7CC7A4" />
-          )}
-        </View>
+    // Android shadow
+    elevation: 6,
+  }}
+>
+  <Ionicons
+    name="search-outline"
+    size={22}
+    color="#6B7280"
+    style={{ marginRight: 8 }}
+  />
+
+  <TextInput
+    value={query}
+    onChangeText={setQuery}
+    placeholder="ابحث عن المنتجات"
+    placeholderTextColor="#9CA3AF"
+    style={{
+      flex: 1,
+      fontSize: 14,
+      color: '#111827',
+      paddingVertical: 0, // important for Android
+    }}
+    returnKeyType="search"
+    onSubmitEditing={handleSearch}
+  />
+
+  {loading && (
+    <ActivityIndicator size="small" color="#7CC7A4" />
+  )}
+</View>
+
 
         {/* Cart */}
         <Pressable
