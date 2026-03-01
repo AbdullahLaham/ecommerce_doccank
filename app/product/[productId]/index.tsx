@@ -83,11 +83,11 @@ export default function ProductDetails() {
         setLoading(true);
         const res = await axios.get(
           `https://docank.mahmoudalbatran.com/api/products/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            },
-          }
+          // {
+          //   headers: {
+          //     Authorization: `Bearer ${token}`
+          //   },
+          // }
         )
         console.log('Product Data:', res.data)
         setProduct(res?.data?.product)
