@@ -21,7 +21,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.abdullah_lahham123.doccank",
+      "package": "com.abdullah.lahham125.doccank",
       "intentFilters": [
         {
           "action": "VIEW",
@@ -35,7 +35,7 @@
       ]
     },
     "ios": {
-      "bundleIdentifier": "com.abdullah.lahham123.doccank",
+      "bundleIdentifier": "com.abdullah.lahham125.doccank",
       "googleServicesFile": "./GoogleService-Info.plist",
       "supportsTablet": true,
       "associatedDomains": [
