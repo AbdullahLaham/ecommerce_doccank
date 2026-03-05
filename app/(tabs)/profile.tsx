@@ -13,10 +13,11 @@ import {
 } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import SafeView from "@/components/SafeView"
-import { removeToken } from "@/lib/auth-storage"
+import { getToken, removeToken } from "@/lib/auth-storage"
 import { router } from "expo-router"
 import { useUserStore } from "@/store/user.store"
 import { checkAuth } from "@/lib/check-auth"
+import { api } from "@/lib/api"
 
 const menuItems = [
   {
@@ -43,7 +44,7 @@ const menuItems = [
 
 export default function ProfileScreen() {
   const user = useUserStore((s) => s.user)
-  const {clearUser} = useUserStore();
+  const { clearUser } = useUserStore();
 
   // ---------------- Supplier Form States ----------------
   const [showSupplierForm, setShowSupplierForm] = useState(false)
@@ -55,9 +56,21 @@ export default function ProfileScreen() {
   const [loading, setLoading] = useState(false)
 
   const onLogout = async () => {
+    try {
+      const token = await getToken();
+    if (!token) return;
+    await api.get("/logout", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     await removeToken();
     clearUser();
     router.replace("/(auth)/login")
+    } catch (error) {
+      console.error("Logout Error:", error);
+      Alert.alert("خطأ", "حدث خطأ أثناء تسجيل الخروج. حاول مرة أخرى.");
+    }
   }
 
   const submitSupplierForm = () => {
@@ -82,54 +95,54 @@ export default function ProfileScreen() {
 
 
   if (!user?.name) {
-  return (
-    <SafeView className="flex-1 bg-brand-light dark:bg-brand-dark">
-      <View className="flex-1 items-center justify-center px-8">
-        <Ionicons
-          name="person-circle-outline"
-          size={110}
-          color="#9CA3AF"
-          style={{ marginBottom: 20 }}
-        />
+    return (
+      <SafeView className="flex-1 bg-brand-light dark:bg-brand-dark">
+        <View className="flex-1 items-center justify-center px-8">
+          <Ionicons
+            name="person-circle-outline"
+            size={110}
+            color="#9CA3AF"
+            style={{ marginBottom: 20 }}
+          />
 
-        <Text
-          className="text-2xl font-extrabold text-neutral-900 dark:text-white mb-3"
-          style={{ writingDirection: "rtl" }}
-        >
-          لا يوجد مستخدم مسجل
-        </Text>
-
-        <Text
-          className="text-neutral-500 dark:text-neutral-400 text-center mb-8"
-          style={{ writingDirection: "rtl" }}
-        >
-          يرجى تسجيل الدخول للوصول إلى حسابك
-          ومتابعة الطلبات والإعدادات
-        </Text>
-        <TouchableOpacity
-    className="bg-brand-primary/20 p-3 rounded-full mb-5"
-    onPress={async () => {
-      await checkAuth();
-    }}
-  >
-    <Ionicons name="refresh" size={18} color="#7CC7A4" />
-  </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => router.replace("/(auth)/login")}
-          className="bg-brand-primary px-10 py-4 rounded-full"
-        >
           <Text
-            className="text-white font-extrabold text-lg"
+            className="text-2xl font-extrabold text-neutral-900 dark:text-white mb-3"
             style={{ writingDirection: "rtl" }}
           >
-            تسجيل الدخول
+            لا يوجد مستخدم مسجل
           </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeView>
-  )
-}
+
+          <Text
+            className="text-neutral-500 dark:text-neutral-400 text-center mb-8"
+            style={{ writingDirection: "rtl" }}
+          >
+            يرجى تسجيل الدخول للوصول إلى حسابك
+            ومتابعة الطلبات والإعدادات
+          </Text>
+          <TouchableOpacity
+            className="bg-brand-primary/20 p-3 rounded-full mb-5"
+            onPress={async () => {
+              await checkAuth();
+            }}
+          >
+            <Ionicons name="refresh" size={18} color="#7CC7A4" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => router.replace("/(auth)/login")}
+            className="bg-brand-primary px-10 py-4 rounded-full"
+          >
+            <Text
+              className="text-white font-extrabold text-lg"
+              style={{ writingDirection: "rtl" }}
+            >
+              تسجيل الدخول
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeView>
+    )
+  }
 
 
 
@@ -280,8 +293,8 @@ function InputField({ label, value, onChangeText, icon }: InputFieldProps) {
 
 
 
-          {/* Toggle Supplier Form Button */}
-          {/* <View className="mx-6 mt-6">
+{/* Toggle Supplier Form Button */ }
+{/* <View className="mx-6 mt-6">
             <TouchableOpacity
               onPress={() => setShowSupplierForm(prev => !prev)}
               className="bg-[#7CC7A4] rounded-2xl py-3 items-center shadow-md flex-row justify-center"
@@ -298,8 +311,8 @@ function InputField({ label, value, onChangeText, icon }: InputFieldProps) {
             </TouchableOpacity>
           </View> */}
 
-          {/* Supplier Form */}
-          {/* {showSupplierForm && (
+{/* Supplier Form */ }
+{/* {showSupplierForm && (
             <View className="mx-6 mt-4 bg-white dark:bg-neutral-800 rounded-3xl p-5 shadow-sm">
               <Text className="text-xl font-bold text-neutral-900 dark:text-white mb-4">
                 الانضمام كمورد

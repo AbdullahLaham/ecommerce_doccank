@@ -101,6 +101,10 @@ export default function SettingsScreen() {
 
   const [cityModalVisible, setCityModalVisible] = useState(false);
 
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
+
+
 
   /** Addresses */
   // const [addresses, setAddresses] = useState<any[]>([]);
@@ -375,6 +379,51 @@ export default function SettingsScreen() {
 
 
   /* ================== DELETE ================== */
+
+
+  const handleDeleteAccount = async () => {
+    try {
+      setDeletingAccount(true);
+
+      const token = await getToken();
+      if (!token) return;
+
+      await api.get("/delete-account", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // حذف التوكن
+      const { removeToken } = await import("@/lib/auth-storage");
+      await removeToken?.();
+
+      // مسح بيانات المستخدم من store
+      useUserStore.getState().setUser(null);
+
+      Toast.show({
+        type: "success",
+        text1: "تم حذف الحساب",
+        text2: "تم حذف حسابك بنجاح",
+      });
+
+      setDeleteModalVisible(false);
+
+      router.replace("/(auth)/login");
+
+    } catch (error: any) {
+      console.log("Delete account error:", error.response?.data || error.message);
+
+      Toast.show({
+        type: "error",
+        text1: "خطأ",
+        text2: "فشل حذف الحساب",
+      });
+    } finally {
+      setDeletingAccount(false);
+    }
+  };
+
 
 
   /* ================== LOCATION ================== */
@@ -702,6 +751,22 @@ export default function SettingsScreen() {
             )}
           </Section>
 
+          <Section title=" حذف الحساب نهائياً ">
+            <TouchableOpacity
+              onPress={() => setDeleteModalVisible(true)}
+              style={{
+                backgroundColor: "#FEE2E2",
+                paddingVertical: 14,
+                borderRadius: 14,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: BRAND.danger, fontWeight: "700" }}>
+                حذف الحساب نهائياً
+              </Text>
+            </TouchableOpacity>
+          </Section>
+
           <Modal
             visible={cityModalVisible}
             transparent
@@ -741,6 +806,85 @@ export default function SettingsScreen() {
                 ))}
               </View>
             </Pressable>
+          </Modal>
+
+          <Modal
+            visible={deleteModalVisible}
+            transparent
+            animationType="fade"
+          >
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: "rgba(0,0,0,0.5)",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 20,
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: "#fff",
+                  borderRadius: 20,
+                  padding: 24,
+                  width: "100%",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 18,
+                    fontWeight: "800",
+                    color: BRAND.danger,
+                    marginBottom: 12,
+                    textAlign: "center",
+                  }}
+                >
+                  تحذير ⚠️
+                </Text>
+
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: BRAND.dark,
+                    marginBottom: 20,
+                  }}
+                >
+                  هذه العملية غير قابلة للاسترجاع.
+                  هل أنت متأكد أنك تريد حذف حسابك نهائياً؟
+                </Text>
+
+                <View style={{ flexDirection: "row", gap: 10 }}>
+                  <TouchableOpacity
+                    onPress={() => setDeleteModalVisible(false)}
+                    style={{
+                      flex: 1,
+                      paddingVertical: 12,
+                      borderRadius: 12,
+                      backgroundColor: "#E5E7EB",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text style={{ fontWeight: "700" }}>إلغاء</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={handleDeleteAccount}
+                    style={{
+                      flex: 1,
+                      paddingVertical: 12,
+                      borderRadius: 12,
+                      backgroundColor: BRAND.danger,
+                      alignItems: "center",
+                    }}
+                    disabled={deletingAccount}
+                  >
+                    <Text style={{ color: "#fff", fontWeight: "700" }}>
+                      {deletingAccount ? "جارٍ الحذف..." : "نعم، احذف الحساب"}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
           </Modal>
         </ScrollView>
       </KeyboardAvoidingView>
